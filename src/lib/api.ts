@@ -17,9 +17,18 @@ export async function searchData(
   sortOrder: 'asc' | 'desc'
 ): Promise<Result[]> {
   // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+  async function fetchMockData(endpoint: string): Promise<Result[]> {
+    console.log(`Fetching data from ${endpoint}...`);
 
-  const filteredResults = mockData.filter((result: Result) => 
+    // Simulate network delay
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(mockData);
+      }, 150); // 1 second delay
+    });
+  }
+  const data = await fetchMockData(tab);
+  const filteredResults = data.filter((result: Result) =>
     (result.tab === tab) &&
     (result.title.toLowerCase().includes(query.toLowerCase()) ||
      result.category.toLowerCase().includes(query.toLowerCase())) &&
