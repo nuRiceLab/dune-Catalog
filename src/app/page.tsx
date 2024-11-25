@@ -53,8 +53,8 @@ export default function Home() {
     return () => window.removeEventListener('resize', updateSlider)
   }, [activeTabIndex, isLoaded])
 
-  const handleSearch = async (query: string, category: string, sortBy: string, sortOrder: 'asc' | 'desc') => {
-    const data = await searchData(activeTab, query, category, sortBy, sortOrder)
+  const handleSearch = async (query: string, category: string) => {
+    const data = await searchData(activeTab, query, category)
     setResults(data)
     setHasSearched(true)
   }

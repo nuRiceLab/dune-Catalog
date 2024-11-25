@@ -3,6 +3,7 @@
 import { ThemeProvider } from "next-themes"
 import { JetBrains_Mono, Poppins, Inter } from 'next/font/google'
 import './globals.css'
+import { Toaster } from "@/components/ui/toaster"
 
 // const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'] })
 const poppins = Poppins({ weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'], subsets: ['latin'] })
@@ -18,6 +19,7 @@ export default function RootLayout({
         <body className={font.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             {children}
+            <Toaster />
         </ThemeProvider>
         </body>
         </html>

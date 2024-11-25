@@ -10,11 +10,9 @@ export interface Result {
 }
 
 export async function searchData(
-  tab: string, 
-  query: string, 
-  category: string,
-  sortBy: string,
-  sortOrder: 'asc' | 'desc'
+    tab: string,
+    query: string,
+    category: string,
 ): Promise<Result[]> {
   // Simulate API call delay
   async function fetchMockData(endpoint: string): Promise<Result[]> {
@@ -28,31 +26,10 @@ export async function searchData(
     });
   }
   const data = await fetchMockData(tab);
-  const filteredResults = data.filter((result: Result) =>
-    (result.tab === tab) &&
-    (result.title.toLowerCase().includes(query.toLowerCase()) ||
-     result.category.toLowerCase().includes(query.toLowerCase())) &&
-    (category === '' || result.category === category)
+  return data.filter((result: Result) =>
+      (result.tab === tab) &&
+      (result.title.toLowerCase().includes(query.toLowerCase()) ||
+          result.category.toLowerCase().includes(query.toLowerCase())) &&
+      (category === '' || result.category === category)
   );
-
-// Sort the results
-  filteredResults.sort((a: Result, b: Result) => {
-    let comparison = 0;
-    switch (sortBy) {
-      case 'title':
-        comparison = a.title.localeCompare(b.title);
-        break;
-      case 'date':
-        comparison = new Date(b.date).getTime() - new Date(a.date).getTime();
-        break;
-      case 'size':
-        comparison = a.size - b.size;
-        break;
-      default:
-        comparison = a.id.localeCompare(b.id); // Default to sort by id
-    }
-    return sortOrder === 'asc' ? comparison : -comparison;
-  });
-
-  return filteredResults;
 }

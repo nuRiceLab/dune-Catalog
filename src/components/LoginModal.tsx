@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { mockLogin } from "@/lib/auth"
+import { useToast } from "@/hooks/use-toast"
 import {
     Dialog,
     DialogContent,
@@ -19,7 +20,8 @@ import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import {useEffect, useState} from "react";
+import { useState } from "react";
+
 interface LoginModalProps {
     isLoggedIn: boolean;
     setIsLoggedIn: (value: boolean) => void;
@@ -35,49 +37,60 @@ const formSchema = z.object({
 
 
 export function LoginModal({ isLoggedIn, setIsLoggedIn }: LoginModalProps) {
-    const [open, setOpen] = useState(false);
-    const [isVisible, setIsVisible] = useState(true);
+    const [open, setOpen] = useState(false)
+    const { toast } = useToast()
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             username: "",
             password: "",
         },
-    });
-    useEffect(() => {
-        if (open) {
-            setIsVisible(true);
-        }
-    }, [open]);
-    const handleLogin = async (username: string, password: string) => {
-        // fix "enter spamming" i.e. clicking enter/submit multiple times, and it logs in multiple times
+    })
+
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        if (isSubmitting) return; // Prevent multiple submissions
+        console.log(values.username, values.password)
+        setIsSubmitting(true);
         try {
-            const response = await mockLogin({ username, password });
+            const response = await mockLogin(values)
+
             if (response.success) {
-                console.log(response.message);
-                console.log(username, password);
-                localStorage.setItem('token', response.token!);
-                setIsVisible(false); // Start fade-out
-                setTimeout(() => {
-                    setIsLoggedIn(true);
-                    setOpen(false); // Close dialog after fade-out
-                }, 200);
+                setIsLoggedIn(true)
+                setOpen(false)
+                toast({
+                    variant: "success",
+                    title: "Login Successful",
+                    description: "You have successfully logged in.",
+                })
             } else {
-                console.error(response.message);
+                toast({
+                    variant: "destructive",
+                    title: "Login Failed",
+                    description: response.message || "An error occurred during login.",
+                })
             }
         } catch (error) {
-            console.error('Login error:', error);
+            console.error("Login error:", error);
+            toast({
+                variant: "destructive",
+                title: "Login Error",
+                description: error instanceof Error ? error.message : "An unexpected error occurred. Please try again.",
+            })
+        } finally {
+            setIsSubmitting(false)
         }
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        setIsLoggedIn(false);
-    };
-
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        handleLogin(values.username, values.password);
     }
+
+    function handleLogout() {
+        setIsLoggedIn(false)
+        toast({
+            variant: "success", // Use the success variant for logout as well
+            title: "Logged Out",
+            description: "You have successfully logged out.",
+        })
+    }
+
     const handleButtonClick = () => {
         if (isLoggedIn) {
             handleLogout();
@@ -91,7 +104,7 @@ export function LoginModal({ isLoggedIn, setIsLoggedIn }: LoginModalProps) {
                 {isLoggedIn ? "Logout" : "Login"}
             </Button>
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className={`sm:max-w-[425px] transition-opacity duration-200 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+                <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Login</DialogTitle>
                         <DialogDescription>
@@ -99,8 +112,8 @@ export function LoginModal({ isLoggedIn, setIsLoggedIn }: LoginModalProps) {
                         </DialogDescription>
                     </DialogHeader>
                     <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                        <FormField
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                            <FormField
                             control={form.control}
                             name="username"
                             render={({ field }) => (
@@ -126,12 +139,14 @@ export function LoginModal({ isLoggedIn, setIsLoggedIn }: LoginModalProps) {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit">Submit</Button>
-                    </form>
+                            <Button type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? "Logging in..." : "Login"}
+                            </Button>
+                        </form>
                 </Form>
             </DialogContent>
-
         </Dialog>
+            {/*<Toaster />*/}
         </>
     )
 }

@@ -8,10 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ChevronUp, ChevronDown } from 'lucide-react'
 
 interface SearchBarProps {
-  onSearch: (query: string, category: string, sortBy: string, sortOrder: 'asc' | 'desc') => void;
+  onSearch: (query: string, category: string) => void;
   activeTab: string;
 }
 
@@ -19,15 +18,11 @@ export function SearchBar({ onSearch, activeTab }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');
   const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState('');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
     // Reset states when activeTab changes
     setQuery('');
     setCategory('');
-    setSortBy('');
-    setSortOrder('asc');
 
     switch (activeTab) {
       case 'Far Detectors':
@@ -47,11 +42,7 @@ export function SearchBar({ onSearch, activeTab }: SearchBarProps) {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSearch(query, category, sortBy, sortOrder);
-  };
-
-  const toggleSortOrder = () => {
-    setSortOrder(prevOrder => prevOrder === 'asc' ? 'desc' : 'asc');
+    onSearch(query, category);
   };
 
   return (
@@ -74,7 +65,7 @@ export function SearchBar({ onSearch, activeTab }: SearchBarProps) {
             ))}
           </SelectContent>
         </Select>
-        <Select value={sortBy} onValueChange={setSortBy}>
+        <Select value={category} onValueChange={setCategory}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
@@ -84,9 +75,6 @@ export function SearchBar({ onSearch, activeTab }: SearchBarProps) {
             <SelectItem value="size">Size</SelectItem>
           </SelectContent>
         </Select>
-        <Button type="button" variant="outline" size="icon" onClick={toggleSortOrder}>
-          {sortOrder === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-        </Button>
       </div>
       <Button type="submit">Search</Button>
     </form>
