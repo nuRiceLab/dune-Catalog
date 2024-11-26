@@ -1,5 +1,5 @@
 'use client'
-import {useState, useEffect, useRef, useLayoutEffect, useCallback} from 'react'
+import {useState, useEffect, useRef, useCallback} from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import  { Header }  from '@/components/Header'
 import  { Footer }  from '@/components/Footer'
@@ -15,12 +15,10 @@ const tabs = [
 ]
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('Far Detectors')
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [sliderStyle, setSliderStyle] = useState({ width: 0, left: 0 })
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
-  const [results, setResults] = useState<Result[]>([])
-  const [hasSearched, setHasSearched] = useState(false)
+  const [results, setResults] = useState<Result[]>([]);
   const [isClient, setIsClient] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const setTabRef = useCallback((el: HTMLButtonElement | null, index: number) => {
@@ -34,8 +32,7 @@ export default function Home() {
 
   useEffect(() => {
     setResults([])
-    setHasSearched(false)
-  }, [activeTab])
+  }, [activeTabIndex])
 
   useEffect(() => {
     const updateSlider = () => {
@@ -54,10 +51,15 @@ export default function Home() {
   }, [activeTabIndex, isLoaded])
 
   const handleSearch = async (query: string, category: string) => {
-    const data = await searchData(activeTab, query, category)
-    setResults(data)
-    setHasSearched(true)
-  }
+    try {
+      const searchResults = await searchData(query, category, tabs[activeTabIndex]);
+      console.log('Search results:', searchResults);
+      setResults(searchResults);
+    } catch (error) {
+      console.error('Search failed:', error);
+      // Handle error (e.g., show error message to user)
+    }
+  };
 
   if (!isClient || !isLoaded) {
     return null; // or a loading spinner
@@ -69,15 +71,7 @@ export default function Home() {
         <Header/>
         <main className="flex-grow container mx-auto px-4 py-8">
           <div className="max-w-5xl mx-auto">
-            <Tabs
-                defaultValue="Far Detectors"
-                value={activeTab}
-                onValueChange={(value) => {
-                  setActiveTab(value)
-                  setActiveTabIndex(tabs.indexOf(value))
-                }}
-                className="w-full"
-            >
+            <Tabs defaultValue={tabs[0]} onValueChange={(value) => setActiveTabIndex(tabs.indexOf(value))} className='w-full'>
               <TabsList className="w-full justify-start bg-muted relative">
                 <div
                     className="tab-slider absolute h-8 bg-background rounded-sm transition-all duration-300 ease-in-out"
@@ -100,14 +94,8 @@ export default function Home() {
               </TabsList>
               {tabs.map((tab) => (
                   <TabsContent key={tab} value={tab} className="mt-6">
-                    <SearchBar onSearch={handleSearch} activeTab={activeTab}/>
-                    {hasSearched ? (
+                    <SearchBar onSearch={handleSearch} activeTab={tabs[activeTabIndex]}/>
                         <ResultsTable results={results}/>
-                    ) : (
-                        <div className="text-center text-gray-500 mt-8">
-                          Please input one or more search criteria
-                        </div>
-                    )}
                   </TabsContent>
               ))}
             </Tabs>

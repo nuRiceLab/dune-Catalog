@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { mockLogin } from "@/lib/auth"
+import { login, logout } from "@/lib/auth"
 import { useToast } from "@/hooks/use-toast"
 import {
     Dialog,
@@ -53,7 +53,7 @@ export function LoginModal({ isLoggedIn, setIsLoggedIn }: LoginModalProps) {
         console.log(values.username, values.password)
         setIsSubmitting(true);
         try {
-            const response = await mockLogin(values)
+            const response = await login(values)
 
             if (response.success) {
                 setIsLoggedIn(true)
@@ -83,6 +83,7 @@ export function LoginModal({ isLoggedIn, setIsLoggedIn }: LoginModalProps) {
     }
 
     function handleLogout() {
+        logout()
         setIsLoggedIn(false)
         toast({
             variant: "success", // Use the success variant for logout as well

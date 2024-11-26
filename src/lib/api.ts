@@ -1,35 +1,26 @@
-import mockData from './MockData.json';
+import axios from 'axios';
+import { getStoredToken } from './auth';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 export interface Result {
-  id: string;
-  title: string;
-  date: string;
-  category: string;
-  size: number;
-  tab: string;
+  name: string;
+  creator: string;
+  created: number; // unix timestamp
+  files: number;
 }
 
-export async function searchData(
-    tab: string,
-    query: string,
-    category: string,
-): Promise<Result[]> {
-  // Simulate API call delay
-  async function fetchMockData(endpoint: string): Promise<Result[]> {
-    console.log(`Fetching data from ${endpoint}...`);
-
-    // Simulate network delay
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(mockData);
-      }, 150); // 1 second delay
-    });
+export async function searchData(query: string, category: string, tab: string): Promise<Result[]> {
+  try {
+    const token = getStoredToken();
+    const response = await axios.post(`${API_URL}/query`,
+        { query, category, tab },
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+    console.log('API Response:', response.data); // Add this line
+    return response.data.results;
+  } catch (error) {
+    console.error('Search failed:', error);
+    throw error;
   }
-  const data = await fetchMockData(tab);
-  return data.filter((result: Result) =>
-      (result.tab === tab) &&
-      (result.title.toLowerCase().includes(query.toLowerCase()) ||
-          result.category.toLowerCase().includes(query.toLowerCase())) &&
-      (category === '' || result.category === category)
-  );
 }
