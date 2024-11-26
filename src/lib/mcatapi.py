@@ -1,12 +1,17 @@
 from datetime import datetime
 from metacat.webapi import MetaCatClient
 import os
-
+import json
+import re
 
 def format_timestamp(timestamp):
     if timestamp:
         return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
     return ''
+
+
+with open(os.path.join(os.path.dirname(__file__), '..', 'config', 'tabsConfig.json')) as f:
+    tabs_config = json.load(f)
 
 
 class MetaCatAPI:
@@ -25,21 +30,11 @@ class MetaCatAPI:
 
     def query(self, query_text, category, tab):
         try:
-            # Define namespace mappings
-            namespace_mapping = {
-                ("Far Detectors", "FD-HD"): "fardet-hd",
-                ("Far Detectors", "FD-VD"): "fardet-vd",
-                ("Protodune-HD", "Data"): "hd-protodune",
-                ("Protodune-HD", "MC"): "hd-protodune",
-                ("ProtoDune-VD", "Data"): "vd-protodune",
-                ("ProtoDune-VD", "MC"): "vd-protodune",
-                ("Near Detector Prototypes", "M 2x2 Data"): "neardet-2x2",
-                ("Near Detector Prototypes", "M 2x2 MC"): "neardet-2x2",
-            }
-
             # Get the namespace based on tab and category
-            namespace = namespace_mapping.get((tab, category), "")
-
+            namespace = next(
+                (cat['namespace'] for cat in tabs_config[tab]['categories'] if cat['name'] == category),
+                None
+            )
             if not namespace:
                 raise ValueError(f"No matching namespace found for tab '{tab}' and category '{category}'")
 
@@ -50,7 +45,7 @@ class MetaCatAPI:
             if query_text:
                 # Escape single quotes in the query_text
                 escaped_query = query_text.replace("'", "\\'")
-                mql_query += f" having name like '%{escaped_query}%'"
+                mql_query += f" having name ~* '(?i){re.escape(escaped_query)}'"
 
             print(f"Executing MQL query: {mql_query}")  # Debug print
 

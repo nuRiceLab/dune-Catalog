@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
+import tabsConfig from '@/config/tabsConfig.json';
 
 interface SearchBarProps {
   onSearch: (query: string, category: string, tab: string) => void;
@@ -24,7 +25,6 @@ export function SearchBar({ onSearch, activeTab }: SearchBarProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!category) {
       toast({
         variant: "destructive",
@@ -49,17 +49,7 @@ export function SearchBar({ onSearch, activeTab }: SearchBarProps) {
   };
 
   const getCategoryOptions = () => {
-    switch (activeTab) {
-      case 'Far Detectors':
-        return ['FD-HD', 'FD-VD'];
-      case 'Protodune-HD':
-      case 'ProtoDune-VD':
-        return ['Data', 'MC'];
-      case 'Near Detector Prototypes':
-        return ['M 2x2 Data', 'M 2x2 MC'];
-      default:
-        return [];
-    }
+    return tabsConfig[activeTab]?.categories.map(cat => cat.name) || [];
   };
 
   return (

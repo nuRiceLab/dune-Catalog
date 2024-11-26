@@ -39,7 +39,7 @@ class QueryRequest(BaseModel):
 
 @app.post("/query")
 async def query(request: QueryRequest):
-    # print('Received query:', request.query, request.category, request.tab)
+    print('Received query:', request.query, request.category, request.tab)
     result = metacat_api.query(request.query, request.category, request.tab)
     # print(result)
     if not result["success"]:

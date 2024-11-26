@@ -6,13 +6,9 @@ import  { Footer }  from '@/components/Footer'
 import { SearchBar } from '@/components/SearchBar'
 import { ResultsTable } from '@/components/ResultsTable'
 import { searchData, Result } from '@/lib/api'
+import tabsConfig from '@/config/tabsConfig.json';
 
-const tabs = [
-  'Far Detectors',
-  'Protodune-HD',
-  'ProtoDune-VD',
-  'Near Detector Prototypes'
-]
+const tabs = Object.keys(tabsConfig);
 
 export default function Home() {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
@@ -28,6 +24,7 @@ export default function Home() {
     setIsClient(true)
     // Force a re-render after a short delay to ensure DOM is fully loaded
     setTimeout(() => setIsLoaded(true), 0)
+
   }, [])
 
   useEffect(() => {
@@ -53,7 +50,7 @@ export default function Home() {
   const handleSearch = async (query: string, category: string) => {
     try {
       const searchResults = await searchData(query, category, tabs[activeTabIndex]);
-      console.log('Search results:', searchResults);
+      // console.log('Search results:', searchResults);
       setResults(searchResults);
     } catch (error) {
       console.error('Search failed:', error);

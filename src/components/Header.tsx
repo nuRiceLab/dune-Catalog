@@ -14,7 +14,7 @@ export function Header() {
                     width={300}
                     height={100}
                     priority={true}
-                    style={{ height: 'auto', width: 'auto' }}
+                    style={{height: 'auto', width: 'auto' }}
                     className="mr-2"
                 />
             </div>

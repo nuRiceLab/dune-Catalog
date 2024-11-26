@@ -12,15 +12,16 @@ export interface Result {
 
 export async function searchData(query: string, category: string, tab: string): Promise<Result[]> {
   try {
+    console.log('API Request:', { query, category, tab });
     const token = getStoredToken();
     const response = await axios.post(`${API_URL}/query`,
         { query, category, tab },
         { headers: { Authorization: `Bearer ${token}` } }
     );
-    console.log('API Response:', response.data); // Add this line
+    console.log('API Response:', response.data);
     return response.data.results;
   } catch (error) {
-    console.error('Search failed:', error);
+    // console.error('Search failed:', error);
     throw error;
   }
 }

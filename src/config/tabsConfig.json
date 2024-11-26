@@ -1,0 +1,50 @@
+{
+  "Far Detectors": {
+    "categories": [
+      {
+        "name": "FD-HD",
+        "namespace": "fardet-hd"
+      },
+      {
+        "name": "FD-VD",
+        "namespace": "fardet-vd"
+      }
+    ]
+  },
+  "Protodune-HD": {
+    "categories": [
+      {
+        "name": "Data",
+        "namespace": "hd-protodune"
+      },
+      {
+        "name": "MC",
+        "namespace": "hd-protodune"
+      }
+    ]
+  },
+  "ProtoDune-VD": {
+    "categories": [
+      {
+        "name": "Data",
+        "namespace": "vd-protodune"
+      },
+      {
+        "name": "MC",
+        "namespace": "vd-protodune"
+      }
+    ]
+  },
+  "Near Detector Prototypes": {
+    "categories": [
+      {
+        "name": "M 2x2 Data",
+        "namespace": "neardet-2x2"
+      },
+      {
+        "name": "M 2x2 MC",
+        "namespace": "neardet-2x2"
+      }
+    ]
+  }
+}
