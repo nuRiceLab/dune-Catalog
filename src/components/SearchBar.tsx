@@ -29,7 +29,7 @@ export function SearchBar({ onSearch, activeTab }: SearchBarProps) {
       toast({
         variant: "destructive",
         title: "Category Required",
-        description: "Please at least select a category before searching.",
+        description: "Please select a category before searching.",
       })
       return;
     }

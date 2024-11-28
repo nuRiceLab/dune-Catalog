@@ -5,7 +5,7 @@ import  { Header }  from '@/components/Header'
 import  { Footer }  from '@/components/Footer'
 import { SearchBar } from '@/components/SearchBar'
 import { ResultsTable } from '@/components/ResultsTable'
-import { searchData, Result } from '@/lib/api'
+import { searchDataSets, Dataset } from '@/lib/api'
 import tabsConfig from '@/config/tabsConfig.json';
 
 const tabs = Object.keys(tabsConfig);
@@ -14,7 +14,7 @@ export default function Home() {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [sliderStyle, setSliderStyle] = useState({ width: 0, left: 0 })
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
-  const [results, setResults] = useState<Result[]>([]);
+  const [results, setResults] = useState<Dataset[]>([]);
   const [isClient, setIsClient] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const setTabRef = useCallback((el: HTMLButtonElement | null, index: number) => {
@@ -49,7 +49,7 @@ export default function Home() {
 
   const handleSearch = async (query: string, category: string) => {
     try {
-      const searchResults = await searchData(query, category, tabs[activeTabIndex]);
+      const searchResults = await searchDataSets(query, category, tabs[activeTabIndex]);
       // console.log('Search results:', searchResults);
       setResults(searchResults);
     } catch (error) {

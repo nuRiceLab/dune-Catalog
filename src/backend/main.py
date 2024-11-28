@@ -31,16 +31,16 @@ async def login(request: LoginRequest):
         raise HTTPException(status_code=401, detail=result["message"])
 
 
-class QueryRequest(BaseModel):
+class DatasetRequest(BaseModel):
     query: str
     category: str
     tab: str
 
 
-@app.post("/query")
-async def query(request: QueryRequest):
+@app.post("/queryDatasets")
+async def get_datasets(request: DatasetRequest):
     print('Received query:', request.query, request.category, request.tab)
-    result = metacat_api.query(request.query, request.category, request.tab)
+    result = metacat_api.get_datasets(request.query, request.category, request.tab)
     # print(result)
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["message"])
@@ -53,3 +53,18 @@ async def health_check():
     if not result["success"]:
         raise HTTPException(status_code=500, detail="MetaCat connection failed")
     return {"status": "healthy"}
+
+
+class FileRequest(BaseModel):
+    namespace: str
+    name: str
+
+
+@app.post("/queryFiles")
+async def get_files(request: FileRequest):
+    print('Received query for files:', request.namespace, request.name)
+    try:
+        files = metacat_api.get_files(request.namespace, request.name, )
+        return files
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

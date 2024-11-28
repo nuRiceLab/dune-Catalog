@@ -3,15 +3,16 @@ import { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown } from 'lucide-react';
-import { Result } from '@/lib/api';
+import { Dataset } from '@/lib/api';
 import { Pagination } from './Pagination';
+import { ResultDialog } from './ResultDialog';
 
 interface ResultsTableProps {
-    results: Result[];
+    results: Dataset[];
 }
 
 export function ResultsTable({ results }: ResultsTableProps) {
-    const [sortColumn, setSortColumn] = useState<keyof Result>('name');
+    const [sortColumn, setSortColumn] = useState<keyof Dataset>('name');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -25,7 +26,7 @@ export function ResultsTable({ results }: ResultsTableProps) {
     const totalPages = Math.ceil(sortedResults.length / pageSize);
     const paginatedResults = sortedResults.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-    const toggleSort = (column: keyof Result) => {
+    const toggleSort = (column: keyof Dataset) => {
         if (column === sortColumn) {
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
         } else {
@@ -51,7 +52,7 @@ export function ResultsTable({ results }: ResultsTableProps) {
                             <TableHead key={header}>
                                 <Button
                                     variant="ghost"
-                                    onClick={() => toggleSort(header.toLowerCase() as keyof Result)}
+                                    onClick={() => toggleSort(header.toLowerCase() as keyof Dataset)}
                                 >
                                     {header}
                                     {sortColumn === header.toLowerCase() && (
@@ -65,7 +66,9 @@ export function ResultsTable({ results }: ResultsTableProps) {
                 <TableBody>
                     {paginatedResults.map((result, index) => (
                         <TableRow key={index}>
-                            <TableCell className="max-w-[200px] break-words">{result.name}</TableCell>
+                            <TableCell className="max-w-[200px] break-words">
+                                <ResultDialog result={result} />
+                            </TableCell>
                             <TableCell>{result.creator}</TableCell>
                             <TableCell>{new Date(result.created).toLocaleDateString()}</TableCell>
                             <TableCell>{result.files}</TableCell>

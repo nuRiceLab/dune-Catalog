@@ -28,7 +28,7 @@ class MetaCatAPI:
         except Exception as e:
             return {"success": False, "message": str(e)}
 
-    def query(self, query_text, category, tab):
+    def get_datasets(self, query_text, category, tab):
         try:
             # Get the namespace based on tab and category
             namespace = next(
@@ -60,7 +60,8 @@ class MetaCatAPI:
                     "name": result.get("name", ""),
                     "creator": result.get("creator", ""),
                     "created": format_timestamp(result.get("created_timestamp", "")),
-                    "files": result.get("file_count", 0)
+                    "files": result.get("file_count", 0),
+                    "namespace": namespace
                 }
                 for result in raw_results
             ]
@@ -77,5 +78,29 @@ class MetaCatAPI:
         try:
             datasets = self.client.list_datasets()
             return {"success": True, "datasets": datasets}
+        except Exception as e:
+            return {"success": False, "message": str(e)}
+
+    def get_files(self, namespace: str, name: str):
+        try:
+            mql_query = f"files from {namespace}:{name} limit 10"
+            print(f"Executing MQL query: {mql_query}")
+            results = self.client.query(mql_query)
+            raw_results = list(results)
+            print(f"Raw query results:")
+            for result in raw_results:
+                print(result)
+            files = [
+                {
+                    "fid": result.get("fid", ""),
+                    "name": result.get("name", ""),
+                    "updated": format_timestamp(result.get("updated_timestamp", "")),
+                    "created": format_timestamp(result.get("created_timestamp", "")),
+                    "size": result.get("size", result.get("size", 0)),
+                }
+                for result in raw_results
+            ]
+
+            return {"success": True, "files": files}
         except Exception as e:
             return {"success": False, "message": str(e)}
