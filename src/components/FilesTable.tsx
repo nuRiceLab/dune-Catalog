@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { File } from '@/lib/api';  // Make sure this import path is correct
+import { File } from '@/lib/api';
 
 interface FilesTableProps {
     files: File[] | undefined;
@@ -30,10 +30,12 @@ export function FilesTable({ files, isLoading }: FilesTableProps) {
             <TableBody>
                 {files.map((file) => (
                     <TableRow key={file.fid}>
-                        <TableCell>{file.name}</TableCell>
+                        <TableCell className="max-w-[200px] break-words">
+                            {file.name}
+                        </TableCell>
                         <TableCell>{formatFileSize(file.size)}</TableCell>
-                        <TableCell>{formatDate(file.created)}</TableCell>
-                        <TableCell>{formatDate(file.updated)}</TableCell>
+                        <TableCell>{file.created}</TableCell>
+                        <TableCell>{file.updated}</TableCell>
                         <TableCell>{file.fid}</TableCell>
                     </TableRow>
                 ))}
@@ -48,8 +50,4 @@ function formatFileSize(bytes: number): string {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-function formatDate(timestamp: number): string {
-    return new Date(timestamp * 1000).toLocaleString(); // Assuming the timestamp is in seconds
 }

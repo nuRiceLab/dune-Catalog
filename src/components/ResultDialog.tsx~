@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dataset, searchFiles, File } from '@/lib/api';
+import { Dataset, searchFiles } from '@/lib/api';
 import {
     Dialog,
     DialogContent,
@@ -18,7 +18,8 @@ interface ResultDialogProps {
 }
 
 export function ResultDialog({ result, className }: ResultDialogProps) {
-    const [files, setFiles] = useState<File[]>([]);    const [isLoadingFiles, setIsLoadingFiles] = useState(false);
+    const [files, setFiles] = useState([]);
+    const [isLoadingFiles, setIsLoadingFiles] = useState(false);
     const [open, setOpen] = useState(false);
     const metacatUrl = `https://metacat.fnal.gov:9443/dune_meta_prod/app/gui/dataset?namespace=${encodeURIComponent(result.namespace)}&name=${encodeURIComponent(result.name)}`;
 
@@ -27,7 +28,7 @@ export function ResultDialog({ result, className }: ResultDialogProps) {
             if (!open) return;
             setIsLoadingFiles(true);
             try {
-                const fetchedFiles: File[] = await searchFiles(result.namespace, result.name);
+                const fetchedFiles = await searchFiles(result.namespace, result.name);
                 setFiles(fetchedFiles);
             } catch (error) {
                 console.error('Error fetching files:', error);

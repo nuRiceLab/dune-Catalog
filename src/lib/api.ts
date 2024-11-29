@@ -44,7 +44,7 @@ export async function searchFiles(namespace: string, name: string): Promise<File
         { headers: { Authorization: `Bearer ${token}` } }
     );
     console.log('API Response:', response.data);
-    return response.data.results;
+    return response.data.files;
   } catch (error) {
     // console.error('Search failed:', error);
     throw error;
