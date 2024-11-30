@@ -52,7 +52,7 @@ export function DatasetDialog({ result, className }: ResultDialogProps) {
                 </span>
             </DialogTrigger>
             <DialogContent className="max-w-4xl w-[90vw] max-h-[90vh] overflow-auto">
-                <DialogHeader>
+                <DialogHeader className="pt-4">
                     <DialogTitle className="text-xl break-all hyphens-auto overflow-wrap-anywhere leading-relaxed">
                         {result.name}
                     </DialogTitle>
@@ -66,7 +66,7 @@ export function DatasetDialog({ result, className }: ResultDialogProps) {
                         <p><strong>Files:</strong> {result.files}</p>
                     </div>
                     <Button asChild>
-                        <a href={metacatUrl} target="_blank" rel="noopener noreferrer"title="You may need to sign in to Metacat when redirected"
+                        <a href={metacatUrl} target="_blank" rel="noopener noreferrer" title="You may need to sign in to Metacat when redirected"
                         >
                             View in Metacat GUI
                         </a>
