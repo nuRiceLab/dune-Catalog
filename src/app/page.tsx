@@ -47,10 +47,9 @@ export default function Home() {
     return () => window.removeEventListener('resize', updateSlider)
   }, [activeTabIndex, isLoaded])
 
-  const handleSearch = async (query: string, category: string) => {
+  const handleSearch = async (query: string, category: string, tab: string, officialOnly: boolean) => {
     try {
-      const searchResults = await searchDataSets(query, category, tabs[activeTabIndex]);
-      // console.log('Search results:', searchResults);
+      const searchResults = await searchDataSets(query, category, tab, officialOnly);
       setResults(searchResults);
     } catch (error) {
       console.error('Search failed:', error);
@@ -91,7 +90,7 @@ export default function Home() {
               </TabsList>
               {tabs.map((tab) => (
                   <TabsContent key={tab} value={tab} className="mt-6">
-                    <SearchBar onSearch={handleSearch} activeTab={tabs[activeTabIndex]}/>
+                    <SearchBar onSearch={handleSearch} activeTab={tab} />
                         <ResultsTable results={results}/>
                   </TabsContent>
               ))}

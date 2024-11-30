@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useToast} from "@/hooks/use-toast";
@@ -13,11 +15,12 @@ import { Loader2 } from "lucide-react"
 import tabsConfig from '@/config/tabsConfig.json';
 
 interface SearchBarProps {
-  onSearch: (query: string, category: string, tab: string) => void;
+  onSearch: (query: string, category: string, tab: string, officialOnly: boolean) => void;
   activeTab: string;
 }
 
 export function SearchBar({ onSearch, activeTab }: SearchBarProps) {
+  const [officialOnly, setOfficialOnly] = useState(false);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +38,7 @@ export function SearchBar({ onSearch, activeTab }: SearchBarProps) {
     }
     setIsLoading(true);
     try {
-      await onSearch(query, category, activeTab);
+      await onSearch(query, category, activeTab, officialOnly);
     } catch (error) {
       console.error('Search failed:', error);
       toast({
@@ -63,7 +66,7 @@ export function SearchBar({ onSearch, activeTab }: SearchBarProps) {
         />
         <Select value={category} onValueChange={setCategory}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select category" />
+            <SelectValue placeholder="Select category"/>
           </SelectTrigger>
           <SelectContent>
             {getCategoryOptions().map((option) => (
@@ -73,6 +76,14 @@ export function SearchBar({ onSearch, activeTab }: SearchBarProps) {
             ))}
           </SelectContent>
         </Select>
+        <div className="flex items-center space-x-2">
+          <Switch
+              id="official-switch"
+              checked={officialOnly}
+              onCheckedChange={setOfficialOnly}
+          />
+          <Label htmlFor="official-switch">Official</Label>
+        </div>
         <Button
             type="submit"
             disabled={isLoading}
@@ -83,7 +94,7 @@ export function SearchBar({ onSearch, activeTab }: SearchBarProps) {
       </span>
           {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin"/>
               </div>
           )}
         </Button>

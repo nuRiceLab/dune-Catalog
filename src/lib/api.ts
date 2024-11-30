@@ -19,18 +19,18 @@ export interface File {
 }
 
 
-export async function searchDataSets(query: string, category: string, tab: string): Promise<Dataset[]> {
+export async function searchDataSets(query: string, category: string, tab: string, officialOnly: boolean): Promise<Dataset[]> {
   try {
-    console.log('API Request:', { query, category, tab });
+    console.log('API Request:', { query, category, tab, officialOnly });
     const token = getStoredToken();
     const response = await axios.post(`${API_URL}/queryDatasets`,
-        { query, category, tab },
+        { query, category, tab, officialOnly },
         { headers: { Authorization: `Bearer ${token}` } }
     );
     console.log('API Response:', response.data);
     return response.data.results;
   } catch (error) {
-    // console.error('Search failed:', error);
+    console.error('Search failed:', error);
     throw error;
   }
 }
