@@ -10,13 +10,9 @@ interface FilesTableProps {
 }
 
 export function FilesTable({ files, isLoading, totalCount }: FilesTableProps) {
-
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
-    if (totalCount > 1000) {
-        totalCount = 1000
-    }
     if (isLoading) {
         return <div>Loading files...</div>;
     }

@@ -91,7 +91,7 @@ class MetaCatAPI:
 
     def get_files(self, namespace: str, name: str):
         try:
-            mql_query = f"files from {namespace}:{name} limit 10"
+            mql_query = f"files from {namespace}:{name} limit 1000"
             print(f"Executing MQL query: {mql_query}")
             results = self.client.query(mql_query)
             raw_results = list(results)

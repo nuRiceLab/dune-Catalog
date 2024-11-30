@@ -17,7 +17,7 @@ interface ResultDialogProps {
     className?: string;
 }
 
-export function ResultDialog({ result, className }: ResultDialogProps) {
+export function DatasetDialog({ result, className }: ResultDialogProps) {
     const [files, setFiles] = useState<File[]>([]);    const [isLoadingFiles, setIsLoadingFiles] = useState(false);
     const [open, setOpen] = useState(false);
     const metacatUrl = `https://metacat.fnal.gov:9443/dune_meta_prod/app/gui/dataset?namespace=${encodeURIComponent(result.namespace)}&name=${encodeURIComponent(result.name)}`;
@@ -66,15 +66,16 @@ export function ResultDialog({ result, className }: ResultDialogProps) {
                         <p><strong>Files:</strong> {result.files}</p>
                     </div>
                     <Button asChild>
-                        <a href={metacatUrl} target="_blank" rel="noopener noreferrer">
+                        <a href={metacatUrl} target="_blank" rel="noopener noreferrer"title="You may need to sign in to Metacat when redirected"
+                        >
                             View in Metacat GUI
                         </a>
                     </Button>
                 </div>
                 <Separator className="my-4" />
                 <div>
-                    <h3 className="text-lg font-semibold mb-2">Files in this dataset:</h3>
-                    <FilesTable files={files} isLoading={isLoadingFiles} />
+                    <h3 className="text-lg font-semibold mb-2">Files in this dataset (DUNE Catalog is only able to display the first 1000 files):</h3>
+                    <FilesTable files={files} isLoading={isLoadingFiles} totalCount={result.files} />
                 </div>
             </DialogContent>
         </Dialog>

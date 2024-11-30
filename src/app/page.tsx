@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import  { Header }  from '@/components/Header'
 import  { Footer }  from '@/components/Footer'
 import { SearchBar } from '@/components/SearchBar'
-import { ResultsTable } from '@/components/ResultsTable'
+import { DatasetTable } from '@/components/DatasetTable'
 import { searchDataSets, Dataset } from '@/lib/api'
 import tabsConfig from '@/config/tabsConfig.json';
 
@@ -91,7 +91,7 @@ export default function Home() {
               {tabs.map((tab) => (
                   <TabsContent key={tab} value={tab} className="mt-6">
                     <SearchBar onSearch={handleSearch} activeTab={tab} />
-                        <ResultsTable results={results}/>
+                        <DatasetTable results={results}/>
                   </TabsContent>
               ))}
             </Tabs>

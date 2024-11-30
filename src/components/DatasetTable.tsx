@@ -1,17 +1,17 @@
-// src/components/ResultsTable.tsx
+// src/components/DatasetTable.tsx
 import { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { Dataset } from '@/lib/api';
 import { Pagination } from './Pagination';
-import { ResultDialog } from './ResultDialog';
+import { DatasetDialog } from './DatasetDialog';
 
 interface ResultsTableProps {
     results: Dataset[];
 }
 
-export function ResultsTable({ results }: ResultsTableProps) {
+export function DatasetTable({ results }: ResultsTableProps) {
     const [sortColumn, setSortColumn] = useState<keyof Dataset>('name');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState(1);
@@ -67,7 +67,7 @@ export function ResultsTable({ results }: ResultsTableProps) {
                     {paginatedResults.map((result, index) => (
                         <TableRow key={index}>
                             <TableCell className="max-w-[200px] break-words">
-                                <ResultDialog result={result} />
+                                <DatasetDialog result={result} />
                             </TableCell>
                             <TableCell>{result.creator}</TableCell>
                             <TableCell>{new Date(result.created).toLocaleDateString()}</TableCell>
