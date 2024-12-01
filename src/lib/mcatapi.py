@@ -38,17 +38,6 @@ class MetaCatAPI:
         )
 
     def login(self, username, password):
-        """
-        Login to MetaCat using a username and password, and obtain an authentication token
-
-        Args:
-            username (str): The username to log in with
-            password (str): The password to log in with
-
-        Returns:
-            A dictionary with a boolean "success" key and a string "token" key,
-            or a string "message" key if the login fails.
-        """
         try:
             # Attempt to log in to MetaCat using the provided username and password
             token = self.client.login_password(username, password)
