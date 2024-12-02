@@ -57,7 +57,8 @@ async def get_datasets(request: DatasetRequest) -> dict:
         request: A DatasetRequest object with query, category, tab, and officialOnly fields.
 
     Returns:
-        A dictionary with a "success" key and value True if the query succeeds, and a "results" key with the query results.
+        A dictionary with a "success" key and value True if the query succeeds,
+        and a "results" key with the query results.
     Raises:
         HTTPException: If the query fails.
     """

@@ -147,7 +147,6 @@ export function LoginModal({ isLoggedIn, setIsLoggedIn }: LoginModalProps) {
                 </Form>
             </DialogContent>
         </Dialog>
-            {/*<Toaster />*/}
         </>
     )
 }

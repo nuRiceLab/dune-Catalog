@@ -1,5 +1,5 @@
 'use client'
-import {useState, useEffect, useRef, useCallback} from 'react'
+import React, {useState, useEffect, useRef, useCallback} from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import  { Header }  from '@/components/Header'
 import  { Footer }  from '@/components/Footer'
@@ -58,7 +58,7 @@ export default function Home() {
   };
 
   if (!isClient || !isLoaded) {
-    return null; // or a loading spinner
+    return null;
   }
 
 

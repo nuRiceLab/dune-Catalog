@@ -6,7 +6,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 export interface Dataset {
   name: string;
   creator: string;
-  created: number; // unix timestamp
+  created: number;
   files: number;
   namespace: string;
 }
@@ -42,8 +42,8 @@ export async function searchDataSets(query: string, category: string, tab: strin
 
     // Make the API request
     const response = await axios.post(`${API_URL}/queryDatasets`,
-      { query, category, tab, officialOnly },
-      { headers: { Authorization: `Bearer ${token}` } }
+      { query, category, tab, officialOnly }
+      ,{ headers: { Authorization: `Bearer ${token}` }}
     );
 
     // Log the API response
@@ -76,8 +76,8 @@ export async function searchFiles(namespace: string, name: string): Promise<File
 
     // Make the API request
     const response = await axios.post(`${API_URL}/queryFiles`,
-      { name, namespace },
-      { headers: { Authorization: `Bearer ${token}` } }
+      { name, namespace }
+        , { headers: { Authorization: `Bearer ${token}` } }
     );
 
     // Log the API response
