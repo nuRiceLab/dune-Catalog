@@ -31,7 +31,6 @@ export async function login(credentials: LoginCredentials): Promise<LoginRespons
     localStorage.setItem('metacatToken', token);
     return { success: true, token };
   } catch (error: unknown) {
-    console.error('Login failed:', error);
 
     if (isAxiosError(error)) {
       // The request was made and the server responded with a status code
@@ -74,9 +73,8 @@ export async function login(credentials: LoginCredentials): Promise<LoginRespons
 function getErrorMessageFromResponseStatus(status: number): string {
   switch (status) {
     case 400:
-      return 'Invalid credentials. Please check your username and password.';
     case 401:
-      return 'Unauthorized. Please check your credentials.';
+      return 'Invalid credentials. Please check your username and password.';
     case 403:
       return 'Access forbidden. You may not have the necessary permissions.';
     case 404:
