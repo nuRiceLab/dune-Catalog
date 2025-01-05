@@ -50,7 +50,6 @@ export function LoginModal({ isLoggedIn, setIsLoggedIn }: LoginModalProps) {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         if (isSubmitting) return; // Prevent multiple submissions
-        console.log(values.username, values.password)
         setIsSubmitting(true);
         try {
             const response = await login(values)
@@ -63,6 +62,8 @@ export function LoginModal({ isLoggedIn, setIsLoggedIn }: LoginModalProps) {
                     title: "Login Successful",
                     description: "You have successfully logged in.",
                 })
+                // Reset form after successful login
+                form.reset();
             } else {
                 toast({
                     variant: "destructive",
@@ -74,21 +75,21 @@ export function LoginModal({ isLoggedIn, setIsLoggedIn }: LoginModalProps) {
             console.error("Login error:", error);
             toast({
                 variant: "destructive",
-                title: "Login Error",
-                description: error instanceof Error ? error.message : "An unexpected error occurred. Please try again.",
+                title: "Login Failed",
+                description: "An error occurred during login.",
             })
         } finally {
-            setIsSubmitting(false)
+            setIsSubmitting(false);
         }
     }
 
-    function handleLogout() {
-        logout()
-        setIsLoggedIn(false)
+    const handleLogout = () => {
+        logout();
+        setIsLoggedIn(false);
         toast({
-            variant: "success", // Use the success variant for logout as well
+            variant: "success",
             title: "Logged Out",
-            description: "You have successfully logged out.",
+            description: "You have been logged out successfully.",
         })
     }
 
@@ -99,6 +100,7 @@ export function LoginModal({ isLoggedIn, setIsLoggedIn }: LoginModalProps) {
             setOpen(true);
         }
     };
+
     return (
         <>
             <Button variant="outline" onClick={handleButtonClick}>
