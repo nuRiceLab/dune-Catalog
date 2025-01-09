@@ -24,6 +24,10 @@ with open(os.path.join(os.path.dirname(__file__), '..', 'config', 'tabsConfig.js
     tabs_config = json.load(f)
 
 
+with open(os.path.join(os.path.dirname(__file__), '..', 'config', 'appConfigs.json')) as f:
+    app_configs = json.load(f)
+
+
 class MetaCatAPI:
     def __init__(self):
         """
@@ -149,16 +153,16 @@ class MetaCatAPI:
             or a string "message" key if the query fails.
         """
         try:
-            # Construct the MQL query
-            mql_query = f"files from {namespace}:{name} limit 1000"
+            # Get num max files to show from app configs
+            max_files = app_configs['filesTable']['maxFilesToShow']
+            
+            # Construct the MQL query with dynamic limit
+            mql_query = f"files from {namespace}:{name} limit {max_files}"
             print(f"Executing MQL query: {mql_query}")  # Debug print
 
             # Execute the MQL query
             results = self.client.query(mql_query)
             raw_results = list(results)
-            # print(f"Raw query results:")  # Debug print
-            # for result in raw_results:
-            #     print(result)  # Print each raw result
 
             # Format the results
             files = [
@@ -172,7 +176,13 @@ class MetaCatAPI:
                 for result in raw_results
             ]
 
-            return {"success": True, "files": files}
+            return {
+                "success": True,
+                "files": files
+            }
         except Exception as e:
-            # If the query fails, return an error message
-            return {"success": False, "message": str(e)}
+            print(f"Error in get_files: {e}")  # Debug print
+            return {
+                "success": False,
+                "message": str(e)
+            }

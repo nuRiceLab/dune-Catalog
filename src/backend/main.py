@@ -3,9 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from src.lib.mcatapi import MetaCatAPI
 
+# Create the FastAPI app
 app = FastAPI()
 
-# Configure CORS
+# Explicitly configure CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # Update this with your frontend URL

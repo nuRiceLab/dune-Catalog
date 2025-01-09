@@ -14,7 +14,6 @@ import {
 import { Loader2 } from "lucide-react"
 import tabsConfig from '@/config/tabsConfig.json';
 import searchConfigs from '@/config/searchConfigs.json';
-import appConfigs from '@/config/appConfigs.json';
 import { isLoggedIn } from '@/lib/auth';
 
 interface SearchBarProps {
@@ -32,9 +31,6 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
   const cooldownInterval = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
 
-  // Ref to keep track of the last selected saved search
-  const savedSearchRef = useRef<{name: string, tab: string, category: string} | null>(null);
-
   // Cleanup interval on unmount
   useEffect(() => {
     return () => {
@@ -46,44 +42,32 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
 
   // Reset category when tab changes
   useEffect(() => {
-    if (!savedSearchRef.current || savedSearchRef.current.tab !== activeTab) {
-      setCategory('');
-    }
+    setCategory('');
   }, [activeTab]);
 
   const startCooldown = () => {
-    // Clear any existing interval to prevent multiple intervals
-    if (cooldownInterval.current) {
-      clearInterval(cooldownInterval.current);
-    }
-
-    const initialCooldownTime = appConfigs.searchBar.cooldownTime;
-    setCooldownTime(initialCooldownTime);
-    
+    setCooldownTime(5); // 5 second cooldown
     cooldownInterval.current = setInterval(() => {
       setCooldownTime((prev) => {
-        // If we've reached 0, clear the interval
         if (prev <= 1) {
           if (cooldownInterval.current) {
             clearInterval(cooldownInterval.current);
-            cooldownInterval.current = null;
           }
           return 0;
         }
-        // Decrement the time
         return prev - 1;
       });
     }, 1000);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (cooldownTime > 0) {
       toast({
         variant: "destructive",
         title: "Search Rate Limited",
-        description: `Please wait ${cooldownTime} second${cooldownTime !== 1 ? 's' : ''} before searching again.`,
+        description: `Please wait ${cooldownTime} seconds before searching again.`,
       });
       return;
     }
@@ -108,7 +92,7 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
 
     setIsLoading(true);
     try {
-      await onSearch(query, category, activeTab, officialOnly);
+      onSearch(query, category, activeTab, officialOnly);
       // Start cooldown after successful search
       startCooldown();
     } catch (error) {
@@ -125,32 +109,16 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
 
   const handleSavedSearchSelect = (searchName: string) => {
     const savedSearch = searchConfigs.savedSearches.find(s => s.name === searchName);
-    
     if (savedSearch) {
-      // Prepare all values before changing tab
-      const newQuery = savedSearch.query;
-      const newCategory = savedSearch.category;
-      const newOfficialOnly = savedSearch.officialOnly;
-
-      // If tab needs to change, do it first
+      // if needed, change the tab
       if (savedSearch.tab !== activeTab && onTabChange) {
         onTabChange(savedSearch.tab);
-        
-        // Delay setting other values to ensure tab change is processed
-        setTimeout(() => {
-          setQuery(newQuery);
-          setCategory(newCategory);
-          setOfficialOnly(newOfficialOnly);
-        }, 0);
-      } else {
-        // If no tab change, set values immediately
-        setQuery(newQuery);
-        setCategory(newCategory);
-        setOfficialOnly(newOfficialOnly);
       }
+      // Then set all the form values
+      setQuery(savedSearch.query);
+      setCategory(savedSearch.category);
+      setOfficialOnly(savedSearch.officialOnly);
 
-      // Update the ref
-      savedSearchRef.current = savedSearch;
     }
   };
 

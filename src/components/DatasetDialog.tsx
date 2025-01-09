@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { FilesTable } from './FilesTable'
 import { cn } from "@/lib/utils"
+import appConfigs from '@/config/appConfigs.json';
 
 interface ResultDialogProps {
     result: Dataset;
@@ -74,7 +75,7 @@ export function DatasetDialog({ result, className }: ResultDialogProps) {
                 </div>
                 <Separator className="my-4" />
                 <div>
-                    <h3 className="text-lg font-semibold mb-2">Files in this dataset (DUNE Catalog is only able to display the first 1000 files):</h3>
+                    <h3 className="text-lg font-semibold mb-2">Files in this dataset (DUNE Catalog is only able to display the first {appConfigs.filesTable.maxFilesToShow} files):</h3>
                     <FilesTable files={files} isLoading={isLoadingFiles} totalCount={result.files} />
                 </div>
             </DialogContent>
