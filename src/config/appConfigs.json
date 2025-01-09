@@ -3,6 +3,6 @@
         "cooldownTime": 5
     },
     "filesTable": {
-        "maxFilesToShow": 100
+        "maxFilesToShow": 1000
     }
 }

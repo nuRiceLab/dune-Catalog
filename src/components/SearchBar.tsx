@@ -78,15 +78,6 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (cooldownTime > 0) {
-      toast({
-        variant: "destructive",
-        title: "Search Rate Limited",
-        description: `Please wait ${cooldownTime} second${cooldownTime !== 1 ? 's' : ''} before searching again.`,
-      });
-      return;
-    }
 
     if (!isLoggedIn()) {
       toast({
@@ -96,7 +87,14 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
       });
       return;
     }
-
+    if (cooldownTime > 0) {
+      toast({
+        variant: "destructive",
+        title: "Search Rate Limited",
+        description: `Please wait ${cooldownTime} second${cooldownTime !== 1 ? 's' : ''} before searching again.`,
+      });
+      return;
+    }
     if (!category) {
       toast({
         variant: "destructive",
