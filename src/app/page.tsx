@@ -7,6 +7,7 @@ import { SearchBar } from '@/components/SearchBar'
 import { DatasetTable } from '@/components/DatasetTable'
 import { searchDataSets, Dataset } from '@/lib/api'
 import tabsConfig from '@/config/tabsConfig.json';
+import { Copy, CheckCheck } from 'lucide-react';
 
 const tabs = Object.keys(tabsConfig);
 
@@ -15,6 +16,8 @@ export default function Home() {
   const [sliderStyle, setSliderStyle] = useState({ width: 0, left: 0 })
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
   const [results, setResults] = useState<Dataset[]>([]);
+  const [mqlQuery, setMqlQuery] = useState<string>('');
+  const [copied, setCopied] = useState(false);
   const [isClient, setIsClient] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -27,6 +30,11 @@ export default function Home() {
     // Force a re-render after a short delay to ensure DOM is fully loaded
     setTimeout(() => setIsLoaded(true), 0)
   }, [])
+
+  useEffect(() => {
+    setResults([])
+    setMqlQuery('')
+  }, [activeTabIndex])
 
   useEffect(() => {
     setResults([])
@@ -55,11 +63,21 @@ export default function Home() {
 
   const handleSearch = async (query: string, category: string, tab: string, officialOnly: boolean) => {
     try {
-      const searchResults = await searchDataSets(query, category, tab, officialOnly);
-      setResults(searchResults);
+      const { results, mqlQuery } = await searchDataSets(query, category, tab, officialOnly);
+      setResults(results);
+      setMqlQuery(mqlQuery);
     } catch (error) {
       console.error('Search failed:', error);
       // Handle error (e.g., show error message to user)
+    }
+  };
+
+  const handleCopyQuery = () => {
+    if (mqlQuery) {
+      navigator.clipboard.writeText(mqlQuery).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
     }
   };
 
@@ -105,6 +123,25 @@ export default function Home() {
                 onTabChange={handleTabChange}
               />
             </div>
+            {mqlQuery && (
+              <div className="mt-4 p-3 bg-muted rounded-md text-sm font-mono overflow-x-auto flex items-center justify-between">
+                <div>
+                  <span className="font-bold">MQL Query: </span>
+                  {mqlQuery}
+                </div>
+                <button 
+                  onClick={handleCopyQuery} 
+                  className="ml-2 hover:bg-muted-foreground/10 p-2 rounded-md transition-colors"
+                  aria-label="Copy MQL Query"
+                >
+                  {copied ? (
+                    <CheckCheck className="h-5 w-5 text-green-500" />
+                  ) : (
+                    <Copy className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+            )}
             {tabs.map((tab) => (
               <TabsContent key={tab} value={tab} className="mt-4">
                 <DatasetTable results={results}/>

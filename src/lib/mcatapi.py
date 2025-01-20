@@ -92,15 +92,10 @@ class MetaCatAPI:
                 # Add the having clause to the MQL query
                 mql_query += " having " + " and ".join(having_conditions)
 
-            print(f"Executing MQL query: {mql_query}")  # Debug print
-
             # Execute the MQL query
             results = self.client.query(mql_query)
-            # print("Raw query results:")
             # Convert the generator to a list
             raw_results = list(results)
-            # for result in raw_results:
-            #     print(result)  # Print each raw result
 
             # Format the results
             formatted_results = [
@@ -113,12 +108,12 @@ class MetaCatAPI:
                 }
                 for result in raw_results
             ]
-            # print("Formatted query results:")
-            # for result in formatted_results:
-            #     print(result)  # Print each formatted result
-            return {"success": True, "results": formatted_results}
+            return {
+                "success": True, 
+                "results": formatted_results,
+                "mqlQuery": mql_query  # Include the MQL query in the response
+            }
         except Exception as e:
-            print(f"Query error: {str(e)}")  # Debug print
             return {"success": False, "message": str(e)}
 
     def list_datasets(self):
@@ -158,7 +153,6 @@ class MetaCatAPI:
             
             # Construct the MQL query with dynamic limit
             mql_query = f"files from {namespace}:{name} limit {max_files}"
-            print(f"Executing MQL query: {mql_query}")  # Debug print
 
             # Execute the MQL query
             results = self.client.query(mql_query)
@@ -167,21 +161,22 @@ class MetaCatAPI:
             # Format the results
             files = [
                 {
-                    "fid": result.get("fid", ""),  # File id
-                    "name": result.get("name", ""),  # File name
-                    "updated": format_timestamp(result.get("updated_timestamp", "")),  # Timestamp of last update
-                    "created": format_timestamp(result.get("created_timestamp", "")),  # Timestamp of creation
-                    "size": result.get("size", result.get("size", 0)),  # File size
+                    "fid": str(result.get("fid", "")),  # Ensure fid is a string
+                    "name": str(result.get("name", "")),  # Ensure name is a string
+                    "updated": format_timestamp(result.get("updated_timestamp", 0)),  # Use 0 as default
+                    "created": format_timestamp(result.get("created_timestamp", 0)),  # Use 0 as default
+                    "size": int(result.get("size", 0)),  # Ensure size is an integer
                 }
                 for result in raw_results
             ]
 
+            # Always return a dictionary with files, even if empty
             return {
                 "success": True,
-                "files": files
+                "results": files,
+                "mqlQuery": mql_query
             }
         except Exception as e:
-            print(f"Error in get_files: {e}")  # Debug print
             return {
                 "success": False,
                 "message": str(e)

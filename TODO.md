@@ -1,10 +1,8 @@
 # DUNE Catalog TODO List
 
 ## Current Tasks
-- Display MeteCat Query
 - Ensure SSO is used for authentication
 - Add metacat query timeout
-- Ensure Query is cleaned of MQL injection
 - Double check for Security measures in general
 - Fix functionality of selecting the current state curated search to refill out the fields
 - Upload webpage to Fermi computers to run
@@ -18,7 +16,6 @@
 - Create export functionality for search results (CSV, JSON)
 - Implement caching mechanism for frequently accessed datasets
 - Add performance monitoring and logging
-- Create unit and integration tests
 - Develop a more comprehensive error handling system
 - Add internationalization (i18n) support
 - Create a dashboard for saved searches and recent queries

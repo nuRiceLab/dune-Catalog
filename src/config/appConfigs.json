@@ -4,5 +4,8 @@
     },
     "filesTable": {
         "maxFilesToShow": 1000
+    },
+    "api": {
+        "timeout": 10000
     }
 }
