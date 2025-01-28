@@ -1,8 +1,6 @@
 # DUNE Catalog TODO List
 
 ## Current Tasks
-- Ensure SSO is used for authentication
-- Add metacat query timeout
 - Double check for Security measures in general
 - Fix functionality of selecting the current state curated search to refill out the fields
 - Upload webpage to Fermi computers to run

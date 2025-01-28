@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { FilesTable } from './FilesTable'
 import { cn } from "@/lib/utils"
-import appConfigs from '@/config/appConfigs.json';
+import config from '@/config/config.json';
 import { Copy, CheckCircle } from 'lucide-react';
 
 interface ResultDialogProps {
@@ -135,7 +135,7 @@ export function DatasetDialog({ result, className }: ResultDialogProps) {
                     </div>
                 )}
                 <div className="w-full">
-                    <h3 className="text-lg font-semibold mb-2">Files in this dataset (DUNE Catalog is only able to display the first {appConfigs.filesTable.maxFilesToShow} files):</h3>
+                    <h3 className="text-lg font-semibold mb-2">Files in this dataset (DUNE Catalog is only able to display the first {config.app.files.maxToShow} files):</h3>
                     <FilesTable files={files} isLoading={isLoadingFiles} totalCount={result.files} />
                 </div>
             </DialogContent>

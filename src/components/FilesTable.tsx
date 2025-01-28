@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Pagination } from './Pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { File } from '@/lib/api';
-import appConfigs from '@/config/appConfigs.json';
+import config from '@/config/config.json';
 
 interface FilesTableProps {
     files: File[] | undefined;
@@ -15,8 +15,8 @@ export function FilesTable({ files, isLoading, totalCount }: FilesTableProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
-    if (totalCount > appConfigs.filesTable.maxFilesToShow) {
-        totalCount = appConfigs.filesTable.maxFilesToShow
+    if (totalCount > config.app.files.maxToShow) {
+        totalCount = config.app.files.maxToShow
     }
     if (isLoading) {
         return <div>Loading files...</div>;

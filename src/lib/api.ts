@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { getStoredToken } from './auth';
-import appConfigs from '@/config/appConfigs.json';
+import config from '@/config/config.json';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 // Add timeout configuration
-const API_TIMEOUT = appConfigs.api.timeout || 10000; // Default to 10 seconds if not specified
+const API_TIMEOUT = config.app.api.timeout || 10000; // Default to 10 seconds if not specified
 
 interface ApiResponse<T> {
   success: boolean;
@@ -50,16 +50,32 @@ export interface File {
  */
 // Add query sanitization function
 function sanitizeMQLQuery(query: string): string {
+  if (!query) return '';
+  
+  // Trim whitespace
+  let sanitized = query.trim();
+  
   // Remove any potentially harmful characters or SQL injection attempts
-  return query.replace(/[;'"\\]/g, '');
+  sanitized = sanitized
+    .replace(/[;'"\\]/g, '') // Remove basic SQL injection characters
+    .replace(/--/g, '') // Remove SQL comments
+    .replace(/\/\*/g, '') // Remove block comment starts
+    .replace(/\*\//g, '') // Remove block comment ends
+    .replace(/union\s+select/gi, '') // Remove UNION SELECT attempts
+    .replace(/drop\s+table/gi, '') // Remove DROP TABLE attempts
+    .replace(/[<>]/g, ''); // Remove HTML tags
+    
+  // Limit query length to prevent overflow attacks
+  return sanitized.slice(0, 1000);
 }
 
 export async function searchDataSets(query: string, category: string, tab: string, officialOnly: boolean): Promise<{ results: Dataset[], mqlQuery: string }> {
   try {
     const token = getStoredToken();
+    const sanitizedQuery = sanitizeMQLQuery(query);
 
     const response = await axios.post<ApiResponse<Dataset>>(`${API_URL}/queryDatasets`, 
-      { query, category, tab, officialOnly },
+      { query: sanitizedQuery, category, tab, officialOnly },
       { 
         headers: { Authorization: `Bearer ${token}` },
         timeout: API_TIMEOUT
@@ -74,7 +90,7 @@ export async function searchDataSets(query: string, category: string, tab: strin
       results: normalizeResults(response.data.results),
       mqlQuery: response.data.mqlQuery || ''
     };
-  } catch (error) {
+  } catch {
     return {
       results: [],
       mqlQuery: ''
@@ -123,7 +139,7 @@ export async function searchFiles(namespace: string, name: string): Promise<{ fi
       files: normalizedFiles,
       mqlQuery: response.data.mqlQuery || ''
     };
-  } catch (error) {
+  } catch {
     // Return an empty array in case of error to prevent breaking the UI
     return {
       files: [],

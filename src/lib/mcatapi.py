@@ -91,7 +91,9 @@ class MetaCatAPI:
             if having_conditions:
                 # Add the having clause to the MQL query
                 mql_query += " having " + " and ".join(having_conditions)
-
+            # # order it
+            # mql_query += "ordered"
+            # print(mql_query)
             # Execute the MQL query
             results = self.client.query(mql_query)
             # Convert the generator to a list
@@ -111,7 +113,7 @@ class MetaCatAPI:
             return {
                 "success": True, 
                 "results": formatted_results,
-                "mqlQuery": mql_query  # Include the MQL query in the response
+                # "mqlQuery": mql_query  # Include the MQL query in the response
             }
         except Exception as e:
             return {"success": False, "message": str(e)}
@@ -152,7 +154,7 @@ class MetaCatAPI:
             max_files = app_configs['filesTable']['maxFilesToShow']
             
             # Construct the MQL query with dynamic limit
-            mql_query = f"files from {namespace}:{name} limit {max_files}"
+            mql_query = f"files from {namespace}:{name} ordered limit {max_files}"
 
             # Execute the MQL query
             results = self.client.query(mql_query)

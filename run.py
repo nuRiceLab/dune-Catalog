@@ -2,6 +2,10 @@ import os
 import sys
 import importlib
 import uvicorn
+import subprocess
+import signal
+import argparse
+import platform
 
 
 def load_env_variables():
@@ -81,7 +85,35 @@ def check_metacat_connection():
         sys.exit(1)
 
 
-def start_server() -> None:
+def get_npm_command():
+    """Get the correct npm command based on the operating system."""
+    if platform.system() == "Windows":
+        return "npm.cmd"
+    return "npm"
+
+
+def start_frontend(production_mode=False):
+    """
+    Start the Next.js frontend server.
+    
+    Args:
+        production_mode (bool): If True, builds and runs in production mode.
+                              If False, runs in development mode.
+    """
+    npm_cmd = get_npm_command()
+    
+    if production_mode:
+        print("Building frontend for production...")
+        build_process = subprocess.Popen([npm_cmd, "run", "build"], cwd=os.path.dirname(__file__))
+        build_process.wait()  # Wait for build to complete
+        print("Starting frontend in production mode...")
+        return subprocess.Popen([npm_cmd, "run", "start"], cwd=os.path.dirname(__file__))
+    else:
+        print("Starting frontend in development mode...")
+        return subprocess.Popen([npm_cmd, "run", "dev"], cwd=os.path.dirname(__file__))
+
+
+def start_server():
     """
     Start the FastAPI server.
 
@@ -94,14 +126,30 @@ def start_server() -> None:
     Returns:
         None
     """
+    print("Starting backend server...")
     uvicorn.run("src.backend.main:app", host="0.0.0.0", port=8000, reload=True)
 
 
+def signal_handler(sig, frame):
+    """Handle Ctrl+C gracefully"""
+    print("\nShutting down servers...")
+    sys.exit(0)
+
+
 if __name__ == "__main__":
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description='Run the DUNE Catalog application')
+    parser.add_argument('-start', '--production', action='store_true',
+                      help='Run in production mode (npm run build + npm run start)')
+    args = parser.parse_args()
+
+    signal.signal(signal.SIGINT, signal_handler)
     print("Performing pre-start checks...")
     load_env_variables()
     check_environment_variables()
     check_required_packages()
     check_metacat_connection()
-    print("All checks passed. Starting the server...")
-    start_server()
+    print("All checks passed. Starting the servers...")
+    frontend_process = start_frontend(production_mode=args.production)
+    start_server()  # This will block until the backend server is stopped
+    frontend_process.terminate()  # Clean up frontend when backend stops

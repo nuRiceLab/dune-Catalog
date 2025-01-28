@@ -12,9 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
-import tabsConfig from '@/config/tabsConfig.json';
-import searchConfigs from '@/config/searchConfigs.json';
-import appConfigs from '@/config/appConfigs.json';
+import config from '@/config/config.json';
 import { isLoggedIn } from '@/lib/auth';
 
 interface SearchBarProps {
@@ -51,30 +49,20 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
     }
   }, [activeTab]);
 
-  const startCooldown = () => {
-    // Clear any existing interval to prevent multiple intervals
-    if (cooldownInterval.current) {
-      clearInterval(cooldownInterval.current);
+  // Initialize cooldown timer
+  useEffect(() => {
+    const cooldownTimer = config.app.search.cooldownTime;
+    if (cooldownTime > 0) {
+      cooldownInterval.current = setInterval(() => {
+        setCooldownTime((prev) => Math.max(0, prev - 1));
+      }, 1000);
     }
-
-    const initialCooldownTime = appConfigs.searchBar.cooldownTime;
-    setCooldownTime(initialCooldownTime);
-    
-    cooldownInterval.current = setInterval(() => {
-      setCooldownTime((prev) => {
-        // If we've reached 0, clear the interval
-        if (prev <= 1) {
-          if (cooldownInterval.current) {
-            clearInterval(cooldownInterval.current);
-            cooldownInterval.current = null;
-          }
-          return 0;
-        }
-        // Decrement the time
-        return prev - 1;
-      });
-    }, 1000);
-  };
+    return () => {
+      if (cooldownInterval.current) {
+        clearInterval(cooldownInterval.current);
+      }
+    };
+  }, [cooldownTime]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,8 +95,7 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
     setIsLoading(true);
     try {
       await onSearch(query, category, activeTab, officialOnly);
-      // Start cooldown after successful search
-      startCooldown();
+      setCooldownTime(config.app.search.cooldownTime);
     } catch (error) {
       console.error('Search failed:', error);
       toast({
@@ -122,38 +109,32 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
   };
 
   const handleSavedSearchSelect = (searchName: string) => {
-    const savedSearch = searchConfigs.savedSearches.find(s => s.name === searchName);
-    
+    const savedSearch = config.savedSearches.find(search => search.name === searchName);
     if (savedSearch) {
-      // Prepare all values before changing tab
-      const newQuery = savedSearch.query;
-      const newCategory = savedSearch.category;
-      const newOfficialOnly = savedSearch.officialOnly;
+      // Store the selected saved search
+      savedSearchRef.current = {
+        name: savedSearch.name,
+        tab: savedSearch.tab,
+        category: savedSearch.category
+      };
 
-      // If tab needs to change, do it first
+      // Update form fields
+      setQuery(savedSearch.query);
+      setOfficialOnly(savedSearch.officialOnly);
+
+      // If the search is for a different tab, trigger tab change
       if (savedSearch.tab !== activeTab && onTabChange) {
         onTabChange(savedSearch.tab);
-        
-        // Delay setting other values to ensure tab change is processed
-        setTimeout(() => {
-          setQuery(newQuery);
-          setCategory(newCategory);
-          setOfficialOnly(newOfficialOnly);
-        }, 0);
-      } else {
-        // If no tab change, set values immediately
-        setQuery(newQuery);
-        setCategory(newCategory);
-        setOfficialOnly(newOfficialOnly);
       }
-
-      // Update the ref
-      savedSearchRef.current = savedSearch;
+      // If it's the same tab, update category immediately
+      else {
+        setCategory(savedSearch.category);
+      }
     }
   };
 
   const getCategoryOptions = () => {
-    return tabsConfig[activeTab]?.categories.map(cat => cat.name) || [];
+    return config.tabs[activeTab]?.categories.map(cat => cat.name) || [];
   };
 
   return (
@@ -209,7 +190,7 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
             <SelectValue placeholder="Select a curated search"/>
           </SelectTrigger>
           <SelectContent>
-            {searchConfigs.savedSearches.map((search) => (
+            {config.savedSearches.map((search) => (
               <SelectItem key={search.name} value={search.name}>
                 <span className="flex items-center gap-2">
                   {search.name}
