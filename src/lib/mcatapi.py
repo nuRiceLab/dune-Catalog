@@ -20,12 +20,10 @@ def format_timestamp(timestamp):
     return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
 
-with open(os.path.join(os.path.dirname(__file__), '..', 'config', 'tabsConfig.json')) as f:
-    tabs_config = json.load(f)
-
-
-with open(os.path.join(os.path.dirname(__file__), '..', 'config', 'appConfigs.json')) as f:
-    app_configs = json.load(f)
+with open(os.path.join(os.path.dirname(__file__), '..', 'config', 'config.json')) as f:
+    config = json.load(f)
+    tabs_config = config['tabs']
+    app_configs = config['app']
 
 
 class MetaCatAPI:
@@ -65,14 +63,20 @@ class MetaCatAPI:
             or a string "message" key if the query fails.
         """
         try:
-            # Get the namespace based on tab and category
-            namespace = next(
-                (cat['namespace'] for cat in tabs_config[tab]['categories'] if cat['name'] == category),
+            # Get the namespace based on tab and category from the consolidated config
+            tab_config = tabs_config.get(tab)
+            if not tab_config:
+                raise ValueError(f"No matching tab found: '{tab}'")
+            
+            category_config = next(
+                (cat for cat in tab_config['categories'] if cat['name'] == category),
                 None
             )
-            if not namespace:
-                raise ValueError(f"No matching namespace found for tab '{tab}' and category '{category}'")
-
+            if not category_config:
+                raise ValueError(f"No matching category found for tab '{tab}': '{category}'")
+            
+            namespace = category_config['namespace']
+            
             # Construct the base MQL query
             mql_query = f"datasets matching {namespace}:*"
 
@@ -93,7 +97,7 @@ class MetaCatAPI:
                 mql_query += " having " + " and ".join(having_conditions)
             # # order it
             # mql_query += "ordered"
-            # print(mql_query)
+            print(mql_query)
             # Execute the MQL query
             results = self.client.query(mql_query)
             # Convert the generator to a list
@@ -151,10 +155,11 @@ class MetaCatAPI:
         """
         try:
             # Get num max files to show from app configs
-            max_files = app_configs['filesTable']['maxFilesToShow']
+            max_files = app_configs['files']['maxToShow']
             
             # Construct the MQL query with dynamic limit
             mql_query = f"files from {namespace}:{name} ordered limit {max_files}"
+            print(f"  MQL query: {mql_query}")
 
             # Execute the MQL query
             results = self.client.query(mql_query)

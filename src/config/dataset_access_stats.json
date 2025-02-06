@@ -1,11 +1,11 @@
 {
   "fardet-hd/fardet-hd__fd_mc_2023a__hit-reconstructed__v09_78_01d01__standard_reco1_dune10kt_1x2x6__prodgenie_nu_dune10kt_1x2x6__out1__v1_official": {
-    "timesAccessed": 7,
-    "lastAccessed": "2025-01-27T23:19:25.907843"
+    "timesAccessed": 13,
+    "lastAccessed": "2025-02-05T12:39:47.960742"
   },
   "fardet-hd/fardet-hd__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_anu_1x2x6__prodgenie_anu_dune10kt_1x2x6__out1__v2_official": {
-    "timesAccessed": 1,
-    "lastAccessed": "2025-01-19T23:23:29.779300"
+    "timesAccessed": 3,
+    "lastAccessed": "2025-02-05T12:48:34.645479"
   },
   "fardet-vd/fardet-vd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__reco2_dunevd10kt_anu_1x8x6_3view_30deg_geov3__prodgenie_anu_numu2nutau_nue2numu_dunevd10kt_1x8x6_3view_30deg__out1__v1_official": {
     "timesAccessed": 1,
@@ -22,5 +22,9 @@
   "hd-protodune/pdhd_1gev_beam_cosmics_official_sce_e500_pandora_limit5000_skip18000_1764": {
     "timesAccessed": 1,
     "lastAccessed": "2025-01-19T23:36:40.031687"
+  },
+  "fardet-hd/fardet-hd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_anu_1x2x6__prodgenie_anu_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-02-05T12:46:18.323460"
   }
 }

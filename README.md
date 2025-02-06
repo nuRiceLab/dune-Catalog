@@ -29,7 +29,7 @@ DUNE Catalog is a web application designed to provide an interface for searching
 
 1. Clone the repository:
    ```bash
-   git clone [repository-url]
+   git clone https://github.com/calvin-www/DUNE-Catalog.git
    cd dune_catalog
    ```
 

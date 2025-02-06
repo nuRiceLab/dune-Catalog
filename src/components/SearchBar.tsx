@@ -51,7 +51,7 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
 
   // Initialize cooldown timer
   useEffect(() => {
-    const cooldownTimer = config.app.search.cooldownTime;
+    // const cooldownTimer = config.app.search.cooldownTime;
     if (cooldownTime > 0) {
       cooldownInterval.current = setInterval(() => {
         setCooldownTime((prev) => Math.max(0, prev - 1));

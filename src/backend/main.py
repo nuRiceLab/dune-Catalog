@@ -143,11 +143,18 @@ async def get_files(request: FileRequest):
     Raises:
         HTTPException if a server error occurs
     """
-    print('Received query for files:', request.namespace, request.name)
     try:
-        files = metacat_api.get_files(request.namespace, request.name)
-        return files
+        result = metacat_api.get_files(request.namespace, request.name)
+        if not result["success"]:
+            # If the API call was successful but returned an error
+            raise HTTPException(
+                status_code=400,
+                detail=result.get("message", "Failed to get files from MetaCat")
+            )
+            
+        return result
     except Exception as e:
+        print('Error in get_files:', str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 

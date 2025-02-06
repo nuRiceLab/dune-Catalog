@@ -106,10 +106,11 @@ export async function searchDataSets(query: string, category: string, tab: strin
  *
  * @param {string} namespace The namespace to search in.
  * @param {string} name The name to search for.
- * @returns {Promise<{ files: File[], mqlQuery: string }>} A promise that resolves with an array of files and the MQL query.
+ * @returns {Promise<{ files: File[], mqlQuery: string }>}A promise that resolves with an array of files and the MQL query.
  */
 export async function searchFiles(namespace: string, name: string): Promise<{ files: File[], mqlQuery: string }> {
   try {
+    console.log('Sending file search request:', { namespace, name });
     const token = getStoredToken();
 
     const response = await axios.post<ApiResponse<File>>(`${API_URL}/queryFiles`,
@@ -134,12 +135,24 @@ export async function searchFiles(namespace: string, name: string): Promise<{ fi
         created: file.created || 0,
         size: file.size || 0
       }));
-
     return {
       files: normalizedFiles,
       mqlQuery: response.data.mqlQuery || ''
     };
-  } catch {
+  } catch (error) {
+    // Log the error for debugging
+    console.error('Error searching files:', error);
+    if (axios.isAxiosError(error)) {
+      console.error('API Error Details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          data: error.config?.data
+        }
+      });
+    }
     // Return an empty array in case of error to prevent breaking the UI
     return {
       files: [],
