@@ -1,12 +1,9 @@
 # DUNE Catalog TODO List
 
 ## Current Tasks
-- record locations of dataset accesses
 - copy list of file names for a dataset
-- fix the clean up protocol?
 - Double check for Security measures in general
 - Fix functionality of selecting the current state curated search to refill out the fields
-- Upload webpage to Fermi computers to run
 - Create way to display the fields of the curated search
 - More robust help button (tutorial?)
 - Clean up console logs
@@ -20,10 +17,8 @@
 - Add performance monitoring and logging
 - Develop a more comprehensive error handling system
 - Add data visualization for dataset metadata
-- Implement progressive loading for large result sets
 - Create a feedback mechanism for users
 - Add keyboard navigation support
-- Develop a mobile-responsive design
 - Implement search history tracking
 - Create a configuration management interface
 
