@@ -161,6 +161,50 @@ export async function searchFiles(namespace: string, name: string): Promise<{ fi
   }
 }
 
+// Store user's location in memory
+let cachedUserLocation: string | null = null;
+
+export async function getUserLocation(): Promise<string> {
+    // Return cached location if available
+    if (cachedUserLocation) {
+        return cachedUserLocation;
+    }
+
+    try {
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+
+        const { latitude, longitude } = position.coords;
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+        );
+        const data = await response.json();
+
+        // Extract city and state from the address
+        const address = data.address;
+        let location = '';
+        
+        if (address.city || address.county) {
+            location = address.city || address.county;
+            if (address.state) {
+                location += `, ${address.state}`;
+            }
+        } else if (address.state) {
+            location = address.state;
+        } else {
+            location = 'Unknown Location';
+        }
+
+        // Cache the location
+        cachedUserLocation = location;
+        return location;
+    } catch (error) {
+        console.error('Error getting location:', error);
+        return 'Unknown Location';
+    }
+}
+
 /**
  * Record dataset access via backend
  * 
@@ -169,8 +213,9 @@ export async function searchFiles(namespace: string, name: string): Promise<{ fi
  */
 export async function recordDatasetAccess(namespace: string, name: string): Promise<void> {
   try {
+    const location = await getUserLocation();
     await axios.post(`${API_URL}/recordDatasetAccess`, 
-      { namespace, name },
+      { namespace, name, location },
       { 
         headers: { Authorization: `Bearer ${getStoredToken()}` },
         timeout: API_TIMEOUT
@@ -186,7 +231,14 @@ export async function recordDatasetAccess(namespace: string, name: string): Prom
  * 
  * @returns An object containing dataset access statistics
  */
-export async function getDatasetAccessStats(): Promise<{ [key: string]: { timesAccessed: number; lastAccessed: string } }> {
+export async function getDatasetAccessStats(): Promise<{ 
+  [key: string]: { 
+    timesAccessed: number; 
+    lastAccessed: string;
+    lastLocation?: string;
+    locations?: string[];
+  } 
+}> {
   try {
     const response = await axios.get(`${API_URL}/getDatasetAccessStats`, {
       headers: { Authorization: `Bearer ${getStoredToken()}` },

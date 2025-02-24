@@ -1,27 +1,39 @@
+import os
+import json
+from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional, List, Dict
+import logging
+import tempfile
+import shutil
 from src.lib.mcatapi import MetaCatAPI
-import json
-import os
-from datetime import datetime
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Create the FastAPI app
 app = FastAPI()
 
-# Explicitly configure CORS middleware
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Update this with your frontend URL
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Initialize MetaCat API
 metacat_api = MetaCatAPI()
 
+# Get the absolute path to the project root directory
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+
 # Path to store dataset access statistics
-STATS_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'config', 'dataset_access_stats.json')
+STATS_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'config', 'dataset_access_stats.json'))
 
 def load_dataset_stats():
     """
@@ -32,30 +44,78 @@ def load_dataset_stats():
         dict: Dataset access statistics
     """
     try:
+        logger.info(f"Loading stats from absolute path: {STATS_FILE_PATH}")
         if not os.path.exists(STATS_FILE_PATH):
-            # Create an empty stats file if it doesn't exist
-            with open(STATS_FILE_PATH, 'w') as f:
-                json.dump({}, f)
-            return {}
-        
-        with open(STATS_FILE_PATH, 'r') as f:
-            return json.load(f)
+            logger.info("Stats file doesn't exist, creating new one")
+            os.makedirs(os.path.dirname(STATS_FILE_PATH), exist_ok=True)
+            stats = {}
+        else:
+            try:
+                with open(STATS_FILE_PATH, 'r', encoding='utf-8') as f:
+                    content = f.read().strip()
+                    if not content:  # File is empty
+                        logger.info("Stats file is empty, initializing new stats")
+                        stats = {}
+                    else:
+                        stats = json.loads(content)
+                        logger.info(f"Successfully loaded existing stats with {len(stats)} entries")
+            except json.JSONDecodeError as e:
+                logger.error(f"Error decoding JSON, initializing new stats. Error: {e}")
+                # Try to load the backup file if it exists
+                backup_path = f"{STATS_FILE_PATH}.bak"
+                if os.path.exists(backup_path):
+                    try:
+                        with open(backup_path, 'r', encoding='utf-8') as f:
+                            stats = json.loads(f.read())
+                            logger.info("Successfully loaded stats from backup file")
+                    except:
+                        stats = {}
+                else:
+                    stats = {}
+                
+        return stats
     except Exception as e:
-        print(f"Error loading dataset stats: {e}")
+        logger.error(f"Error loading dataset stats: {e}")
         return {}
 
 def save_dataset_stats(stats):
     """
-    Save dataset access statistics to JSON file.
+    Save dataset access statistics to JSON file using a temporary file for atomic writes.
     
     Args:
         stats (dict): Dataset access statistics to save
     """
     try:
-        with open(STATS_FILE_PATH, 'w') as f:
-            json.dump(stats, f, indent=2)
+        logger.info(f"Saving stats to: {STATS_FILE_PATH}")
+        
+        # Create backup of existing file if it exists
+        if os.path.exists(STATS_FILE_PATH):
+            backup_path = f"{STATS_FILE_PATH}.bak"
+            try:
+                shutil.copy2(STATS_FILE_PATH, backup_path)
+                logger.info("Created backup of existing stats file")
+            except Exception as e:
+                logger.warning(f"Could not create backup: {e}")
+        
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(STATS_FILE_PATH), exist_ok=True)
+        
+        # Write to a temporary file first
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, encoding='utf-8') as temp_file:
+            json.dump(stats, temp_file, indent=2)
+            temp_path = temp_file.name
+        
+        # Then move it to the actual file (atomic operation on Unix)
+        shutil.move(temp_path, STATS_FILE_PATH)
+        logger.info(f"Successfully saved stats with {len(stats)} entries")
     except Exception as e:
-        print(f"Error saving dataset stats: {e}")
+        logger.error(f"Error saving dataset stats: {e}")
+        # Clean up temporary file if it exists
+        if 'temp_path' in locals():
+            try:
+                os.unlink(temp_path)
+            except:
+                pass
 
 class LoginRequest(BaseModel):
     username: str
@@ -161,6 +221,7 @@ async def get_files(request: FileRequest):
 class DatasetStatsRequest(BaseModel):
     namespace: str
     name: str
+    location: str | None = None  # Optional location field
 
 @app.post("/recordDatasetAccess")
 async def record_dataset_access(request: DatasetStatsRequest):
@@ -168,33 +229,56 @@ async def record_dataset_access(request: DatasetStatsRequest):
     Record access for a specific dataset.
     
     Args:
-        request (DatasetStatsRequest): Namespace and name of the dataset
+        request (DatasetStatsRequest): Namespace, name, and location of the dataset access
     
     Returns:
         dict: Updated dataset access statistics
     """
     try:
+        logger.info(f"Received dataset access request for: {request.namespace}/{request.name}")
         # Load existing stats
         stats = load_dataset_stats()
         
         # Create unique key
         dataset_key = f"{request.namespace}/{request.name}"
+        logger.info(f"Processing dataset key: {dataset_key}")
         
         # Update or create stats for this dataset
         if dataset_key not in stats:
+            logger.info("Creating new entry for dataset")
             stats[dataset_key] = {
                 "timesAccessed": 1,
-                "lastAccessed": datetime.now().isoformat()
+                "lastAccessed": datetime.now().isoformat(),
+                "lastLocation": request.location,
+                "locations": [request.location] if request.location else []
             }
         else:
-            stats[dataset_key]["timesAccessed"] += 1
+            logger.info(f"Updating existing entry. Previous access count: {stats[dataset_key].get('timesAccessed', 0)}")
+            # Increment access count
+            if "timesAccessed" not in stats[dataset_key]:
+                stats[dataset_key]["timesAccessed"] = 1
+            else:
+                stats[dataset_key]["timesAccessed"] += 1
+            
+            # Update last access time
             stats[dataset_key]["lastAccessed"] = datetime.now().isoformat()
+            
+            # Update location if provided
+            if request.location:
+                stats[dataset_key]["lastLocation"] = request.location
+                if "locations" not in stats[dataset_key]:
+                    stats[dataset_key]["locations"] = []
+                if request.location not in stats[dataset_key]["locations"]:
+                    stats[dataset_key]["locations"].append(request.location)
+            
+            logger.info(f"New access count: {stats[dataset_key]['timesAccessed']}")
         
         # Save updated stats
         save_dataset_stats(stats)
         
         return {"success": True, "stats": stats}
     except Exception as e:
+        logger.error(f"Error recording dataset access: {e}")
         return {"success": False, "message": str(e)}
 
 @app.get("/getDatasetAccessStats")

@@ -1,9 +1,10 @@
 # DUNE Catalog TODO List
 
 ## Current Tasks
+- record locations of dataset accesses
+- copy list of file names for a dataset
 - fix the clean up protocol?
 - Double check for Security measures in general
-- record locations of dataset accesses
 - Fix functionality of selecting the current state curated search to refill out the fields
 - Upload webpage to Fermi computers to run
 - Create way to display the fields of the curated search
