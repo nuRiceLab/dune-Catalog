@@ -3,7 +3,7 @@ import { getStoredToken } from './auth';
 import config from '@/config/config.json';
 import admins from '@/config/admins.json';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const API_TIMEOUT = config.app.api.timeout || 10000; // Default to 10 seconds if not specified
 
