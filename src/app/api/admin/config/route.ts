@@ -11,8 +11,8 @@ import {
  * GET handler - Retrieve configuration data
  * 
  * Usage:
- * - /api/admin/configs?file=config.json - Returns specific config file
- * - /api/admin/configs?list=true - Lists all available config files
+ * - /api/admin/config?file=config.json - Returns specific config file
+ * - /api/admin/config?list=true - Lists all available config files
  */
 export async function GET(request: NextRequest) {
   console.log('[API:GET] Request received for unified config endpoint');
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
  * POST handler - Update configuration data
  * 
  * Usage:
- * - /api/admin/configs?file=config.json - Updates specific config file
+ * - /api/admin/config?file=config.json - Updates specific config file
  */
 export async function POST(request: NextRequest) {
   console.log('[API:POST] Request received for unified config endpoint');

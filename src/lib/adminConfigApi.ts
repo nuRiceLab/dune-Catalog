@@ -14,7 +14,7 @@ export async function getConfigData(filename: string) {
   const username = getCurrentUser();
   console.log(`[adminConfigApi] Current user: ${username}`);
   
-  const response = await fetch(`/api/admin/configs?file=${filename}`, {
+  const response = await fetch(`/api/admin/config?file=${filename}`, {
     method: 'GET',
     headers: {
       'X-Username': username || ''
@@ -44,7 +44,7 @@ export async function saveConfigData(filename: string, data: any) {
   const username = getCurrentUser();
   console.log(`[adminConfigApi] Current user: ${username}`);
   
-  const response = await fetch(`/api/admin/configs?file=${filename}`, {
+  const response = await fetch(`/api/admin/config?file=${filename}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export async function listConfigFiles() {
   const username = getCurrentUser();
   console.log(`[adminConfigApi] Current user: ${username}`);
   
-  const response = await fetch('/api/admin/configs?list=true', {
+  const response = await fetch('/api/admin/config?list=true', {
     method: 'GET',
     headers: {
       'X-Username': username || ''
