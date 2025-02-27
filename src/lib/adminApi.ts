@@ -6,7 +6,9 @@ import { isUserAdmin } from '@/lib/auth';
 /**
  * Path to the configuration directory
  */
-export const CONFIG_PATH = path.join(process.cwd(), 'src', 'config');
+export const CONFIG_PATH = process.env.NODE_ENV === 'production'
+  ? path.join('/opt/dune_catalog', 'src', 'config')  // Production path
+  : path.join(process.cwd(), 'src', 'config');       // Development path
 
 /**
  * Validates if the request is from an authorized admin user

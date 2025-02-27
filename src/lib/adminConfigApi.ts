@@ -74,5 +74,5 @@ export const CONFIG_FILES = {
   APP_CONFIG: 'config.json',
   ADMINS: 'admins.json',
   DATASET_ACCESS: 'dataset_access_stats.json',
-  HELP_CONTENT: 'helpContent.json'
+  HELP_CONTENT: 'helpContent.json'  // This matches the actual filename
 };
