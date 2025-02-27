@@ -10,15 +10,17 @@ import { getCurrentUser } from '@/lib/auth';
  * @returns The configuration data
  */
 export async function getConfigData(filename: string) {
-  const response = await fetch(`api/admin/configs?file=${filename}`, {
+  const response = await fetch(`/api/admin/configs?file=${filename}`, {
     method: 'GET',
     headers: {
-      'X-Username': getCurrentUser() || ''
+      'X-Username': getCurrentUser() || '',
+      'Accept': 'application/json'
     },
     credentials: 'same-origin'
   });
   
   if (!response.ok) {
+    console.error('Failed to load config:', await response.text());
     throw new Error(`Error loading configuration: ${response.statusText}`);
   }
   
@@ -32,17 +34,19 @@ export async function getConfigData(filename: string) {
  * @returns The API response
  */
 export async function saveConfigData(filename: string, data: any) {
-  const response = await fetch(`api/admin/configs?file=${filename}`, {
+  const response = await fetch(`/api/admin/configs?file=${filename}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Username': getCurrentUser() || ''
+      'X-Username': getCurrentUser() || '',
+      'Accept': 'application/json'
     },
     credentials: 'same-origin',
     body: JSON.stringify(data)
   });
   
   if (!response.ok) {
+    console.error('Failed to save config:', await response.text());
     throw new Error(`Error saving configuration: ${response.statusText}`);
   }
   
@@ -54,15 +58,17 @@ export async function saveConfigData(filename: string, data: any) {
  * @returns Array of configuration filenames
  */
 export async function listConfigFiles() {
-  const response = await fetch(`api/admin/configs?list=true`, {
+  const response = await fetch(`/api/admin/configs?list=true`, {
     method: 'GET',
     headers: {
-      'X-Username': getCurrentUser() || ''
+      'X-Username': getCurrentUser() || '',
+      'Accept': 'application/json'
     },
     credentials: 'same-origin'
   });
   
   if (!response.ok) {
+    console.error('Failed to list configs:', await response.text());
     throw new Error(`Error listing configurations: ${response.statusText}`);
   }
   

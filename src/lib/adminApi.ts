@@ -6,9 +6,7 @@ import { isUserAdmin } from '@/lib/auth';
 /**
  * Path to the configuration directory
  */
-export const CONFIG_PATH = process.env.NODE_ENV === 'production'
-  ? path.join('/opt/dune_catalog', 'src', 'config')  // Production path
-  : path.join(process.cwd(), 'src', 'config');       // Development path
+export const CONFIG_PATH = path.join(process.cwd(), 'src', 'config');
 
 /**
  * Validates if the request is from an authorized admin user
@@ -47,20 +45,21 @@ export function unauthorizedResponse() {
 export async function readConfigFile(filename: string) {
   try {
     const filePath = path.join(CONFIG_PATH, filename);
+    console.log('Reading config file from:', filePath);
     
     // Check if file exists
     try {
       await fs.access(filePath);
     } catch (error) {
-      console.log(`File ${filename} not found:`, error);
+      console.error('File not found:', filePath);
       return null;
     }
     
-    // Read and parse the file
-    const fileContent = await fs.readFile(filePath, 'utf-8');
+    // Read and parse file
+    const fileContent = await fs.readFile(filePath, 'utf8');
     return JSON.parse(fileContent);
   } catch (error) {
-    console.error(`Error reading config file ${filename}:`, error);
+    console.error('Error reading config file:', error);
     return null;
   }
 }
@@ -74,22 +73,21 @@ export async function readConfigFile(filename: string) {
 export async function writeConfigFile(filename: string, data: any): Promise<boolean> {
   try {
     const filePath = path.join(CONFIG_PATH, filename);
+    console.log('Writing config file to:', filePath);
     
-    // Create a backup first
+    // Create backup of existing file if it exists
     try {
-      const existingContent = await fs.readFile(filePath, 'utf-8');
       const backupPath = `${filePath}.bak`;
-      await fs.writeFile(backupPath, existingContent, 'utf-8');
+      await fs.copyFile(filePath, backupPath);
     } catch (error) {
-      // If file doesn't exist yet, no need for backup
-      console.log(`No backup created for ${filename} (likely new file)`);
+      console.log('No existing file to backup');
     }
     
-    // Write the new content
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    // Write new data
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2));
     return true;
   } catch (error) {
-    console.error(`Error writing config file ${filename}:`, error);
+    console.error('Error writing config file:', error);
     return false;
   }
 }
@@ -100,12 +98,11 @@ export async function writeConfigFile(filename: string, data: any): Promise<bool
  */
 export async function listConfigFiles(): Promise<string[] | null> {
   try {
+    console.log('Listing config files from:', CONFIG_PATH);
     const files = await fs.readdir(CONFIG_PATH);
-    return files
-      .filter(file => file.endsWith('.json'))
-      .filter(file => !file.endsWith('.bak') && !file.endsWith('~')); // Exclude backup files
+    return files.filter(file => file.endsWith('.json'));
   } catch (error) {
-    console.error('Error reading config directory:', error);
+    console.error('Error listing config files:', error);
     return null;
   }
 }
