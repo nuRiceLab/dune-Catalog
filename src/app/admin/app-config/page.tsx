@@ -20,7 +20,7 @@ import { Switch } from '@/components/ui/switch';
 import JsonEditor from '@/components/JsonEditor';
 import { isUserAdmin } from '@/lib/auth';
 import AdminSidebar from '@/components/AdminSidebar';
-import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminConfigApi';
+import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminApi';
 
 interface AppConfig {
   app: {
