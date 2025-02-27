@@ -1,4 +1,5 @@
 import axios, { isAxiosError} from 'axios';
+import { isAdmin } from './api';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
@@ -28,10 +29,12 @@ export async function login(credentials: LoginCredentials): Promise<LoginRespons
   try {
     const response = await axios.post(`${API_URL}/login`, credentials);
     const { token } = response.data;
-    localStorage.setItem('metacatToken', token);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('metacatToken', token);
+      localStorage.setItem('metacatUsername', credentials.username);
+    }
     return { success: true, token };
   } catch (error: unknown) {
-
     if (isAxiosError(error)) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
@@ -91,7 +94,10 @@ function getErrorMessageFromResponseStatus(status: number): string {
  */
 export function logout(): void {
   // Remove the stored token from local storage
-  localStorage.removeItem('metacatToken');
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('metacatToken');
+    localStorage.removeItem('metacatUsername');
+  }
 }
 
 /**
@@ -100,7 +106,40 @@ export function logout(): void {
  * @returns The stored token, or null if no token is stored.
  */
 export function getStoredToken(): string | null {
-  return localStorage.getItem('metacatToken');
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('metacatToken');
+  }
+  return null;
+}
+
+/**
+ * Retrieves the stored username from local storage.
+ *
+ * @returns The stored username, or null if no username is stored.
+ */
+export function getCurrentUser(): string | null {
+  // Check if we're in a browser environment
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('metacatUsername');
+  }
+  // If we're on the server side, we don't have access to localStorage
+  return null;
+}
+
+/**
+ * Checks if the user is an admin.
+ *
+ * @returns True if the user is an admin, false otherwise.
+ */
+export function isUserAdmin(username?: string): boolean {
+  // If username is provided explicitly (for server-side)
+  if (username) {
+    return isAdmin(username);
+  }
+  
+  // Otherwise try to get from localStorage (client-side)
+  const currentUser = getCurrentUser();
+  return currentUser ? isAdmin(currentUser) : false;
 }
 
 /**

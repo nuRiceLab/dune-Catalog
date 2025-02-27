@@ -103,7 +103,7 @@ def save_dataset_stats(stats):
             json.dump(stats, temp_file, indent=2)
             temp_path = temp_file.name
         
-        # Then move it to the actual file
+        # Then move it to the actual file (atomic operation on Unix)
         shutil.move(temp_path, STATS_FILE_PATH)
         # logger.info(f"Successfully saved stats with {len(stats)} entries")
     except Exception as e:

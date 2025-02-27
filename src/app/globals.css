@@ -8,8 +8,6 @@
         @apply border-border;
     }
     body {
-        overflow-x: hidden;
-        overscroll-behavior: contain;
         @apply bg-background text-foreground;
     }
     :root {
@@ -57,5 +55,14 @@
         --input: #4A5568;
         --ring: #F3A054;
         --headfoot-background: #383f48;
+    }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    }
+  body {
+    @apply bg-background text-foreground;
     }
 }

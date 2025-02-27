@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { getStoredToken } from './auth';
 import config from '@/config/config.json';
-import admins from '@/config/admins.json';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
@@ -35,16 +34,6 @@ export interface File {
   size: number;
 }
 
-/**
- * Checks if a user is an admin
- * @param username The username to check
- * @returns True if the user is an admin, false otherwise
- */
-export function isAdmin(username: string): boolean {
-  // console.log('Checking admin status for:', username);
-  // console.log(admins.admins.includes(username));
-  return admins.admins.includes(username);
-}
 
 function sanitizeMQLQuery(query: string): string {
   if (!query) return '';
@@ -52,19 +41,19 @@ function sanitizeMQLQuery(query: string): string {
   // Trim whitespace
   let sanitized = query.trim();
   
-  // Remove potentially harmful characters while preserving MQL syntax
+  // Remove any potentially harmful characters or SQL injection attempts
   sanitized = sanitized
-    .replace(/['"\\]/g, '') // Remove quotes and backslashes for safety
+    .replace(/[;'"\\]/g, '') // Remove basic SQL injection characters
+    .replace(/--/g, '') // Remove SQL comments
     .replace(/\/\*/g, '') // Remove block comment starts
     .replace(/\*\//g, '') // Remove block comment ends
-    .replace(/[<>]/g, '') // Remove HTML tags
-    .replace(/\s+/g, ' '); // Normalize whitespace
+    .replace(/union\s+select/gi, '') // Remove UNION SELECT attempts
+    .replace(/drop\s+table/gi, '') // Remove DROP TABLE attempts
+    .replace(/[<>]/g, ''); // Remove HTML tags
     
   // Limit query length to prevent overflow attacks
-  // but allow enough space for complex queries with dataset specifications
-  return sanitized.slice(0, 2000);
+  return sanitized.slice(0, 1000);
 }
-
 /**
  * Searches for datasets matching the given query string.
  *
@@ -173,16 +162,6 @@ export async function searchFiles(namespace: string, name: string): Promise<{ fi
 // Store user's location in memory
 let cachedUserLocation: string | null = null;
 
-/**
- * Retrieves the user's location and returns it as a string in the format "City, State".
- * The location is cached in memory for future calls to this function.
- * If the user's location cannot be determined, the function returns "Unknown Location".
- *
- * This function uses the Geolocation API to get the user's latitude and longitude,
- * and then uses the Nominatim API to reverse geocode those coordinates into a human-readable location.
- *
- * @returns A string representing the user's location
- */
 export async function getUserLocation(): Promise<string> {
     // Return cached location if available
     if (cachedUserLocation) {

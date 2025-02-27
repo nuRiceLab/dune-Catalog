@@ -52,6 +52,7 @@ export function LoginModal({ isLoggedIn, setIsLoggedIn }: LoginModalProps) {
         if (isSubmitting) return; // Prevent multiple submissions
         setIsSubmitting(true);
         try {
+            console.log('Attempting login with username:', values.username);
             const response = await login(values)
 
             if (response.success) {
