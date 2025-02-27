@@ -10,21 +10,40 @@ import { getCurrentUser } from '@/lib/auth';
  * @returns The configuration data
  */
 export async function getConfigData(filename: string) {
-  const response = await fetch(`/api/admin/configs?file=${filename}`, {
+  console.log('Fetching config file:', filename);
+  
+  // Use app directory route path
+  const path = './api/admin/configs';
+  const url = `${path}?file=${encodeURIComponent(filename)}`;
+  
+  console.log('Request URL:', url);
+  console.log('Current user:', getCurrentUser());
+  
+  const response = await fetch(url, {
     method: 'GET',
     headers: {
       'X-Username': getCurrentUser() || '',
       'Accept': 'application/json'
-    },
-    credentials: 'same-origin'
+    }
   });
   
+  console.log('Response status:', response.status);
+  console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+  
   if (!response.ok) {
-    console.error('Failed to load config:', await response.text());
+    const errorText = await response.text();
+    console.error('Failed to load config:', {
+      status: response.status,
+      statusText: response.statusText,
+      error: errorText,
+      url
+    });
     throw new Error(`Error loading configuration: ${response.statusText}`);
   }
   
-  return await response.json();
+  const data = await response.json();
+  console.log('Config data loaded successfully');
+  return data;
 }
 
 /**
@@ -34,23 +53,41 @@ export async function getConfigData(filename: string) {
  * @returns The API response
  */
 export async function saveConfigData(filename: string, data: any) {
-  const response = await fetch(`/api/admin/configs?file=${filename}`, {
+  console.log('Saving config file:', filename);
+  
+  // Use app directory route path
+  const path = './api/admin/configs';
+  const url = `${path}?file=${encodeURIComponent(filename)}`;
+  
+  console.log('Request URL:', url);
+  console.log('Request data:', data);
+  
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-Username': getCurrentUser() || '',
       'Accept': 'application/json'
     },
-    credentials: 'same-origin',
     body: JSON.stringify(data)
   });
   
+  console.log('Response status:', response.status);
+  
   if (!response.ok) {
-    console.error('Failed to save config:', await response.text());
+    const errorText = await response.text();
+    console.error('Failed to save config:', {
+      status: response.status,
+      statusText: response.statusText,
+      error: errorText,
+      url
+    });
     throw new Error(`Error saving configuration: ${response.statusText}`);
   }
   
-  return await response.json();
+  const result = await response.json();
+  console.log('Config saved successfully');
+  return result;
 }
 
 /**
@@ -58,21 +95,37 @@ export async function saveConfigData(filename: string, data: any) {
  * @returns Array of configuration filenames
  */
 export async function listConfigFiles() {
-  const response = await fetch(`/api/admin/configs?list=true`, {
+  console.log('Listing config files');
+  
+  // Use app directory route path
+  const path = './api/admin/configs';
+  const url = `${path}?list=true`;
+  
+  console.log('Request URL:', url);
+  
+  const response = await fetch(url, {
     method: 'GET',
     headers: {
       'X-Username': getCurrentUser() || '',
       'Accept': 'application/json'
-    },
-    credentials: 'same-origin'
+    }
   });
   
+  console.log('Response status:', response.status);
+  
   if (!response.ok) {
-    console.error('Failed to list configs:', await response.text());
+    const errorText = await response.text();
+    console.error('Failed to list configs:', {
+      status: response.status,
+      statusText: response.statusText,
+      error: errorText,
+      url
+    });
     throw new Error(`Error listing configurations: ${response.statusText}`);
   }
   
   const data = await response.json();
+  console.log('Config list loaded successfully:', data.configFiles);
   return data.configFiles;
 }
 
