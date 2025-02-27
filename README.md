@@ -54,6 +54,10 @@ DUNE Catalog is a web application designed to provide an interface for searching
      METACAT_SERVER_URL=your_metacat_server_url
      METACAT_AUTH_SERVER_URL=your_metacat_auth_server_url
      ```
+5. Set up Python virtual environment:
+   ```bash
+   source dune-data-catalog/bin/activate
+   ```
 
 ### Running the Application
 

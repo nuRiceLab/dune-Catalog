@@ -12,10 +12,7 @@ import { getCurrentUser } from '@/lib/auth';
 export async function getConfigData(filename: string) {
   console.log('Fetching config file:', filename);
   
-  // Use app directory route path
-  const path = './api/admin/configs';
-  const url = `${path}?file=${encodeURIComponent(filename)}`;
-  
+  const url = `/api/admin/config?file=${encodeURIComponent(filename)}`;
   console.log('Request URL:', url);
   console.log('Current user:', getCurrentUser());
   
@@ -55,10 +52,7 @@ export async function getConfigData(filename: string) {
 export async function saveConfigData(filename: string, data: any) {
   console.log('Saving config file:', filename);
   
-  // Use app directory route path
-  const path = './api/admin/configs';
-  const url = `${path}?file=${encodeURIComponent(filename)}`;
-  
+  const url = `/api/admin/config?file=${encodeURIComponent(filename)}`;
   console.log('Request URL:', url);
   console.log('Request data:', data);
   
@@ -97,10 +91,7 @@ export async function saveConfigData(filename: string, data: any) {
 export async function listConfigFiles() {
   console.log('Listing config files');
   
-  // Use app directory route path
-  const path = './api/admin/configs';
-  const url = `${path}?list=true`;
-  
+  const url = `/api/admin/config?list=true`;
   console.log('Request URL:', url);
   
   const response = await fetch(url, {
