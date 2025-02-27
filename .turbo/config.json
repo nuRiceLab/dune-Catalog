@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "**/src/config/**": {
+      "loader": "none"
+    }
+  }
+}

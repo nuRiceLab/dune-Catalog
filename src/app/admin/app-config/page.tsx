@@ -73,17 +73,14 @@ export default function AppConfigPage() {
 
   // Load config data
   const loadConfigData = async () => {
-    console.log('[AppConfigPage] Component mounted, loading config data');
     setIsLoading(true);
     try {
       // Use the unified API endpoint
       const data = await getConfigData(CONFIG_FILES.APP_CONFIG);
-      console.log('[AppConfigPage] Config data loaded successfully:', data);
       setAppConfig(data);
       setJsonContent(JSON.stringify(data, null, 2));
       setIsLoading(false);
     } catch (error) {
-      console.error('[AppConfigPage] Error loading config data:', error);
       toast({
         title: "Error Loading Configuration",
         description: "Failed to load configuration data. Please try again.",
@@ -131,7 +128,6 @@ export default function AppConfigPage() {
       });
       setSaving(false);
     } catch (error) {
-      console.error('Failed to save config:', error);
       toast({
         title: "Error Saving Configuration",
         description: "Failed to save configuration data. Please check your JSON and try again.",

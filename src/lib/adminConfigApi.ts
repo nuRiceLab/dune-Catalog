@@ -10,9 +10,7 @@ import { getCurrentUser } from '@/lib/auth';
  * @returns The configuration data
  */
 export async function getConfigData(filename: string) {
-  console.log(`[adminConfigApi] Requesting config file: ${filename}`);
   const username = getCurrentUser();
-  console.log(`[adminConfigApi] Current user: ${username}`);
   
   const response = await fetch(`/api/admin/config?file=${filename}`, {
     method: 'GET',
@@ -21,15 +19,11 @@ export async function getConfigData(filename: string) {
     }
   });
   
-  console.log(`[adminConfigApi] Response status: ${response.status} ${response.statusText}`);
-  
   if (!response.ok) {
-    console.error(`[adminConfigApi] Error loading configuration: ${response.statusText}`);
     throw new Error(`Error loading configuration: ${response.statusText}`);
   }
   
   const data = await response.json();
-  console.log(`[adminConfigApi] Received data:`, data);
   return data;
 }
 
@@ -40,9 +34,7 @@ export async function getConfigData(filename: string) {
  * @returns The API response
  */
 export async function saveConfigData(filename: string, data: any) {
-  console.log(`[adminConfigApi] Saving config file: ${filename}`, data);
   const username = getCurrentUser();
-  console.log(`[adminConfigApi] Current user: ${username}`);
   
   const response = await fetch(`/api/admin/config?file=${filename}`, {
     method: 'POST',
@@ -53,15 +45,11 @@ export async function saveConfigData(filename: string, data: any) {
     body: JSON.stringify(data)
   });
   
-  console.log(`[adminConfigApi] Save response status: ${response.status} ${response.statusText}`);
-  
   if (!response.ok) {
-    console.error(`[adminConfigApi] Error saving configuration: ${response.statusText}`);
     throw new Error(`Error saving configuration: ${response.statusText}`);
   }
   
   const responseData = await response.json();
-  console.log(`[adminConfigApi] Save response data:`, responseData);
   return responseData;
 }
 
@@ -70,9 +58,7 @@ export async function saveConfigData(filename: string, data: any) {
  * @returns Array of configuration filenames
  */
 export async function listConfigFiles() {
-  console.log(`[adminConfigApi] Listing all config files`);
   const username = getCurrentUser();
-  console.log(`[adminConfigApi] Current user: ${username}`);
   
   const response = await fetch('/api/admin/config?list=true', {
     method: 'GET',
@@ -81,15 +67,11 @@ export async function listConfigFiles() {
     }
   });
   
-  console.log(`[adminConfigApi] List response status: ${response.status} ${response.statusText}`);
-  
   if (!response.ok) {
-    console.error(`[adminConfigApi] Error listing configuration files: ${response.statusText}`);
     throw new Error(`Error listing configuration files: ${response.statusText}`);
   }
   
   const data = await response.json();
-  console.log(`[adminConfigApi] List of config files:`, data.configFiles);
   return data.configFiles;
 }
 
