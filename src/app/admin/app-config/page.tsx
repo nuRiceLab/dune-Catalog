@@ -20,7 +20,7 @@ import { Switch } from '@/components/ui/switch';
 import JsonEditor from '@/components/JsonEditor';
 import { isUserAdmin } from '@/lib/auth';
 import AdminSidebar from '@/components/AdminSidebar';
-import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminApi';
+import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminConfigApi';
 
 interface AppConfig {
   app: {
@@ -73,15 +73,17 @@ export default function AppConfigPage() {
 
   // Load config data
   const loadConfigData = async () => {
+    console.log('[AppConfigPage] Component mounted, loading config data');
     setIsLoading(true);
     try {
       // Use the unified API endpoint
       const data = await getConfigData(CONFIG_FILES.APP_CONFIG);
+      console.log('[AppConfigPage] Config data loaded successfully:', data);
       setAppConfig(data);
       setJsonContent(JSON.stringify(data, null, 2));
       setIsLoading(false);
     } catch (error) {
-      console.error('Failed to load config:', error);
+      console.error('[AppConfigPage] Error loading config data:', error);
       toast({
         title: "Error Loading Configuration",
         description: "Failed to load configuration data. Please try again.",

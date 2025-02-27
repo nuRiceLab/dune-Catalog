@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import AdminSidebar from '@/components/AdminSidebar';
-import { getConfigData, saveConfigData, listConfigFiles, CONFIG_FILES } from '@/lib/adminApi';
+import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminConfigApi';
 
 // Dynamically import the JSON editor to avoid SSR issues
 const JsonEditor = dynamic(() => import('@/components/JsonEditor'), { ssr: false });

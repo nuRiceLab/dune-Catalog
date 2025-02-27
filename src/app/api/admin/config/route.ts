@@ -5,70 +5,78 @@ import {
   readConfigFile,
   writeConfigFile,
   listConfigFiles
-} from '@/lib/adminConfigServer';
+} from '@/lib/adminApi';
 
 /**
  * GET handler - Retrieve configuration data
  * 
  * Usage:
- * - /api/admin/config?file=config.json - Returns specific config file
- * - /api/admin/config?list=true - Lists all available config files
+ * - /api/admin/configs?file=config.json - Returns specific config file
+ * - /api/admin/configs?list=true - Lists all available config files
  */
 export async function GET(request: NextRequest) {
-  console.log('GET request received for config endpoint');
+  console.log('[API:GET] Request received for unified config endpoint');
   
   try {
     // Validate admin permissions
-    if (!isAuthorized(request)) {
-      console.log('User not authorized for config access');
+    const isAdmin = isAuthorized(request);
+    console.log(`[API:GET] Authorization check result: ${isAdmin}`);
+    
+    if (!isAdmin) {
+      console.log('[API:GET] Unauthorized access attempt');
       return unauthorizedResponse();
     }
     
-    // Parse URL parameters
-    const url = new URL(request.url);
-    const listParam = url.searchParams.get('list');
-    const fileParam = url.searchParams.get('file');
+    // Check if we're listing all config files
+    const { searchParams } = new URL(request.url);
+    const listMode = searchParams.get('list') === 'true';
+    const filename = searchParams.get('file');
     
-    // If list parameter is provided, return the list of config files
-    if (listParam === 'true') {
-      console.log('Listing all config files');
-      const configFiles = await listConfigFiles();
+    console.log(`[API:GET] Request params - listMode: ${listMode}, filename: ${filename}`);
+    
+    if (listMode) {
+      // List all config files
+      console.log('[API:GET] Listing all config files');
+      const files = await listConfigFiles();
+      console.log(`[API:GET] Found ${files?.length || 0} config files:`, files);
       
-      if (configFiles === null) {
-        return NextResponse.json(
-          { error: 'Failed to read configuration directory' }, 
-          { status: 500 }
-        );
-      }
-      
-      return NextResponse.json({ configFiles });
+      return NextResponse.json({ 
+        success: true, 
+        configFiles: files 
+      });
     }
     
-    // If no file specified, return 400 error
-    if (!fileParam) {
-      console.log('No file parameter specified');
+    // Get specific config file
+    if (!filename) {
+      console.log('[API:GET] Missing filename parameter');
       return NextResponse.json(
-        { error: 'Missing file parameter. Use ?file=filename.json' },
+        { error: 'Missing filename parameter' },
         { status: 400 }
       );
     }
     
-    // Get the configuration file
-    console.log(`Retrieving config file: ${fileParam}`);
-    const configData = await readConfigFile(fileParam);
+    // Add .json extension if not present
+    const filenameWithExt = filename.endsWith('.json') ? filename : `${filename}.json`;
+    console.log(`[API:GET] Retrieving config file: ${filenameWithExt}`);
+    
+    // Read the config file
+    const configData = await readConfigFile(filenameWithExt);
     
     if (configData === null) {
+      console.log(`[API:GET] Config file not found: ${filenameWithExt}`);
       return NextResponse.json(
-        { error: `Configuration file not found: ${fileParam}` }, 
+        { error: `Config file not found: ${filenameWithExt}` },
         { status: 404 }
       );
     }
     
+    console.log(`[API:GET] Successfully retrieved config file: ${filenameWithExt}`);
     return NextResponse.json(configData);
+    
   } catch (error) {
-    console.error('Error handling config GET request:', error);
+    console.error('[API:GET] Error processing request:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' }, 
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -78,50 +86,73 @@ export async function GET(request: NextRequest) {
  * POST handler - Update configuration data
  * 
  * Usage:
- * - /api/admin/config?file=config.json - Updates specific config file
+ * - /api/admin/configs?file=config.json - Updates specific config file
  */
 export async function POST(request: NextRequest) {
-  console.log('POST request received for config endpoint');
+  console.log('[API:POST] Request received for unified config endpoint');
   
   try {
     // Validate admin permissions
-    if (!isAuthorized(request)) {
-      console.log('User not authorized for config update');
+    const isAdmin = isAuthorized(request);
+    console.log(`[API:POST] Authorization check result: ${isAdmin}`);
+    
+    if (!isAdmin) {
+      console.log('[API:POST] Unauthorized access attempt');
       return unauthorizedResponse();
     }
     
-    // Parse URL parameters
-    const url = new URL(request.url);
-    const fileParam = url.searchParams.get('file');
+    // Get filename from query params
+    const { searchParams } = new URL(request.url);
+    const filename = searchParams.get('file');
     
-    // If no file specified, return 400 error
-    if (!fileParam) {
-      console.log('No file parameter specified for update');
+    console.log(`[API:POST] Request param - filename: ${filename}`);
+    
+    if (!filename) {
+      console.log('[API:POST] Missing filename parameter');
       return NextResponse.json(
-        { error: 'Missing file parameter. Use ?file=filename.json' },
+        { error: 'Missing filename parameter' },
         { status: 400 }
       );
     }
     
-    // Get request body
-    const data = await request.json();
+    // Add .json extension if not present
+    const filenameWithExt = filename.endsWith('.json') ? filename : `${filename}.json`;
+    console.log(`[API:POST] Updating config file: ${filenameWithExt}`);
     
-    // Update the configuration file
-    console.log(`Updating config file: ${fileParam}`);
-    const success = await writeConfigFile(fileParam, data);
+    // Parse request body
+    let data;
+    try {
+      data = await request.json();
+      console.log(`[API:POST] Received data for ${filenameWithExt}:`, data);
+    } catch (error) {
+      console.error('[API:POST] Invalid JSON data:', error);
+      return NextResponse.json(
+        { error: 'Invalid JSON data' },
+        { status: 400 }
+      );
+    }
+    
+    // Write data to config file
+    const success = await writeConfigFile(filenameWithExt, data);
     
     if (!success) {
+      console.log(`[API:POST] Failed to write config file: ${filenameWithExt}`);
       return NextResponse.json(
-        { error: `Failed to update configuration file: ${fileParam}` }, 
+        { error: `Failed to write config file: ${filenameWithExt}` },
         { status: 500 }
       );
     }
     
-    return NextResponse.json({ success: true });
+    console.log(`[API:POST] Successfully updated config file: ${filenameWithExt}`);
+    return NextResponse.json({ 
+      success: true,
+      message: `Config file ${filenameWithExt} updated successfully` 
+    });
+    
   } catch (error) {
-    console.error('Error handling config POST request:', error);
+    console.error('[API:POST] Error processing request:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' }, 
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

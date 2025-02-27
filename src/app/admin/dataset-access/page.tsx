@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import AdminSidebar from '@/components/AdminSidebar';
-import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminApi';
+import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminConfigApi';
 
 // Dynamically import chart component to avoid SSR issues
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
