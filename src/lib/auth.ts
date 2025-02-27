@@ -1,7 +1,7 @@
 import axios, { isAxiosError} from 'axios';
 import { isAdmin } from './api';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 interface LoginCredentials {
   username: string;
