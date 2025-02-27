@@ -1,7 +1,5 @@
 import { getCurrentUser } from '@/lib/auth';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
 /**
  * Helper functions to interact with the unified admin config API
  */
@@ -12,11 +10,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
  * @returns The configuration data
  */
 export async function getConfigData(filename: string) {
-  const response = await fetch(`/api/admin/configs?file=${filename}`, {
+  const response = await fetch(`api/admin/configs?file=${filename}`, {
     method: 'GET',
     headers: {
       'X-Username': getCurrentUser() || ''
-    }
+    },
+    credentials: 'same-origin'
   });
   
   if (!response.ok) {
@@ -29,16 +28,17 @@ export async function getConfigData(filename: string) {
 /**
  * Save configuration data to the admin API
  * @param filename The configuration file to update
- * @param data The data to save
+ * @param data The new configuration data
  * @returns The API response
  */
 export async function saveConfigData(filename: string, data: any) {
-  const response = await fetch(`/api/admin/configs?file=${filename}`, {
+  const response = await fetch(`api/admin/configs?file=${filename}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-Username': getCurrentUser() || ''
     },
+    credentials: 'same-origin',
     body: JSON.stringify(data)
   });
   
@@ -54,15 +54,16 @@ export async function saveConfigData(filename: string, data: any) {
  * @returns Array of configuration filenames
  */
 export async function listConfigFiles() {
-  const response = await fetch(`/api/admin/configs?list=true`, {
+  const response = await fetch(`api/admin/configs?list=true`, {
     method: 'GET',
     headers: {
       'X-Username': getCurrentUser() || ''
-    }
+    },
+    credentials: 'same-origin'
   });
   
   if (!response.ok) {
-    throw new Error(`Error listing configuration files: ${response.statusText}`);
+    throw new Error(`Error listing configurations: ${response.statusText}`);
   }
   
   const data = await response.json();
@@ -73,6 +74,6 @@ export async function listConfigFiles() {
 export const CONFIG_FILES = {
   APP_CONFIG: 'config.json',
   ADMINS: 'admins.json',
-  DATASET_ACCESS: 'dataset_access_stats.json',
-  HELP_CONTENT: 'helpContent.json'  // This matches the actual filename
+  DATASET_ACCESS: 'dataset_access.json',
+  HELP_CONTENT: 'help_content.json'
 };
