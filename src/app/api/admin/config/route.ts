@@ -5,17 +5,17 @@ import {
   readConfigFile,
   writeConfigFile,
   listConfigFiles
-} from '@/lib/adminApi';
+} from '@/lib/adminConfigServer';
 
 /**
  * GET handler - Retrieve configuration data
  * 
  * Usage:
- * - /api/admin/configs?file=config.json - Returns specific config file
- * - /api/admin/configs?list=true - Lists all available config files
+ * - /api/admin/config?file=config.json - Returns specific config file
+ * - /api/admin/config?list=true - Lists all available config files
  */
 export async function GET(request: NextRequest) {
-  console.log('GET request received for unified config endpoint');
+  console.log('GET request received for config endpoint');
   
   try {
     // Validate admin permissions
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json(configData);
   } catch (error) {
-    console.error('Error handling unified config GET request:', error);
+    console.error('Error handling config GET request:', error);
     return NextResponse.json(
       { error: 'Internal Server Error' }, 
       { status: 500 }
@@ -78,10 +78,10 @@ export async function GET(request: NextRequest) {
  * POST handler - Update configuration data
  * 
  * Usage:
- * - /api/admin/configs?file=config.json - Updates specific config file
+ * - /api/admin/config?file=config.json - Updates specific config file
  */
 export async function POST(request: NextRequest) {
-  console.log('POST request received for unified config endpoint');
+  console.log('POST request received for config endpoint');
   
   try {
     // Validate admin permissions
@@ -103,44 +103,23 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Parse request body
-    let configData;
-    try {
-      configData = await request.json();
-    } catch (error) {
-      console.log('Invalid JSON in config request body:', error);
-      return NextResponse.json(
-        { error: 'Invalid JSON in request body' },
-        { status: 400 }
-      );
-    }
+    // Get request body
+    const data = await request.json();
     
-    // Validate data format (basic validation)
-    if (!configData || typeof configData !== 'object') {
-      console.log('Invalid config data format:', configData);
-      return NextResponse.json(
-        { error: 'Invalid configuration data format. Expected JSON object or array.' }, 
-        { status: 400 }
-      );
-    }
-    
-    // Write to file
+    // Update the configuration file
     console.log(`Updating config file: ${fileParam}`);
-    const success = await writeConfigFile(fileParam, configData);
+    const success = await writeConfigFile(fileParam, data);
     
     if (!success) {
       return NextResponse.json(
-        { error: `Failed to write configuration to ${fileParam}` }, 
+        { error: `Failed to update configuration file: ${fileParam}` }, 
         { status: 500 }
       );
     }
     
-    return NextResponse.json({ 
-      success: true, 
-      message: `Configuration updated successfully in ${fileParam}` 
-    });
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error handling unified config POST request:', error);
+    console.error('Error handling config POST request:', error);
     return NextResponse.json(
       { error: 'Internal Server Error' }, 
       { status: 500 }
