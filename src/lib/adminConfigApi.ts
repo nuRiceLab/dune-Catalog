@@ -1,6 +1,6 @@
 import { getCurrentUser } from '@/lib/auth';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 /**
  * Helper functions to interact with the unified admin config API
@@ -12,7 +12,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
  * @returns The configuration data
  */
 export async function getConfigData(filename: string) {
-  const response = await fetch(`${API_URL}/api/admin/configs?file=${filename}`, {
+  const response = await fetch(`/api/admin/configs?file=${filename}`, {
     method: 'GET',
     headers: {
       'X-Username': getCurrentUser() || ''
@@ -33,7 +33,7 @@ export async function getConfigData(filename: string) {
  * @returns The API response
  */
 export async function saveConfigData(filename: string, data: any) {
-  const response = await fetch(`${API_URL}/api/admin/configs?file=${filename}`, {
+  const response = await fetch(`/api/admin/configs?file=${filename}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ export async function saveConfigData(filename: string, data: any) {
  * @returns Array of configuration filenames
  */
 export async function listConfigFiles() {
-  const response = await fetch(`${API_URL}/api/admin/configs?list=true`, {
+  const response = await fetch(`/api/admin/configs?list=true`, {
     method: 'GET',
     headers: {
       'X-Username': getCurrentUser() || ''
