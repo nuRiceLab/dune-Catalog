@@ -123,7 +123,7 @@ export default function AdminsPage() {
       await saveConfigData(CONFIG_FILES.ADMINS, dataToSave);
       
       toast({
-        title: "Success",
+        title: "success",
         description: "Admin list has been updated successfully."
       });
     } catch (error) {

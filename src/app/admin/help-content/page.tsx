@@ -113,7 +113,7 @@ export default function HelpContentPage() {
       await saveConfigData(CONFIG_FILES.HELP_CONTENT, dataToSave);
       
       toast({
-        title: "Success",
+        title: "success",
         description: "Help content has been updated successfully."
       });
     } catch (error) {
@@ -192,7 +192,11 @@ export default function HelpContentPage() {
     if (isJsonMode) {
       // Switching from JSON to form
       try {
-        const parsedData = JSON.parse(jsonContent);
+        // The jsonContent might already be a string from the editor
+        const parsedData = typeof jsonContent === 'string' 
+          ? JSON.parse(jsonContent) 
+          : jsonContent;
+          
         if (parsedData.title && parsedData.sections && Array.isArray(parsedData.sections)) {
           setHelpContent(parsedData);
           setIsJsonMode(false);

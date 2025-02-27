@@ -34,14 +34,17 @@ export default function JsonEditor({ value, onChange }: JsonEditorProps) {
     if (!value) return;
     setEditorContent(value);
     
-    // Try to parse JSON to check validity
-    try {
-      const parsedContent = JSON.parse(value);
-      setIsValid(true);
-      onChange(parsedContent);
-    } catch (error) {
-      setIsValid(false);
-    }
+    // Store the content as a string, but don't validate on every keystroke
+    onChange(value);
+    
+    // Optional: do a lightweight check for obvious syntax errors
+    // This is less strict than full JSON.parse validation
+    const hasUnbalancedBraces = (
+      (value.match(/{/g) || []).length !== (value.match(/}/g) || []).length ||
+      (value.match(/\[/g) || []).length !== (value.match(/\]/g) || []).length
+    );
+    
+    setIsValid(!hasUnbalancedBraces);
   };
 
   return (
@@ -66,7 +69,7 @@ export default function JsonEditor({ value, onChange }: JsonEditorProps) {
       </div>
       {!isValid && (
         <div className="text-sm text-destructive">
-          Invalid JSON format. Please correct the errors before saving.
+          Possible JSON syntax error. Check for balanced braces and brackets.
         </div>
       )}
     </div>

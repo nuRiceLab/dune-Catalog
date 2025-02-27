@@ -149,7 +149,10 @@ export default function DatasetAccessPage() {
     if (isJsonMode) {
       // Switching from JSON to form
       try {
-        const parsedData = JSON.parse(jsonContent);
+        // The jsonContent might already be a string from the editor
+        const parsedData = typeof jsonContent === 'string' 
+          ? JSON.parse(jsonContent) 
+          : jsonContent;
         setAccessStats(parsedData);
         setIsJsonMode(false);
       } catch (error) {
@@ -172,7 +175,10 @@ export default function DatasetAccessPage() {
       let dataToSave;
       if (isJsonMode) {
         try {
-          dataToSave = JSON.parse(jsonContent);
+          // The jsonContent might already be a string from the editor
+          dataToSave = typeof jsonContent === 'string' 
+            ? JSON.parse(jsonContent) 
+            : jsonContent;
         } catch (error) {
           toast({
             title: 'Invalid JSON',
