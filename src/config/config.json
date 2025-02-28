@@ -52,8 +52,8 @@
     "Protodune-HD": {
       "categories": [
         {
-          "name": "Data",
-          "namespace": "hd-protodune"
+          "name": "Keep-up reco",
+          "namespace": "hd-protodune-det-reco"
         },
         {
           "name": "MC",
@@ -64,8 +64,8 @@
     "ProtoDune-VD": {
       "categories": [
         {
-          "name": "Data",
-          "namespace": "vd-protodune"
+          "name": "Keep-up reco",
+          "namespace": "vd-protodune-det-reco"
         },
         {
           "name": "MC",
@@ -76,12 +76,16 @@
     "Near Detector Prototypes": {
       "categories": [
         {
-          "name": "M 2x2 Data",
-          "namespace": "neardet-2x2"
+          "name": "ND 2x2 charge",
+          "namespace": "neardet-2x2-lar-charge"
         },
         {
-          "name": "M 2x2 MC",
-          "namespace": "neardet-2x2"
+          "name": "ND 2x2 light",
+          "namespace": "neardet-2x2-lar-light" 
+        },
+        {
+          "name": "ND 2x2 minerva",
+          "namespace": "neardet-2x2-minerva"	  
         }
       ]
     }
