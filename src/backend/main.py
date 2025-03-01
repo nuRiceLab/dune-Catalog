@@ -19,7 +19,7 @@ app = FastAPI()
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Add your frontend URLs here
+    allow_origins=["http://localhost:3000", "http://168.7.136.133:3000", "https://dune-tech.rice.edu/catalog"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
