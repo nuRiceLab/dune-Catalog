@@ -87,30 +87,19 @@ export default function HelpContentPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      let dataToSave;
+      // Prepare the config data - simple approach like app-config page
+      const dataToSave = isJsonMode ? JSON.parse(jsonContent) : helpContent;
       
-      if (isJsonMode) {
-        // Use the JSON content
-        try {
-          dataToSave = JSON.parse(jsonContent);
-          if (!dataToSave.title || !dataToSave.sections || !Array.isArray(dataToSave.sections)) {
-            throw new Error('Invalid help content format');
-          }
-        } catch (error) {
-          toast({
-            variant: "destructive",
-            title: "Invalid JSON",
-            description: "Please check your JSON format and try again."
-          });
-          setIsSaving(false);
-          return;
-        }
-      } else {
-        // Use the form data
-        dataToSave = helpContent;
+      // Basic validation for help content structure
+      if (isJsonMode && (!dataToSave.title || !dataToSave.sections || !Array.isArray(dataToSave.sections))) {
+        throw new Error('Invalid help content format');
       }
       
+      // Save to the API
       await saveConfigData(CONFIG_FILES.HELP_CONTENT, dataToSave);
+      
+      // Update local state with saved data
+      setHelpContent(dataToSave);
       
       toast({
         title: "Success",
@@ -121,7 +110,7 @@ export default function HelpContentPage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to save changes. Please try again."
+        description: "Failed to save changes. Please check your JSON and try again."
       });
     } finally {
       setIsSaving(false);
@@ -192,7 +181,11 @@ export default function HelpContentPage() {
     if (isJsonMode) {
       // Switching from JSON to form
       try {
-        const parsedData = JSON.parse(jsonContent);
+        // The jsonContent might already be a string from the editor
+        const parsedData = typeof jsonContent === 'string' 
+          ? JSON.parse(jsonContent) 
+          : jsonContent;
+          
         if (parsedData.title && parsedData.sections && Array.isArray(parsedData.sections)) {
           setHelpContent(parsedData);
           setIsJsonMode(false);

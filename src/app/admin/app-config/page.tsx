@@ -123,7 +123,7 @@ export default function AppConfigPage() {
       }
       
       toast({
-        title: "Success",
+        title: "success",
         description: "Configuration saved successfully!",
       });
       setSaving(false);

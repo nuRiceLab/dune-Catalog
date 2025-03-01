@@ -149,7 +149,10 @@ export default function DatasetAccessPage() {
     if (isJsonMode) {
       // Switching from JSON to form
       try {
-        const parsedData = JSON.parse(jsonContent);
+        // The jsonContent might already be a string from the editor
+        const parsedData = typeof jsonContent === 'string' 
+          ? JSON.parse(jsonContent) 
+          : jsonContent;
         setAccessStats(parsedData);
         setIsJsonMode(false);
       } catch (error) {
@@ -169,37 +172,25 @@ export default function DatasetAccessPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      let dataToSave;
-      if (isJsonMode) {
-        try {
-          dataToSave = JSON.parse(jsonContent);
-        } catch (error) {
-          toast({
-            title: 'Invalid JSON',
-            description: 'Please correct the JSON format before saving.',
-            variant: 'destructive',
-          });
-          setIsSaving(false);
-          return;
-        }
-      } else {
-        dataToSave = accessStats;
-      }
+      // Prepare the config data - simple approach like app-config page
+      const dataToSave = isJsonMode ? JSON.parse(jsonContent) : accessStats;
       
+      // Save to the API
       await saveConfigData(CONFIG_FILES.DATASET_ACCESS, dataToSave);
+      
+      // Update local state with saved data
+      setAccessStats(dataToSave);
+      
       toast({
         title: "Success",
         description: "Dataset access statistics saved successfully."
       });
-      
-      // Refresh the data
-      setAccessStats(dataToSave);
     } catch (error) {
-      console.error('Error saving dataset statistics:', error);
+      console.error('Error saving dataset access stats:', error);
       toast({
+        title: "Error Saving Configuration",
+        description: "Failed to save configuration data. Please check your JSON and try again.",
         variant: "destructive",
-        title: "Error",
-        description: "Failed to save dataset access statistics."
       });
     } finally {
       setIsSaving(false);
