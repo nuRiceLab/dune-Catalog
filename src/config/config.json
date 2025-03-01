@@ -10,7 +10,7 @@
       "timeout": 10000
     },
     "info": {
-      "lastUpdated": "2/26/2025"
+      "lastUpdated": "2/27/2025"
     }
   },
   "savedSearches": [
@@ -81,11 +81,11 @@
         },
         {
           "name": "ND 2x2 light",
-          "namespace": "neardet-2x2-lar-light" 
+          "namespace": "neardet-2x2-lar-light"
         },
         {
           "name": "ND 2x2 minerva",
-          "namespace": "neardet-2x2-minerva"	  
+          "namespace": "neardet-2x2-minerva"
         }
       ]
     }
