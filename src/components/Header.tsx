@@ -13,11 +13,17 @@ export function Header() {
 
     // Check admin status whenever login state changes
     useEffect(() => {
-        if (isUserLoggedIn) {
-            setIsAdmin(isUserAdmin());
-        } else {
-            setIsAdmin(false);
-        }
+        const checkAdminStatus = async () => {
+            if (isUserLoggedIn) {
+                // Always verify with backend for security
+                const adminStatus = await isUserAdmin();
+                setIsAdmin(adminStatus);
+            } else {
+                setIsAdmin(false);
+            }
+        };
+        
+        checkAdminStatus();
     }, [isUserLoggedIn]);
 
     useEffect(() => {

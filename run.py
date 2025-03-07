@@ -7,7 +7,6 @@ import signal
 import argparse
 import platform
 
-
 def load_env_variables():
     """
     Load environment variables from a .env file.

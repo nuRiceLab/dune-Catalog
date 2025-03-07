@@ -1,8 +1,10 @@
 import os
 import json
 from datetime import datetime
-from fastapi import FastAPI, HTTPException
+from typing import Dict, List, Optional, Union, Any
+from fastapi import FastAPI, HTTPException, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 import logging
 import tempfile
@@ -19,7 +21,10 @@ app = FastAPI()
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://168.7.136.133:3000", "htpp://dune-tech.rice.edu:3000"],  # Add your frontend URLs here
+    allow_origins=[
+        "http://localhost:3000", 
+        "https://dune-tech.rice.edu/dunecatalog"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,92 +33,51 @@ app.add_middleware(
 # Initialize MetaCat API
 metacat_api = MetaCatAPI()
 
+# Load admin usernames on startup
+@app.on_event("startup")
+async def startup_event():
+    global admin_usernames
+    logger.info("Starting application - loading admin usernames")
+    
+    # Log the config path to verify it's correct
+    logger.info(f"Config path: {CONFIG_PATH}")
+    admins_file = os.path.join(CONFIG_PATH, 'admins.json')
+    logger.info(f"Admin file path: {admins_file}")
+    logger.info(f"Admin file exists: {os.path.exists(admins_file)}")
+    
+    # Load admin usernames
+    admin_usernames = get_admin_usernames()
+    logger.info(f"Loaded {len(admin_usernames)} admin usernames: {admin_usernames}")
+    
+    # If no admin usernames were loaded, try to create a default admins.json file
+    if len(admin_usernames) == 0:
+        logger.warning("No admin usernames found. Creating default admins.json file.")
+        try:
+            # Create config directory if it doesn't exist
+            os.makedirs(CONFIG_PATH, exist_ok=True)
+            
+            # Create a default admins.json file with a sample admin
+            with open(admins_file, 'w') as f:
+                json.dump({"admins": ["admin"]}, f)
+            
+            # Reload admin usernames
+            admin_usernames = get_admin_usernames()
+            logger.info(f"Created default admin file. Loaded admin usernames: {admin_usernames}")
+        except Exception as e:
+            logger.error(f"Failed to create default admins.json file: {e}")
+
 # Get the absolute path to the project root directory
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-# Path to store dataset access statistics
-STATS_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'config', 'dataset_access_stats.json'))
+# Path to the configuration directory
+CONFIG_PATH = os.path.join(PROJECT_ROOT, 'src', 'config')
 
-def load_dataset_stats():
-    """
-    Load dataset access statistics from JSON file.
-    Creates the file if it doesn't exist.
-    
-    Returns:
-        dict: Dataset access statistics
-    """
-    try:
-        # logger.info(f"Loading stats from absolute path: {STATS_FILE_PATH}")
-        if not os.path.exists(STATS_FILE_PATH):
-            # logger.info("Stats file doesn't exist, creating new one")
-            os.makedirs(os.path.dirname(STATS_FILE_PATH), exist_ok=True)
-            stats = {}
-        else:
-            try:
-                with open(STATS_FILE_PATH, 'r', encoding='utf-8') as f:
-                    content = f.read().strip()
-                    if not content:  # File is empty
-                        # logger.info("Stats file is empty, initializing new stats")
-                        stats = {}
-                    else:
-                        stats = json.loads(content)
-                        # logger.info(f"Successfully loaded existing stats with {len(stats)} entries")
-            except json.JSONDecodeError:
-                # Try to load the backup file if it exists
-                backup_path = f"{STATS_FILE_PATH}.bak"
-                if os.path.exists(backup_path):
-                    try:
-                        with open(backup_path, 'r', encoding='utf-8') as f:
-                            stats = json.loads(f.read())
-                            # logger.info("Successfully loaded stats from backup file")
-                    except:
-                        stats = {}
-                else:
-                    stats = {}
+# Security
+security = HTTPBearer()
 
-        return stats
-    except Exception as e:
-        logger.error(f"Error loading dataset stats: {e}")
-        return {}
+# Admin usernames (will be loaded from config)
+admin_usernames = []
 
-def save_dataset_stats(stats):
-    """
-    Save dataset access statistics to JSON file using a temporary file for atomic writes.
-    
-    Args:
-        stats (dict): Dataset access statistics to save
-    """
-    try:
-        # logger.info(f"Saving stats to: {STATS_FILE_PATH}")
-        
-        # Create backup of existing file if it exists
-        if os.path.exists(STATS_FILE_PATH):
-            backup_path = f"{STATS_FILE_PATH}.bak"
-            try:
-                shutil.copy2(STATS_FILE_PATH, backup_path)
-                # logger.info("Created backup of existing stats file")
-            except Exception as e:
-                logger.warning(f"Could not create backup: {e}")
-        
-        # Ensure directory exists
-        os.makedirs(os.path.dirname(STATS_FILE_PATH), exist_ok=True)
-        
-        # Write to a temporary file first
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, encoding='utf-8') as temp_file:
-            json.dump(stats, temp_file, indent=2)
-            temp_path = temp_file.name
-        
-        # Then move it to the actual file
-        shutil.move(temp_path, STATS_FILE_PATH)
-        # logger.info(f"Successfully saved stats with {len(stats)} entries")
-    except Exception as e:
-        logger.error(f"Error saving dataset stats: {e}")
-        # Clean up temporary file if it exists
-        if 'temp_path' in locals():
-            try:
-                os.unlink(temp_path)
-            except:
-                pass
 
 class LoginRequest(BaseModel):
     username: str
@@ -134,7 +98,11 @@ async def login(request: LoginRequest):
     """
     result = metacat_api.login(request.username, request.password)
     if result["success"]:
-        return {"token": result["token"]}
+        token = result["token"]
+        return {
+            "token": token, 
+            "username": request.username
+        }
     else:
         raise HTTPException(status_code=401, detail="Login failed")
 
@@ -276,19 +244,206 @@ async def record_dataset_access(request: DatasetStatsRequest):
         
         return {"success": True, "stats": stats}
     except Exception as e:
-        # logger.error(f"Error recording dataset access: {e}")
+        logger.error(f"Error recording dataset access: {e}")
         return {"success": False, "message": str(e)}
 
-@app.get("/getDatasetAccessStats")
-async def get_dataset_access_stats():
+
+def load_dataset_stats() -> Dict[str, Any]:
     """
-    Retrieve dataset access statistics.
+    Load dataset access statistics from the config file
     
     Returns:
-        dict: Dataset access statistics
+        Dict containing dataset access statistics
+    """
+    stats_file = os.path.join(CONFIG_PATH, 'dataset_access_stats.json')
+    
+    # Create empty stats file if it doesn't exist
+    if not os.path.exists(stats_file):
+        with open(stats_file, 'w') as f:
+            json.dump({}, f)
+        return {}
+    
+    try:
+        with open(stats_file, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        logger.error(f"Error loading dataset stats: {e}")
+        return {}
+
+
+def save_dataset_stats(stats: Dict[str, Any]) -> bool:
+    """
+    Save dataset access statistics to the config file
+    
+    Args:
+        stats: Dictionary containing dataset access statistics
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    stats_file = os.path.join(CONFIG_PATH, 'dataset_access_stats.json')
+    
+    try:
+        # Create a temporary file to write to
+        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
+            json.dump(stats, temp_file, indent=2)
+        
+        # Replace the original file with the temporary file
+        shutil.move(temp_file.name, stats_file)
+        return True
+    except Exception as e:
+        logger.error(f"Error saving dataset stats: {e}")
+        return False
+
+
+def get_admin_usernames() -> List[str]:
+    """
+    Get list of admin usernames from the admins config file
+    
+    Returns:
+        List of admin usernames
+    """
+    admins_file = os.path.join(CONFIG_PATH, 'admins.json')
+    logger.info(f"Loading admin usernames from: {admins_file}")
+    
+    try:
+        if os.path.exists(admins_file):
+            logger.info(f"Admin file exists: {admins_file}")
+            with open(admins_file, 'r') as f:
+                content = f.read()
+                logger.info(f"Admin file content: {content}")
+                data = json.loads(content)
+                admins = data.get('admins', [])
+                logger.info(f"Loaded admin usernames: {admins}")
+                return admins
+        else:
+            logger.warning(f"Admin file does not exist: {admins_file}")
+        return []
+    except Exception as e:
+        logger.error(f"Error loading admin usernames: {e}")
+        return []
+
+
+@app.get("/verify_admin")
+def verify_admin(credentials: HTTPAuthorizationCredentials = Depends(security), x_username: Optional[str] = Header(None)) -> str:
+    """
+    Verify that the request is from an admin user
+    
+    Args:
+        credentials: HTTP Authorization credentials
+        x_username: Username from X-Username header
+        
+    Returns:
+        str: Username if admin, raises HTTPException otherwise
+    """
+    logger.info(f"Verifying admin access. X-Username header: {x_username}")
+    logger.info(f"Token present: {bool(credentials and credentials.credentials)}")
+    
+    # First priority: Get username from token using auth_info
+    username = None
+    if credentials and credentials.credentials:
+        token = credentials.credentials
+        token_username = metacat_api.get_username()
+        if token_username:
+            username = token_username
+            logger.info(f"Using username from token auth_info: {username}")
+    
+    if not username:
+        logger.warning("Admin verification failed: Could not determine username")
+        raise HTTPException(status_code=401, detail="Authentication failed - could not determine username")
+    isAdmin = username in admin_usernames
+
+    # Check if user is admin
+    if not isAdmin:
+        logger.warning(f"Admin verification failed: User '{username}' is not an admin")
+        raise HTTPException(status_code=403, detail="Not authorized as admin")
+    
+    logger.info(f"Admin verification successful for user: {username}")
+    return username
+
+
+class ConfigRequest(BaseModel):
+    file: str
+
+
+class ConfigData(BaseModel):
+    data: Dict[str, Any]
+
+
+@app.get("/admin/config")
+async def get_config(file: str = None, list: bool = False, admin_user: str = Depends(verify_admin)):
+    """
+    Get configuration data or list available configuration files
+    
+    Args:
+        file: Name of the configuration file to retrieve
+        list: If True, return a list of available configuration files
+        admin_user: Username of the admin user (from dependency)
+        
+    Returns:
+        Configuration data or list of configuration files
     """
     try:
-        stats = load_dataset_stats()
-        return {"success": True, "stats": stats}
+        if list:
+            # List all config files
+            files = [f for f in os.listdir(CONFIG_PATH) if f.endswith('.json')]
+            return {"success": True, "configFiles": files}
+        
+        if not file:
+            raise HTTPException(status_code=400, detail="File parameter is required")
+        
+        # Get config file path
+        config_file = os.path.join(CONFIG_PATH, file)
+        
+        # Check if file exists
+        if not os.path.exists(config_file):
+            return {"success": False, "message": f"Config file {file} not found"}
+        
+        # Read and parse the file
+        with open(config_file, 'r') as f:
+            data = json.load(f)
+        
+        return {"success": True, "data": data}
     except Exception as e:
-        return {"success": False, "message": str(e)}
+        logger.error(f"Error getting config: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/admin/config")
+async def save_config(file: str, data: ConfigData, admin_user: str = Depends(verify_admin)):
+    """
+    Save configuration data to a file
+    
+    Args:
+        file: Name of the configuration file to save
+        data: Configuration data to save
+        admin_user: Username of the admin user (from dependency)
+        
+    Returns:
+        Success message
+    """
+    try:
+        if not file:
+            raise HTTPException(status_code=400, detail="File parameter is required")
+        
+        # Get config file path
+        config_file = os.path.join(CONFIG_PATH, file)
+        
+        # Create a temporary file to write to
+        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
+            json.dump(data.data, temp_file, indent=2)
+        
+        # Replace the original file with the temporary file
+        shutil.move(temp_file.name, config_file)
+        
+        # If we're updating the admins file, reload the admin usernames
+        if file == 'admins.json':
+            global admin_usernames
+            admin_usernames = get_admin_usernames()
+        
+        return {"success": True, "message": f"Config file {file} updated successfully"}
+    except Exception as e:
+        logger.error(f"Error saving config: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+

@@ -1,11 +1,10 @@
 import axios from 'axios';
 import { getStoredToken } from './auth';
 import config from '@/config/config.json';
-import admins from '@/config/admins.json';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const API_TIMEOUT = config.app.api.timeout || 10000; // Default to 10 seconds if not specified
+const API_TIMEOUT = config.app.api.timeout; 
 
 interface ApiResponse<T> {
   success: boolean;
@@ -35,16 +34,8 @@ export interface File {
   size: number;
 }
 
-/**
- * Checks if a user is an admin
- * @param username The username to check
- * @returns True if the user is an admin, false otherwise
- */
-export function isAdmin(username: string): boolean {
-  // console.log('Checking admin status for:', username);
-  // console.log(admins.admins.includes(username));
-  return admins.admins.includes(username);
-}
+// The isAdmin function has been moved to the backend for better security
+// Use checkIsAdmin from adminConfigApi.ts or verifyUserIsAdmin from auth.ts instead
 
 function sanitizeMQLQuery(query: string): string {
   if (!query) return '';
@@ -119,7 +110,7 @@ export async function searchDataSets(query: string, category: string, tab: strin
  */
 export async function searchFiles(namespace: string, name: string): Promise<{ files: File[], mqlQuery: string }> {
   try {
-    console.log('Sending file search request:', { namespace, name });
+    // Prepare to send file search request
     const token = getStoredToken();
 
     const response = await axios.post<ApiResponse<File>>(`${API_URL}/queryFiles`,
@@ -242,31 +233,5 @@ export async function recordDatasetAccess(namespace: string, name: string): Prom
     );
   } catch (error) {
     console.error('Error recording dataset access:', error);
-  }
-}
-
-/**
- * Retrieve dataset access statistics from backend
- * 
- * @returns An object containing dataset access statistics
- */
-export async function getDatasetAccessStats(): Promise<{ 
-  [key: string]: { 
-    timesAccessed: number; 
-    lastAccessed: string;
-    lastLocation?: string;
-    locations?: string[];
-  } 
-}> {
-  try {
-    const response = await axios.get(`${API_URL}/getDatasetAccessStats`, {
-      headers: { Authorization: `Bearer ${getStoredToken()}` },
-      timeout: API_TIMEOUT
-    });
-
-    return response.data.success ? response.data.stats : {};
-  } catch (error) {
-    console.error('Error retrieving dataset access stats:', error);
-    return {};
   }
 }

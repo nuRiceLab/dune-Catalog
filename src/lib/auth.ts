@@ -1,7 +1,7 @@
 import axios, { isAxiosError} from 'axios';
-import { isAdmin } from './api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface LoginCredentials {
   username: string;
@@ -28,10 +28,13 @@ interface LoginResponse {
 export async function login(credentials: LoginCredentials): Promise<LoginResponse> {
   try {
     const response = await axios.post(`${API_URL}/login`, credentials);
-    const { token } = response.data;
+    const { token, username } = response.data;
+    // Process login response
+    
     if (typeof window !== 'undefined') {
+      // Store only the token in localStorage
       localStorage.setItem('metacatToken', token);
-      localStorage.setItem('metacatUsername', credentials.username);
+      // User authenticated successfully
     }
     return { success: true, token };
   } catch (error: unknown) {
@@ -96,7 +99,6 @@ export function logout(): void {
   // Remove the stored token from local storage
   if (typeof window !== 'undefined') {
     localStorage.removeItem('metacatToken');
-    localStorage.removeItem('metacatUsername');
   }
 }
 
@@ -113,33 +115,48 @@ export function getStoredToken(): string | null {
 }
 
 /**
- * Retrieves the stored username from local storage.
+ * Gets the current user by making an API call to check the token.
+ * This is more secure than storing the username in localStorage.
  *
- * @returns The stored username, or null if no username is stored.
+ * @returns A promise that resolves to the username or null if not authenticated
  */
-export function getCurrentUser(): string | null {
-  // Check if we're in a browser environment
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('metacatUsername');
-  }
-  // If we're on the server side, we don't have access to localStorage
-  return null;
-}
+
 
 /**
- * Checks if the user is an admin.
+ * Checks if the user is an admin by verifying with the backend.
+ * All admin checks should go through the backend for security.
  *
- * @returns True if the user is an admin, false otherwise.
+ * @returns Promise that resolves to a boolean indicating if the user is an admin
  */
-export function isUserAdmin(username?: string): boolean {
-  // If username is provided explicitly (for server-side)
-  if (username) {
-    return isAdmin(username);
-  }
+export async function isUserAdmin(): Promise<boolean> {
   
-  // Otherwise try to get from localStorage (client-side)
-  const currentUser = getCurrentUser();
-  return currentUser ? isAdmin(currentUser) : false;
+  try {
+    const token = getStoredToken();
+    if (!token) {
+      return false;
+    }
+    
+    // Make API call to the verify_admin endpoint
+    // If the user is an admin, the endpoint will return successfully
+    // If not, it will throw a 403 error
+    await axios.get(`${API_URL}/verify_admin`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    
+    // If we get here, the user is an admin (endpoint didn't throw an error)
+    return true;
+  } catch (error: any) {
+    // Check if this is a 403 error (not authorized as admin)
+    if (error.response && error.response.status === 403) {
+      return false;
+    }
+    
+    // For other errors (like 401 unauthorized or network errors)
+    console.error('Error checking admin status:', error);
+    return false;
+  }
 }
 
 /**

@@ -1,113 +1,104 @@
-import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from 'fs';
-import path from 'path';
-import { isUserAdmin } from '@/lib/auth';
+import { getStoredToken } from '@/lib/auth';
 
 /**
- * Path to the configuration directory
+ * Helper functions to interact with the unified admin config API
  */
-export const CONFIG_PATH = path.join(process.cwd(), 'src', 'config');
 
 /**
- * Validates if the request is from an authorized admin user
- * @param request - The incoming request object
- * @returns boolean indicating if the user is authorized
+ * Get configuration data from the admin API
+ * @param filename The configuration file to retrieve
+ * @returns The configuration data
  */
-export function isAuthorized(request: NextRequest): boolean {
-  // Get username from headers (supporting both header formats)
-  const username = request.headers.get('X-Username') || request.headers.get('username');
+export async function getConfigData(filename: string) {
+  const token = getStoredToken();
   
-  if (!username) {
-    return false;
+  if (!token) {
+    throw new Error('Authentication required');
   }
   
-  // Check if user is admin using the username from headers
-  const isAdmin = isUserAdmin(username);
-  return isAdmin;
-}
-
-/**
- * Creates a standard unauthorized response
- * @returns NextResponse with 401 status
- */
-export function unauthorizedResponse() {
-  return NextResponse.json(
-    { error: 'Unauthorized' }, 
-    { status: 401 }
-  );
-}
-
-/**
- * Reads a configuration file from the config directory
- * @param filename - Name of the configuration file
- * @returns The parsed JSON content or null if not found
- */
-export async function readConfigFile(filename: string) {
-  try {
-    const filePath = path.join(CONFIG_PATH, filename);
-    
-    // Check if file exists
-    try {
-      await fs.access(filePath);
-    } catch (error) {
-      return null;
+  // Use the backend endpoint instead of Next.js API route
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+  const response = await fetch(`${apiUrl}/admin/config?file=${filename}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+      // No need to send X-Username header as the server will extract it from the token
     }
-    
-    // Read and parse the file
-    const fileContent = await fs.readFile(filePath, 'utf-8');
-    
-    try {
-      const parsedData = JSON.parse(fileContent);
-      return parsedData;
-    } catch (parseError) {
-      return null;
-    }
-  } catch (error) {
-    return null;
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Error loading configuration: ${response.statusText}`);
   }
+  
+  const data = await response.json();
+  return data.data; // The backend returns data inside a data property
 }
 
 /**
- * Writes data to a configuration file
- * @param filename - Name of the configuration file
- * @param data - The data to write (will be stringified)
- * @returns boolean indicating success or failure
+ * Save configuration data to the admin API
+ * @param filename The configuration file to update
+ * @param data The data to save
+ * @returns The API response
  */
-export async function writeConfigFile(filename: string, data: any): Promise<boolean> {
-  try {
-    const filePath = path.join(CONFIG_PATH, filename);
-    
-    // Create a backup first
-    try {
-      const existingContent = await fs.readFile(filePath, 'utf-8');
-      const backupPath = `${filePath}.bak`;
-      await fs.writeFile(backupPath, existingContent, 'utf-8');
-    } catch (error) {
-      // If file doesn't exist yet, no need for backup
-    }
-    
-    // Write the new content
-    const jsonString = JSON.stringify(data, null, 2);
-    await fs.writeFile(filePath, jsonString, 'utf-8');
-    return true;
-  } catch (error) {
-    return false;
+export async function saveConfigData(filename: string, data: any) {
+  const token = getStoredToken();
+  
+  if (!token) {
+    throw new Error('Authentication required');
   }
+  
+  // Use the backend endpoint instead of Next.js API route
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+  const response = await fetch(`${apiUrl}/admin/config?file=${filename}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ data }) // Wrap data in a data property as expected by the backend
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Error saving configuration: ${response.statusText}`);
+  }
+  
+  const responseData = await response.json();
+  return responseData;
 }
 
 /**
- * Lists all configuration files in the config directory
- * @returns Array of filenames or null if error
+ * Get a list of all available configuration files
+ * @returns Array of configuration filenames
  */
-export async function listConfigFiles(): Promise<string[] | null> {
-  try {
-    const files = await fs.readdir(CONFIG_PATH);
-    
-    // Filter to only include .json files
-    const jsonFiles = files.filter(file => file.endsWith('.json'));
-    
-    return jsonFiles;
-  } catch (error) {
-    return null;
+export async function listConfigFiles() {
+  const token = getStoredToken();
+  
+  if (!token) {
+    throw new Error('Authentication required');
   }
+  
+  // Use the backend endpoint instead of Next.js API route
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+  const response = await fetch(`${apiUrl}/admin/config?list=true`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+      // No need to send X-Username header as the server will extract it from the token
+    }
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Error listing configuration files: ${response.statusText}`);
+  }
+  
+  const data = await response.json();
+  return data.configFiles;
 }
+
+// Common config filenames for convenience
+export const CONFIG_FILES = {
+  APP_CONFIG: 'config.json',
+  ADMINS: 'admins.json',
+  DATASET_ACCESS: 'dataset_access_stats.json',
+  HELP_CONTENT: 'helpContent.json'
+};

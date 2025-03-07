@@ -26,15 +26,31 @@ import AdminSidebar from '@/components/AdminSidebar';
 export default function AdminDashboard() {
   const router = useRouter();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  // Redirect non-admin users
-  if (typeof window !== 'undefined') {
-    useEffect(() => {
-      if (!isUserAdmin()) {
+  // Check admin status and redirect non-admin users
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      // Always verify with backend for security
+      const adminStatus = await isUserAdmin();
+      if (!adminStatus) {
+        toast({
+          title: "Access Denied",
+          description: "You don't have admin privileges to access this page.",
+          variant: "destructive"
+        });
         router.push('/');
+      } else {
+        setIsAdmin(true);
       }
-    }, [router]);
+    };
+    
+    checkAdminStatus();
+  }, [router, toast]);
+  
+  // Don't render admin content until we've verified admin status
+  if (!isAdmin && typeof window !== 'undefined') {
+    return <div className="flex h-screen items-center justify-center">Verifying admin access...</div>;
   }
 
   return (

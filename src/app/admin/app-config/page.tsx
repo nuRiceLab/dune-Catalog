@@ -20,7 +20,7 @@ import { Switch } from '@/components/ui/switch';
 import JsonEditor from '@/components/JsonEditor';
 import { isUserAdmin } from '@/lib/auth';
 import AdminSidebar from '@/components/AdminSidebar';
-import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminConfigApi';
+import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminApi';
 
 interface AppConfig {
   app: {
@@ -65,11 +65,22 @@ export default function AppConfigPage() {
   const [jsonContent, setJsonContent] = useState('');
   const [newTabName, setNewTabName] = useState('');
 
-  // Redirect non-admin users
-  if (typeof window !== 'undefined' && !isUserAdmin()) {
-    router.push('/');
-    return null;
-  }
+  // Check admin status on component mount
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      const isAdmin = await isUserAdmin();
+      if (!isAdmin) {
+        toast({
+          title: "Access Denied",
+          description: "You don't have admin privileges to access this page.",
+          variant: "destructive"
+        });
+        router.push('/');
+      }
+    };
+    
+    checkAdminStatus();
+  }, [router, toast]);
 
   // Load config data
   const loadConfigData = async () => {

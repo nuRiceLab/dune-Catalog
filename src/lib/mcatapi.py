@@ -188,3 +188,16 @@ class MetaCatAPI:
                 "success": False,
                 "message": str(e)
             }
+            
+    def get_username(self):
+        """
+        Returns username and token expiration timestamp.
+
+        Returns:
+            str: Username of the authenticated user
+        """
+        try:
+            username, _ = self.client.auth_info()
+            return username
+        except Exception as e:
+            return ""

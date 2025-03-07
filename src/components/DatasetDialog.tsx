@@ -32,24 +32,20 @@ export function DatasetDialog({ result, className }: ResultDialogProps) {
             if (!open) return;
             setIsLoadingFiles(true);
             try {
-                console.log('Fetching files for:', { 
-                    namespace: result.namespace, 
-                    name: result.name,
-                    open: open 
-                });
+                // Fetch files for the selected dataset
 
                 // Record dataset access
                 recordDatasetAccess(result.namespace, result.name);
                 
                 const response = await searchFiles(result.namespace, result.name);
-                console.log('File search response:', response);
+                // Process file search response
                 
                 // Additional check to ensure files are being set
                 if (response.files && response.files.length > 0) {
-                    console.log(`Loaded ${response.files.length} files`);
+                    // Files loaded successfully
                     setFiles(response.files);
                 } else {
-                    console.warn('No files found or empty response');
+                    // No files found in response
                     setFiles([]);
                 }
                 

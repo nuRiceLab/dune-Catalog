@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCurrentUser, isUserAdmin } from '@/lib/auth';
+import { isUserAdmin } from '@/lib/auth';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import AdminSidebar from '@/components/AdminSidebar';
-import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminConfigApi';
+import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminApi';
 
 // Dynamically import the JSON editor to avoid SSR issues
 const JsonEditor = dynamic(() => import('@/components/JsonEditor'), { ssr: false });
@@ -55,16 +55,35 @@ export default function HelpContentPage() {
   const [jsonContent, setJsonContent] = useState('');
   const [editingSection, setEditingSection] = useState<number | null>(null);
   const [currentSection, setCurrentSection] = useState<HelpSection>({ title: '', content: '' });
-  const [showJsonEditor, setShowJsonEditor] = useState(false);
-
-  // Redirect non-admin users
-  if (typeof window !== 'undefined' && !isUserAdmin()) {
-    router.push('/');
-    return null;
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showJsonEditor, setShowJsonEditor] = useState(false);  useEffect(() => {
+    const checkAdminStatus = async () => {
+      // Always verify with backend for security
+      const adminStatus = await isUserAdmin();
+      if (!adminStatus) {
+        toast({
+          title: "Access Denied",
+          description: "You don't have admin privileges to access this page.",
+          variant: "destructive"
+        });
+        router.push('/');
+      } else {
+        setIsAdmin(true);
+      }
+    };
+    
+    checkAdminStatus();
+  }, [router, toast]);
+  
+  // Don't render admin content until we've verified admin status
+  if (!isAdmin && typeof window !== 'undefined') {
+    return <div className="flex h-screen items-center justify-center">Verifying admin access...</div>;
   }
-
+  
+  // Fetch help content data when admin is verified
   useEffect(() => {
-    // Fetch help content data
+    if (!isAdmin) return;
+    
     getConfigData(CONFIG_FILES.HELP_CONTENT)
       .then(data => {
         if (data.title && data.sections) {
@@ -82,7 +101,7 @@ export default function HelpContentPage() {
         });
         setIsLoading(false);
       });
-  }, [toast]);
+  }, [isAdmin, toast]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -209,7 +228,6 @@ export default function HelpContentPage() {
       setIsJsonMode(true);
     }
   };
-
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
