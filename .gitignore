@@ -45,3 +45,8 @@ next-env.d.ts
 
 # dataset stats
 dataset_access_stats.json 
+admins.json
+
+# virtual environment
+/dune-data-catalog
+/path
