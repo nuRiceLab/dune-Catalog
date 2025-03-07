@@ -54,8 +54,6 @@
         {
           "name": "Keep-up reco",
           "namespace": "hd-protodune-det-reco"
-          "name": "Keep-up reco",
-          "namespace": "hd-protodune-det-reco"
         },
         {
           "name": "MC",
@@ -66,8 +64,6 @@
     "ProtoDune-VD": {
       "categories": [
         {
-          "name": "Keep-up reco",
-          "namespace": "vd-protodune-det-reco"
           "name": "Keep-up reco",
           "namespace": "vd-protodune-det-reco"
         },

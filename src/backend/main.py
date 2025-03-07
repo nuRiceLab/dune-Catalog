@@ -37,34 +37,8 @@ metacat_api = MetaCatAPI()
 @app.on_event("startup")
 async def startup_event():
     global admin_usernames
-    logger.info("Starting application - loading admin usernames")
-    
-    # Log the config path to verify it's correct
-    logger.info(f"Config path: {CONFIG_PATH}")
-    admins_file = os.path.join(CONFIG_PATH, 'admins.json')
-    logger.info(f"Admin file path: {admins_file}")
-    logger.info(f"Admin file exists: {os.path.exists(admins_file)}")
-    
-    # Load admin usernames
     admin_usernames = get_admin_usernames()
-    logger.info(f"Loaded {len(admin_usernames)} admin usernames: {admin_usernames}")
     
-    # If no admin usernames were loaded, try to create a default admins.json file
-    if len(admin_usernames) == 0:
-        logger.warning("No admin usernames found. Creating default admins.json file.")
-        try:
-            # Create config directory if it doesn't exist
-            os.makedirs(CONFIG_PATH, exist_ok=True)
-            
-            # Create a default admins.json file with a sample admin
-            with open(admins_file, 'w') as f:
-                json.dump({"admins": ["admin"]}, f)
-            
-            # Reload admin usernames
-            admin_usernames = get_admin_usernames()
-            logger.info(f"Created default admin file. Loaded admin usernames: {admin_usernames}")
-        except Exception as e:
-            logger.error(f"Failed to create default admins.json file: {e}")
 
 # Get the absolute path to the project root directory
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -304,17 +278,13 @@ def get_admin_usernames() -> List[str]:
         List of admin usernames
     """
     admins_file = os.path.join(CONFIG_PATH, 'admins.json')
-    logger.info(f"Loading admin usernames from: {admins_file}")
     
     try:
         if os.path.exists(admins_file):
-            logger.info(f"Admin file exists: {admins_file}")
             with open(admins_file, 'r') as f:
                 content = f.read()
-                logger.info(f"Admin file content: {content}")
                 data = json.loads(content)
                 admins = data.get('admins', [])
-                logger.info(f"Loaded admin usernames: {admins}")
                 return admins
         else:
             logger.warning(f"Admin file does not exist: {admins_file}")
@@ -339,7 +309,7 @@ def verify_admin(credentials: HTTPAuthorizationCredentials = Depends(security), 
     logger.info(f"Verifying admin access. X-Username header: {x_username}")
     logger.info(f"Token present: {bool(credentials and credentials.credentials)}")
     
-    # First priority: Get username from token using auth_info
+    # Get username from token using auth_info
     username = None
     if credentials and credentials.credentials:
         token = credentials.credentials

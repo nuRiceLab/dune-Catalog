@@ -42,21 +42,29 @@ export default function DatasetAccessPage() {
   const [jsonContent, setJsonContent] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  // Redirect non-admin users
-  if (typeof window !== 'undefined' && !isUserAdmin()) {
-    router.push('/');
-    return null;
-  }
+  // We'll check admin status in useEffect instead of conditionally
 
   useEffect(() => {
-    // Fetch dataset access statistics
-    const fetchStats = async () => {
+    // Check admin status and fetch data if user is admin
+    const checkAdminAndFetchData = async () => {
+      const isAdmin = await isUserAdmin();
+      if (!isAdmin) {
+        toast({
+          title: "Access Denied",
+          description: "You don't have admin privileges to access this page.",
+          variant: "destructive"
+        });
+        router.push('/');
+        return;
+      }
+      
+      // Fetch dataset access statistics
       try {
         const data = await getConfigData(CONFIG_FILES.DATASET_ACCESS);
         setAccessStats(data);
         setJsonContent(JSON.stringify(data, null, 2));
-      } catch (error) {
-        console.error('Error fetching dataset statistics:', error);
+      } catch (err) {
+        console.error('Error fetching dataset statistics:', err);
         toast({
           variant: "destructive",
           title: "Error",
@@ -67,13 +75,13 @@ export default function DatasetAccessPage() {
       }
     };
 
-    fetchStats();
-  }, [toast]);
+    checkAdminAndFetchData();
+  }, [toast, router]);
 
   // Prepare chart data
   const getChartOptions = () => {
     const datasets = Object.keys(accessStats);
-    const accessCounts = datasets.map(ds => accessStats[ds].timesAccessed);
+    // We'll use this variable in the chart series
     
     return {
       chart: {
@@ -155,7 +163,7 @@ export default function DatasetAccessPage() {
           : jsonContent;
         setAccessStats(parsedData);
         setIsJsonMode(false);
-      } catch (error) {
+      } catch {
         toast({
           title: 'Invalid JSON',
           description: 'Please correct the JSON format before switching to form mode.',
@@ -185,8 +193,8 @@ export default function DatasetAccessPage() {
         title: "Success",
         description: "Dataset access statistics saved successfully."
       });
-    } catch (error) {
-      console.error('Error saving dataset access stats:', error);
+    } catch (err) {
+      console.error('Error saving dataset access stats:', err);
       toast({
         title: "Error Saving Configuration",
         description: "Failed to save configuration data. Please check your JSON and try again.",
@@ -249,12 +257,14 @@ export default function DatasetAccessPage() {
                 <JsonEditor
                   value={jsonContent}
                   onChange={(value) => {
-                    setJsonContent(value);
-                    try {
-                      const parsed = JSON.parse(value);
-                      setAccessStats(parsed);
-                    } catch (error) {
-                      // Invalid JSON, just update the jsonContent
+                    if (typeof value === 'string') {
+                      setJsonContent(value);
+                      try {
+                        const parsed = JSON.parse(value);
+                        setAccessStats(parsed);
+                      } catch (error) {
+                        console.error('Failed to parse JSON:', error);
+                      }
                     }
                   }}
                 />

@@ -56,7 +56,7 @@ export default function HelpContentPage() {
   const [editingSection, setEditingSection] = useState<number | null>(null);
   const [currentSection, setCurrentSection] = useState<HelpSection>({ title: '', content: '' });
   const [isAdmin, setIsAdmin] = useState(false);
-  const [showJsonEditor, setShowJsonEditor] = useState(false);  useEffect(() => {
+  const [showJsonEditor] = useState(false);  useEffect(() => {
     const checkAdminStatus = async () => {
       // Always verify with backend for security
       const adminStatus = await isUserAdmin();
@@ -74,11 +74,6 @@ export default function HelpContentPage() {
     
     checkAdminStatus();
   }, [router, toast]);
-  
-  // Don't render admin content until we've verified admin status
-  if (!isAdmin && typeof window !== 'undefined') {
-    return <div className="flex h-screen items-center justify-center">Verifying admin access...</div>;
-  }
   
   // Fetch help content data when admin is verified
   useEffect(() => {
@@ -215,7 +210,7 @@ export default function HelpContentPage() {
             variant: 'destructive',
           });
         }
-      } catch (error) {
+      } catch {
         toast({
           title: 'Invalid JSON',
           description: 'Please correct the JSON format before switching to form mode.',
@@ -228,6 +223,10 @@ export default function HelpContentPage() {
       setIsJsonMode(true);
     }
   };
+    // Don't render admin content until we've verified admin status
+    if (!isAdmin && typeof window !== 'undefined') {
+      return <div className="flex h-screen items-center justify-center">Verifying admin access...</div>;
+    }
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
@@ -279,14 +278,16 @@ export default function HelpContentPage() {
                 <JsonEditor
                   value={jsonContent}
                   onChange={(value) => {
-                    setJsonContent(value);
-                    try {
-                      const parsed = JSON.parse(value);
-                      if (parsed.title && parsed.sections && Array.isArray(parsed.sections)) {
-                        setHelpContent(parsed);
+                    if (typeof value === 'string') {
+                      setJsonContent(value);
+                      try {
+                        const parsed = JSON.parse(value);
+                        if (parsed.title && parsed.sections && Array.isArray(parsed.sections)) {
+                          setHelpContent(parsed as HelpContent);
+                        }
+                      } catch (error) {
+                        console.error('Failed to parse JSON:', error);
                       }
-                    } catch (error) {
-                      // Invalid JSON, just update the jsonContent
                     }
                   }}
                 />
@@ -379,7 +380,7 @@ export default function HelpContentPage() {
                       </div>
                     ) : (
                       <div className="text-center py-4 border rounded-md text-muted-foreground">
-                        No help sections. Click "Add Section" to create one.
+                        No help sections. Click &quot;Add Section&quot; to create one.
                       </div>
                     )}
                   </div>
@@ -442,10 +443,17 @@ export default function HelpContentPage() {
                   <CardContent>
                     <div className="h-[300px] border rounded-md">
                       <JsonEditor
-                        value={helpContent}
+                        value={JSON.stringify(helpContent, null, 2)}
                         onChange={(value) => {
-                          if (value && typeof value === 'object' && 'title' in value && 'sections' in value) {
-                            setHelpContent(value as HelpContent);
+                          if (typeof value === 'string') {
+                            try {
+                              const parsed = JSON.parse(value);
+                              if (parsed && typeof parsed === 'object' && 'title' in parsed && 'sections' in parsed) {
+                                setHelpContent(parsed as HelpContent);
+                              }
+                            } catch (error) {
+                              console.error('Failed to parse JSON:', error);
+                            }
                           }
                         }}
                       />

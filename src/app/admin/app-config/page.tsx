@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
@@ -82,8 +82,8 @@ export default function AppConfigPage() {
     checkAdminStatus();
   }, [router, toast]);
 
-  // Load config data
-  const loadConfigData = async () => {
+  // Load config data - wrapped in useCallback to prevent dependency changes on every render
+  const loadConfigData = useCallback(async () => {
     setIsLoading(true);
     try {
       // Use the unified API endpoint
@@ -91,7 +91,7 @@ export default function AppConfigPage() {
       setAppConfig(data);
       setJsonContent(JSON.stringify(data, null, 2));
       setIsLoading(false);
-    } catch (error) {
+    } catch {
       toast({
         title: "Error Loading Configuration",
         description: "Failed to load configuration data. Please try again.",
@@ -99,12 +99,12 @@ export default function AppConfigPage() {
       });
       setIsLoading(false);
     }
-  };
+  }, [toast]);
 
   // Load data on component mount
   useEffect(() => {
     loadConfigData();
-  }, []);
+  }, [loadConfigData]);
 
   // Save config data
   const saveConfig = async () => {
@@ -138,7 +138,7 @@ export default function AppConfigPage() {
         description: "Configuration saved successfully!",
       });
       setSaving(false);
-    } catch (error) {
+    } catch {
       toast({
         title: "Error Saving Configuration",
         description: "Failed to save configuration data. Please check your JSON and try again.",
@@ -156,7 +156,7 @@ export default function AppConfigPage() {
         const parsedConfig = JSON.parse(jsonContent);
         setAppConfig(parsedConfig);
         setIsJsonMode(false);
-      } catch (error) {
+      } catch {
         toast({
           title: 'Invalid JSON',
           description: 'Please correct the JSON format before switching to form mode.',
@@ -232,12 +232,15 @@ export default function AppConfigPage() {
                     <JsonEditor
                       value={jsonContent}
                       onChange={(value) => {
-                        setJsonContent(value);
-                        try {
-                          const parsedConfig = JSON.parse(value);
-                          setAppConfig(parsedConfig);
-                        } catch (error) {
-                          setAppConfig(null);
+                        if (typeof value === 'string') {
+                          setJsonContent(value);
+                          try {
+                            const parsedConfig = JSON.parse(value);
+                            setAppConfig(parsedConfig as AppConfig);
+                          } catch (error) {
+                            console.error('Failed to parse JSON:', error);
+                            setAppConfig(null);
+                          }
                         }
                       }}
                     />

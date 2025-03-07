@@ -28,7 +28,7 @@ interface LoginResponse {
 export async function login(credentials: LoginCredentials): Promise<LoginResponse> {
   try {
     const response = await axios.post(`${API_URL}/login`, credentials);
-    const { token, username } = response.data;
+    const { token } = response.data;
     // Process login response
     
     if (typeof window !== 'undefined') {
@@ -147,9 +147,10 @@ export async function isUserAdmin(): Promise<boolean> {
     
     // If we get here, the user is an admin (endpoint didn't throw an error)
     return true;
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { response?: { status: number } };
     // Check if this is a 403 error (not authorized as admin)
-    if (error.response && error.response.status === 403) {
+    if (err.response && err.response.status === 403) {
       return false;
     }
     

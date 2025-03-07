@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import MonacoEditor from '@monaco-editor/react';
 
 interface JsonEditorProps {
-  value: any;
-  onChange: (newContent: any) => void;
+  value: Record<string, unknown> | string;
+  onChange: (newContent: Record<string, unknown> | string) => void;
 }
 
 export default function JsonEditor({ value, onChange }: JsonEditorProps) {
@@ -20,7 +20,7 @@ export default function JsonEditor({ value, onChange }: JsonEditorProps) {
       try {
         const parsed = JSON.parse(value);
         setEditorContent(JSON.stringify(parsed, null, 2));
-      } catch (e) {
+      } catch {
         // If it's not valid JSON, use it as is
         setEditorContent(value);
       }

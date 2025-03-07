@@ -14,17 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { 
-  Users, 
-  LayoutDashboard,
-  BarChart4, 
-  HelpCircle, 
-  Settings,
-  Save,
-  PlusCircle,
-  X,
-  Loader2
-} from "lucide-react";
+import { Save, PlusCircle, X, Loader2 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import AdminSidebar from '@/components/AdminSidebar';
 import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminApi';
@@ -116,7 +106,7 @@ export default function AdminsPage() {
           if (!dataToSave.admins || !Array.isArray(dataToSave.admins)) {
             throw new Error('Invalid admins format');
           }
-        } catch (error) {
+        } catch {
           toast({
             variant: "destructive",
             title: "Invalid JSON",
@@ -164,7 +154,7 @@ export default function AdminsPage() {
             variant: 'destructive',
           });
         }
-      } catch (error) {
+      } catch {
         toast({
           title: 'Invalid JSON',
           description: 'Please correct the JSON format before switching to form mode.',
@@ -229,14 +219,16 @@ export default function AdminsPage() {
                 <JsonEditor
                   value={jsonContent}
                   onChange={(value) => {
-                    setJsonContent(value);
-                    try {
-                      const parsed = JSON.parse(value);
-                      if (parsed.admins && Array.isArray(parsed.admins)) {
-                        setAdmins(parsed.admins);
+                    if (typeof value === 'string') {
+                      setJsonContent(value);
+                      try {
+                        const parsed = JSON.parse(value);
+                        if (parsed.admins && Array.isArray(parsed.admins)) {
+                          setAdmins(parsed.admins);
+                        }
+                      } catch (error) {
+                        console.error('Failed to parse JSON:', error);
                       }
-                    } catch (error) {
-                      // Invalid JSON, just update the jsonContent
                     }
                   }}
                 />

@@ -40,7 +40,7 @@ export async function getConfigData(filename: string) {
  * @param data The data to save
  * @returns The API response
  */
-export async function saveConfigData(filename: string, data: any) {
+export async function saveConfigData(filename: string, data: Record<string, unknown>) {
   const token = getStoredToken();
   
   if (!token) {
