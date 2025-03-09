@@ -183,7 +183,7 @@ export default function AppConfigPage() {
             <div>
               <h1 className="text-2xl font-bold">App Configuration</h1>
               <p className="text-muted-foreground">
-                Manage general settings and default configurations
+                Manage general settings and default configurations (App may need to be restarted after changes)
               </p>
             </div>
             <div className="flex items-center gap-2">

@@ -31,9 +31,9 @@ export function FilesTable({ files, isLoading, totalCount }: FilesTableProps) {
     const totalPages = Math.ceil(( totalCount  || files.length) / pageSize);
     const paginatedFiles = files.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-    const handleCopyFileIds = () => {
-        const fileIds = files.map(file => file.fid).join('\n');
-        navigator.clipboard.writeText(fileIds).then(() => {
+    const handleCopyFileNames = () => {
+        const fileNames = files.map(file => file.name).join('\n');
+        navigator.clipboard.writeText(fileNames).then(() => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         });
@@ -45,18 +45,18 @@ export function FilesTable({ files, isLoading, totalCount }: FilesTableProps) {
                 <Button 
                     variant="outline" 
                     size="sm" 
-                    onClick={handleCopyFileIds}
+                    onClick={handleCopyFileNames}
                     className="flex items-center gap-2"
                 >
                     {copied ? (
                         <>
                             <CheckCircle className="h-4 w-4 text-green-500" />
-                            Copied All File IDs
+                            Copied All File Names
                         </>
                     ) : (
                         <>
                             <Copy className="h-4 w-4" />
-                            Copy All File IDs
+                            Copy All File Names
                         </>
                     )}
                 </Button>
