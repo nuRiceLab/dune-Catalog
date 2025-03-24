@@ -1,7 +1,7 @@
 import os
 import json
 from datetime import datetime
-from typing import Dict, List, Optional, Union, Any
+from typing import Dict, List, Optional, Any
 from fastapi import FastAPI, HTTPException, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -314,10 +314,11 @@ def verify_admin(credentials: HTTPAuthorizationCredentials = Depends(security), 
     if credentials and credentials.credentials:
         token = credentials.credentials
         token_username = metacat_api.get_username()
+        logger.info(f"Token username: {token_username}")
         if token_username:
             username = token_username
             logger.info(f"Using username from token auth_info: {username}")
-    
+        
     if not username:
         logger.warning("Admin verification failed: Could not determine username")
         raise HTTPException(status_code=401, detail="Authentication failed - could not determine username")

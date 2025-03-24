@@ -3,8 +3,9 @@ from metacat.webapi import MetaCatClient
 import os
 import json
 import re
-
-
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 def format_timestamp(timestamp):
     """
     Format a given timestamp (in seconds) into a human-readable string
@@ -200,4 +201,5 @@ class MetaCatAPI:
             username, _ = self.client.auth_info()
             return username
         except Exception as e:
+            logger.error(f"Failed to get username from token auth_info: {str(e)}")
             return ""
