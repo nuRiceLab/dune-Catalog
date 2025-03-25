@@ -15,25 +15,11 @@
   },
   "savedSearches": [
     {
-      "name": "Latest HD MC",
-      "tab": "Protodune-HD",
-      "category": "MC",
-      "query": "latest",
+      "name": "Latest",
+      "tab": "",
+      "category": "",
+      "query": "",
       "officialOnly": true
-    },
-    {
-      "name": "VD Calibration",
-      "tab": "ProtoDune-VD",
-      "category": "Data",
-      "query": "calibration",
-      "officialOnly": true
-    },
-    {
-      "name": "2x2 Beam Data",
-      "tab": "Near Detector Prototypes",
-      "category": "M 2x2 Data",
-      "query": "beam",
-      "officialOnly": false
     }
   ],
   "tabs": {
