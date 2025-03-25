@@ -126,7 +126,7 @@ def start_server():
         None
     """
     print("Starting backend server...")
-    uvicorn.run("src.backend.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("src.backend.main:app", host="0.0.0.0", port=8080, reload=True)
 
 
 def signal_handler(sig, frame):
