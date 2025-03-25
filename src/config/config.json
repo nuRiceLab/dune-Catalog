@@ -4,7 +4,7 @@
       "cooldownTime": 5
     },
     "files": {
-      "maxToShow": 1000
+      "maxToShow": 10
     },
     "api": {
       "timeout": 10000
@@ -88,6 +88,9 @@
           "namespace": "neardet-2x2-minerva"
         }
       ]
+    },
+    "ProtoDUNE-SP": {
+      "categories": []
     }
   }
 }

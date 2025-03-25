@@ -101,15 +101,21 @@ def start_frontend(production_mode=False):
     """
     npm_cmd = get_npm_command()
     
+    # Set up environment with node_modules/.bin in PATH
+    env = os.environ.copy()
+    project_dir = os.path.dirname(__file__)
+    node_bin_path = os.path.join(project_dir, 'node_modules', '.bin')
+    env['PATH'] = f"{node_bin_path}:{env.get('PATH', '')}"
+    
     if production_mode:
         print("Building frontend for production...")
-        build_process = subprocess.Popen([npm_cmd, "run", "build"], cwd=os.path.dirname(__file__))
+        build_process = subprocess.Popen([npm_cmd, "run", "build"], cwd=project_dir, env=env)
         build_process.wait()  # Wait for build to complete
         print("Starting frontend in production mode...")
-        return subprocess.Popen([npm_cmd, "run", "start"], cwd=os.path.dirname(__file__))
+        return subprocess.Popen([npm_cmd, "run", "start"], cwd=project_dir, env=env)
     else:
         print("Starting frontend in development mode...")
-        return subprocess.Popen([npm_cmd, "run", "dev"], cwd=os.path.dirname(__file__))
+        return subprocess.Popen([npm_cmd, "run", "dev"], cwd=project_dir, env=env)
 
 
 def start_server():

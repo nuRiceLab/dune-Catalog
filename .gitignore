@@ -44,7 +44,7 @@ next-env.d.ts
 .token_library
 
 # config files
-/src/config/
+/src/config/dataset_access_stats.json
 
 # virtual environment
 /dune-data-catalog
