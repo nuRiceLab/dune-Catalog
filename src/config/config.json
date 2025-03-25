@@ -4,13 +4,13 @@
       "cooldownTime": 5
     },
     "files": {
-      "maxToShow": 10
+      "maxToShow": 50
     },
     "api": {
       "timeout": 10000
     },
     "info": {
-      "lastUpdated": "2/27/2025"
+      "lastUpdated": "3/25/2025"
     }
   },
   "savedSearches": [
@@ -58,6 +58,10 @@
         {
           "name": "MC",
           "namespace": "hd-protodune"
+        },
+	{
+         "name": "HD Coldbox",
+	 "namespace": "hd-coldbox"
         }
       ]
     },
@@ -70,7 +74,27 @@
         {
           "name": "MC",
           "namespace": "vd-protodune"
-        }
+        },
+	{ 
+          "name": "VD Coldbox top",
+	  "namespace": "vd-coldbox-top"
+	},
+	{
+	  "name": "VD Coldbox bottom",
+	  "namespace": "vd-coldbox-bottom"
+	}
+      ]
+    },
+    "ProtoDUNE-SP": {
+      "categories": [
+        {
+	  "name": "ProtoDUNE-SP MC",
+          "namespace": "pdsp_mc_reco"	  
+        },
+	{
+	  "name": "ProtoDUNE-SP Data Reco",
+	  "namespace": "pdsp_det_reco"
+	}
       ]
     },
     "Near Detector Prototypes": {
@@ -86,11 +110,12 @@
         {
           "name": "ND 2x2 minerva",
           "namespace": "neardet-2x2-minerva"
-        }
+        },
+	{
+	  "name": "ND TMS",
+	  "namespace": "neardet-lar-tms"
+	}
       ]
-    },
-    "ProtoDUNE-SP": {
-      "categories": []
     }
   }
 }
