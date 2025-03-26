@@ -31,7 +31,7 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
   const { toast } = useToast();
 
   // Ref to keep track of the last selected saved search
-  const savedSearchRef = useRef<{name: string, tab: string, category: string} | null>(null);
+  //const savedSearchRef = useRef<{name: string, tab: string, category: string} | null>(null);
 
   // Cleanup interval on unmount
   useEffect(() => {
@@ -44,11 +44,10 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
 
   // Reset category when tab changes
   useEffect(() => {
-    if (!savedSearchRef.current || savedSearchRef.current.tab !== activeTab) {
-      setCategory('');
-    }
+    //if (!savedSearchRef.current || savedSearchRef.current.tab !== activeTab) {
+    //  setCategory('');
+    //}
   }, [activeTab]);
-
   // Initialize cooldown timer
   useEffect(() => {
     // const cooldownTimer = config.app.search.cooldownTime;
@@ -107,7 +106,7 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
       setIsLoading(false);
     }
   };
-
+  {/*
   const handleSavedSearchSelect = (searchName: string) => {
     const savedSearch = config.savedSearches.find(search => search.name === searchName);
     if (savedSearch) {
@@ -132,7 +131,7 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
       }
     }
   };
-
+  */};
   const getCategoryOptions = () => {
     return config.tabs[activeTab]?.categories.map(cat => cat.name) || [];
   };
@@ -182,7 +181,7 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
           )}
         </Button>
       </form>
-      
+      {/*
       <div className="flex space-x-2 items-center">
         <Label className="text-sm text-muted-foreground">Curated Searches:</Label>
         <Select onValueChange={handleSavedSearchSelect}>
@@ -201,6 +200,7 @@ export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) 
           </SelectContent>
         </Select>
       </div>
+    */}
     </div>
   );
 }
