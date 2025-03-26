@@ -21,7 +21,7 @@ interface SearchBarProps {
   onTabChange?: (tab: string) => void;
 }
 
-export function SearchBar({ onSearch, activeTab, onTabChange }: SearchBarProps) {
+export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarProps) {
   const [officialOnly, setOfficialOnly] = useState(false);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');
