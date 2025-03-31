@@ -86,6 +86,7 @@ class DatasetRequest(BaseModel):
     category: str
     tab: str
     officialOnly: bool
+    customMql: Optional[str] = None
 
 
 @app.post("/queryDatasets")
@@ -94,7 +95,7 @@ async def get_datasets(request: DatasetRequest) -> dict:
     Queries MetaCat for datasets based on user input.
 
     Args:
-        request: A DatasetRequest object with query, category, tab, and officialOnly fields.
+        request: A DatasetRequest object with query, category, tab, officialOnly, and optional customMql fields.
 
     Returns:
         A dictionary with a "success" key and value True if the query succeeds,
@@ -103,7 +104,17 @@ async def get_datasets(request: DatasetRequest) -> dict:
         HTTPException: If the query fails.
     """
     print('Received query:', request.query, request.category, request.tab, request.officialOnly)
-    result = metacat_api.get_datasets(request.query, request.category, request.tab, request.officialOnly)
+    if request.customMql:
+        print('Using custom MQL:', request.customMql)
+    
+    result = metacat_api.get_datasets(
+        request.query, 
+        request.category, 
+        request.tab, 
+        request.officialOnly,
+        request.customMql
+    )
+    
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["message"])
     return result

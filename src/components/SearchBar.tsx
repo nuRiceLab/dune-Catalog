@@ -14,9 +14,10 @@ import {
 import { Loader2 } from "lucide-react"
 import config from '@/config/config.json';
 import { isLoggedIn } from '@/lib/auth';
+import { Textarea } from "@/components/ui/textarea"
 
 interface SearchBarProps {
-  onSearch: (query: string, category: string, tab: string, officialOnly: boolean) => void;
+  onSearch: (query: string, category: string, tab: string, officialOnly: boolean, customMql?: string) => void;
   activeTab: string;
   onTabChange?: (tab: string) => void;
 }
@@ -25,6 +26,7 @@ export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarPro
   const [officialOnly, setOfficialOnly] = useState(false);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');
+  const [customMql, setCustomMql] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [cooldownTime, setCooldownTime] = useState(0);
   const cooldownInterval = useRef<NodeJS.Timeout | null>(null);
@@ -47,7 +49,11 @@ export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarPro
     //if (!savedSearchRef.current || savedSearchRef.current.tab !== activeTab) {
     //  setCategory('');
     //}
+    if (activeTab !== 'Other') {
+      setCustomMql('');
+    }
   }, [activeTab]);
+  
   // Initialize cooldown timer
   useEffect(() => {
     // const cooldownTimer = config.app.search.cooldownTime;
@@ -82,7 +88,17 @@ export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarPro
       });
       return;
     }
-    if (!category) {
+    
+    if (activeTab === 'Other') {
+      if (!customMql.trim()) {
+        toast({
+          variant: "destructive",
+          title: "MQL Required",
+          description: "Please enter an MQL query string.",
+        });
+        return;
+      }
+    } else if (!category) {
       toast({
         variant: "destructive",
         title: "Category Required",
@@ -93,7 +109,7 @@ export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarPro
 
     setIsLoading(true);
     try {
-      await onSearch(query, category, activeTab, officialOnly);
+      await onSearch(query, category, activeTab, officialOnly, customMql);
       setCooldownTime(config.app.search.cooldownTime);
     } catch (error) {
       console.error('Search failed:', error);
@@ -138,38 +154,49 @@ export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarPro
 
   return (
     <div className="space-y-4">
-      <form onSubmit={handleSubmit} className="flex space-x-2">
-        <Input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search..."
-          className="flex-grow"
-        />
-        <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select category"/>
-          </SelectTrigger>
-          <SelectContent>
-            {getCategoryOptions().map((option) => (
-              <SelectItem key={option} value={option}>
-                {option}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="official-switch"
-            checked={officialOnly}
-            onCheckedChange={setOfficialOnly}
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-2">
+        {activeTab === 'Other' ? (
+          <Textarea
+            value={customMql}
+            onChange={(e) => setCustomMql(e.target.value)}
+            placeholder="Enter MQL query..."
+            className="min-h-[100px] font-mono"
           />
-          <Label htmlFor="official-switch">Official</Label>
-        </div>
+        ) : (
+          <div className="flex space-x-2">
+            <Input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search..."
+              className="flex-grow"
+            />
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select category"/>
+              </SelectTrigger>
+              <SelectContent>
+                {getCategoryOptions().map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="official-switch"
+                checked={officialOnly}
+                onCheckedChange={setOfficialOnly}
+              />
+              <Label htmlFor="official-switch">Official</Label>
+            </div>
+          </div>
+        )}
         <Button
           type="submit"
           disabled={isLoading}
-          className="relative"
+          className="relative self-end"
         >
           <span className={`${isLoading ? 'invisible' : 'visible'}`}>
             Search

@@ -66,16 +66,19 @@ function sanitizeMQLQuery(query: string): string {
  * @param {string} category The category to search in.
  * @param {string} tab The tab to search in.
  * @param {boolean} officialOnly Whether to search for official datasets only.
+ * @param {string} customMql Optional custom MQL query to use directly.
  *
  * @returns {Promise<{ results: Dataset[], mqlQuery: string }>} A promise that resolves with an array of datasets and the MQL query.
  */
-export async function searchDataSets(query: string, category: string, tab: string, officialOnly: boolean): Promise<{ results: Dataset[], mqlQuery: string }> {
+export async function searchDataSets(query: string, category: string, tab: string, officialOnly: boolean, customMql?: string): Promise<{ results: Dataset[], mqlQuery: string }> {
   try {
     const token = getStoredToken();
     const sanitizedQuery = sanitizeMQLQuery(query);
+    // Don't sanitize custom MQL queries to preserve quotes and syntax
+    const sanitizedMql = customMql ? customMql.trim().slice(0, 2000) : undefined;
 
     const response = await axios.post<ApiResponse<Dataset>>(`${API_URL}/queryDatasets`, 
-      { query: sanitizedQuery, category, tab, officialOnly },
+      { query: sanitizedQuery, category, tab, officialOnly, customMql: sanitizedMql },
       { 
         headers: { Authorization: `Bearer ${token}` },
         timeout: API_TIMEOUT

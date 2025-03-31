@@ -8,7 +8,8 @@ import { DatasetTable } from '@/components/DatasetTable'
 import { searchDataSets, Dataset } from '@/lib/api'
 import config from '@/config/config.json';
 
-const tabs = Object.keys(config.tabs);
+// Add 'Other' to the tabs list for MQL queries
+const tabs = [...Object.keys(config.tabs), 'Other'];
 
 export default function Home() {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
@@ -27,10 +28,6 @@ export default function Home() {
     // Force a re-render after a short delay to ensure DOM is fully loaded
     setTimeout(() => setIsLoaded(true), 0)
   }, [])
-
-  useEffect(() => {
-    setResults([])
-  }, [activeTabIndex])
 
   useEffect(() => {
     setResults([])
@@ -57,9 +54,9 @@ export default function Home() {
     setActiveTabIndex(newIndex);
   };
 
-  const handleSearch = async (query: string, category: string, tab: string, officialOnly: boolean) => {
+  const handleSearch = async (query: string, category: string, tab: string, officialOnly: boolean, customMql?: string) => {
     try {
-      const { results } = await searchDataSets(query, category, tab, officialOnly);
+      const { results } = await searchDataSets(query, category, tab, officialOnly, customMql);
       setResults(results);
     } catch (error) {
       console.error('Search failed:', error);

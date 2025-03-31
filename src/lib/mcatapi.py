@@ -49,7 +49,7 @@ class MetaCatAPI:
             # If the login fails, return an error message
             return {"success": False, "message": str(e)}
 
-    def get_datasets(self, query_text, category, tab, official_only):
+    def get_datasets(self, query_text, category, tab, official_only, custom_mql=None):
         """
         Get datasets matching the given query parameters
 
@@ -58,47 +58,51 @@ class MetaCatAPI:
             category (str): The category to search in
             tab (str): The tab to search in
             official_only (bool): Whether to only search for official datasets
+            custom_mql (str, optional): Custom MQL query string to use directly
 
         Returns:
             A dictionary with a boolean "success" key and a list "results" key,
             or a string "message" key if the query fails.
         """
         try:
-            # Get the namespace based on tab and category from the consolidated config
-            tab_config = tabs_config.get(tab)
-            if not tab_config:
-                raise ValueError(f"No matching tab found: '{tab}'")
-            
-            category_config = next(
-                (cat for cat in tab_config['categories'] if cat['name'] == category),
-                None
-            )
-            if not category_config:
-                raise ValueError(f"No matching category found for tab '{tab}': '{category}'")
-            
-            namespace = category_config['namespace']
-            
-            # Construct the base MQL query
-            mql_query = f"datasets matching {namespace}:*"
+            # If custom MQL is provided, use it directly
+            if custom_mql:
+                mql_query = custom_mql
+            else:
+                # Get the namespace based on tab and category from the consolidated config
+                tab_config = tabs_config.get(tab)
+                if not tab_config:
+                    raise ValueError(f"No matching tab found: '{tab}'")
+                
+                category_config = next(
+                    (cat for cat in tab_config['categories'] if cat['name'] == category),
+                    None
+                )
+                if not category_config:
+                    raise ValueError(f"No matching category found for tab '{tab}': '{category}'")
+                
+                namespace = category_config['namespace']
+                
+                # Construct the base MQL query
+                mql_query = f"datasets matching {namespace}:*"
 
-            having_conditions = []
-            # Add search condition if query_text is provided
-            if query_text:
-                # Escape the query text for use in the MQL query
-                escaped_query = re.escape(query_text.replace("'", "\\'"))
-                # Add the search condition to the list of conditions
-                having_conditions.append(f"name ~* '(?i){escaped_query}'")
+                having_conditions = []
+                # Add search condition if query_text is provided
+                if query_text:
+                    # Escape the query text for use in the MQL query
+                    escaped_query = re.escape(query_text.replace("'", "\\'"))
+                    # Add the search condition to the list of conditions
+                    having_conditions.append(f"name ~* '(?i){escaped_query}'")
 
-            if official_only:
-                # Add the condition to search for official datasets
-                having_conditions.append("name ~* '(?i)official'")
+                if official_only:
+                    # Add the condition to search for official datasets
+                    having_conditions.append("name ~* '(?i)official'")
 
-            if having_conditions:
-                # Add the having clause to the MQL query
-                mql_query += " having " + " and ".join(having_conditions)
-            # # order it
-            # mql_query += "ordered"
-            print(mql_query)
+                if having_conditions:
+                    # Add the having clause to the MQL query
+                    mql_query += " having " + " and ".join(having_conditions)
+            
+            print(f"Executing MQL query: {mql_query}")
             # Execute the MQL query
             results = self.client.query(mql_query)
             # Convert the generator to a list
@@ -111,14 +115,14 @@ class MetaCatAPI:
                     "creator": result.get("creator", ""),
                     "created": format_timestamp(result.get("created_timestamp", "")),
                     "files": result.get("file_count", 0),
-                    "namespace": namespace
+                    "namespace": result.get("namespace", "")
                 }
                 for result in raw_results
             ]
             return {
                 "success": True, 
                 "results": formatted_results,
-                # "mqlQuery": mql_query  # Include the MQL query in the response
+                "mqlQuery": mql_query  # Include the MQL query in the response
             }
         except Exception as e:
             return {"success": False, "message": str(e)}
