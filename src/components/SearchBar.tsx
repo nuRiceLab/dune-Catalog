@@ -49,8 +49,14 @@ export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarPro
     //if (!savedSearchRef.current || savedSearchRef.current.tab !== activeTab) {
     //  setCategory('');
     //}
+    // Reset search form when tab changes
+    setCategory('');
+    setQuery('');
     if (activeTab !== 'Other') {
       setCustomMql('');
+    } else {
+      // Reset regular search fields when switching to Other tab
+      setOfficialOnly(false);
     }
   }, [activeTab]);
   
