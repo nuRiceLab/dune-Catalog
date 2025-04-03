@@ -112,7 +112,7 @@ export function LoginModal({ isLoggedIn, setIsLoggedIn }: LoginModalProps) {
                     <DialogHeader>
                         <DialogTitle>Login</DialogTitle>
                         <DialogDescription>
-                            Please enter your username and password for your MetaCat Account.
+                            Please enter your username and password for your Fermi Services account.
                         </DialogDescription>
                     </DialogHeader>
                     <Form {...form}>
