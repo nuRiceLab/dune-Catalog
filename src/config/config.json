@@ -41,8 +41,8 @@
           "name": "Keep-up reco",
           "namespace": "hd-protodune-det-reco"
         },
-        {
-          "name": "MC",
+	{
+          "name": "Data and MC",
           "namespace": "hd-protodune"
         },
 	{
@@ -58,7 +58,7 @@
           "namespace": "vd-protodune-det-reco"
         },
         {
-          "name": "MC",
+          "name": "Data and MC",
           "namespace": "vd-protodune"
         },
 	{ 
