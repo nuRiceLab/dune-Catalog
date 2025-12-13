@@ -89,7 +89,7 @@
           "name": "ND 2x2 charge",
           "namespace": "neardet-2x2-lar-charge"
         },
-        {
+	{
           "name": "ND 2x2 light",
           "namespace": "neardet-2x2-lar-light"
         },
@@ -97,6 +97,14 @@
           "name": "ND 2x2 minerva",
           "namespace": "neardet-2x2-minerva"
         },
+	{ 
+	  "name": "ND 2x2 lar",
+	  "namespace": "neardet-2x2-lar"
+        },
+        {
+	  "name" : "ND-lar-tms-sand",
+	  "namespace": "neardet-lar-tms-sand"
+	},  
 	{
 	  "name": "ND TMS",
 	  "namespace": "neardet-lar-tms"
