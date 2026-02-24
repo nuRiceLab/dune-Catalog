@@ -42,11 +42,18 @@ class MetaCatAPI:
 
     def login(self, username, password):
         try:
-            # Attempt to log in to MetaCat using the provided username and password
-            token = self.client.login_password(username, password)
-            return {"success": True, "token": token}
+            logger.info(f"Attempting login for user: {username}")
+            logger.info(f"Server URL: {os.getenv('METACAT_SERVER_URL')}")
+            logger.info(f"Auth URL: {os.getenv('METACAT_AUTH_SERVER_URL')}")
+            authenticated_user, expiration = self.client.login_password(username, password)
+            logger.info(f"Login successful for: {authenticated_user}")
+            return {
+                "success": True,
+                "token": authenticated_user,
+                "expiration": format_timestamp(expiration)
+            }
         except Exception as e:
-            # If the login fails, return an error message
+            logger.error(f"Login failed: {type(e).__name__}: {str(e)}", exc_info=True)
             return {"success": False, "message": str(e)}
 
     def get_datasets(self, query_text, category, tab, official_only, custom_mql=None):

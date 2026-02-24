@@ -50,3 +50,5 @@ next-env.d.ts
 /dune-data-catalog
 /path
 src/config/dataset_access_stats.json
+venv/
+src/backend/__pycache__/

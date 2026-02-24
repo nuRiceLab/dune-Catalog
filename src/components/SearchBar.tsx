@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
 import config from '@/config/config.json';
-import { isLoggedIn } from '@/lib/auth';
+// import { isLoggedIn } from '@/lib/auth';
 import { Textarea } from "@/components/ui/textarea"
 
 interface SearchBarProps {
@@ -78,14 +78,15 @@ export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarPro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!isLoggedIn()) {
-      toast({
-        variant: "destructive",
-        title: "Authentication Required",
-        description: "Please sign in to perform searches.",
-      });
-      return;
-    }
+    // Commented out while the metacat auth server is down
+    // if (!isLoggedIn()) {
+    //   toast({
+    //     variant: "destructive",
+    //     title: "Authentication Required",
+    //     description: "Please sign in to perform searches.",
+    //   });
+    //   return;
+    // }
     if (cooldownTime > 0) {
       toast({
         variant: "destructive",
