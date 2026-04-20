@@ -45,9 +45,13 @@
           "name": "MC",
           "namespace": "hd-protodune"
         },
-	{
-         "name": "HD Coldbox",
-	 "namespace": "hd-coldbox"
+        {
+          "name": "HD Coldbox",
+          "namespace": "hd-coldbox"
+        },
+        {
+          "name": "Raw data",
+          "namespace": "hd-protodune"
         }
       ]
     },
@@ -61,26 +65,34 @@
           "name": "MC",
           "namespace": "vd-protodune"
         },
-	{ 
+        {
           "name": "VD Coldbox top",
-	  "namespace": "vd-coldbox-top"
-	},
-	{
-	  "name": "VD Coldbox bottom",
-	  "namespace": "vd-coldbox-bottom"
-	}
+          "namespace": "vd-coldbox-top"
+        },
+        {
+          "name": "VD Coldbox bottom",
+          "namespace": "vd-coldbox-bottom"
+        },
+        {
+          "name": "Raw data ",
+          "namespace": "vd-protodune"
+        }
       ]
     },
     "ProtoDUNE-SP": {
       "categories": [
         {
-	  "name": "ProtoDUNE-SP MC",
-          "namespace": "pdsp_mc_reco"	  
+          "name": "ProtoDUNE-SP MC",
+          "namespace": "pdsp_mc_reco"
         },
-	{
-	  "name": "ProtoDUNE-SP Data Reco",
-	  "namespace": "pdsp_det_reco"
-	}
+        {
+          "name": "ProtoDUNE-SP Data Reco",
+          "namespace": "pdsp_det_reco"
+        },
+        {
+          "name": "Raw data",
+          "namespace": "protodune-sp"
+        }
       ]
     },
     "Near Detector Prototypes": {
@@ -89,7 +101,7 @@
           "name": "ND 2x2 charge",
           "namespace": "neardet-2x2-lar-charge"
         },
-	{
+        {
           "name": "ND 2x2 light",
           "namespace": "neardet-2x2-lar-light"
         },
@@ -97,18 +109,18 @@
           "name": "ND 2x2 minerva",
           "namespace": "neardet-2x2-minerva"
         },
-	{ 
-	  "name": "ND 2x2 lar",
-	  "namespace": "neardet-2x2-lar"
+        {
+          "name": "ND 2x2 lar",
+          "namespace": "neardet-2x2-lar"
         },
         {
-	  "name" : "ND-lar-tms-sand",
-	  "namespace": "neardet-lar-tms-sand"
-	},  
-	{
-	  "name": "ND TMS",
-	  "namespace": "neardet-lar-tms"
-	}
+          "name": "ND-lar-tms-sand",
+          "namespace": "neardet-lar-tms-sand"
+        },
+        {
+          "name": "ND TMS",
+          "namespace": "neardet-lar-tms"
+        }
       ]
     }
   }
