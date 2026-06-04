@@ -1,51 +1,4430 @@
 {
   "fardet-hd/fardet-hd__fd_mc_2023a__hit-reconstructed__v09_78_01d01__standard_reco1_dune10kt_1x2x6__prodgenie_nu_dune10kt_1x2x6__out1__v1_official": {
-    "timesAccessed": 16,
-    "lastAccessed": "2025-02-27T20:15:27.914071",
+    "timesAccessed": 45,
+    "lastAccessed": "2026-06-03T06:51:01.568092",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Houston, Texas",
+      "Unknown Location",
+      "Warwickshire, England",
+      "Mato Grosso",
+      "Fargo, North Dakota"
+    ]
+  },
+  "fardet-hd/fardet-hd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_anu_1x2x6__prodgenie_anu_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 13,
+    "lastAccessed": "2026-06-03T06:45:37.910879",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Houston, Texas",
+      "Campinas, S\u00e3o Paulo",
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_nu_1x2x6__prodgenie_nu_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 17,
+    "lastAccessed": "2026-04-20T13:27:45.396375",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Houston, Texas",
+      "Harris County, Texas",
+      "Unknown Location",
+      "Campinas, S\u00e3o Paulo",
+      "Shropshire, England",
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "fardet-hd/fardet-hd__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_anu_1x2x6__prodgenie_anue_dune10kt_1x2x6__out1__v2_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-06-03T16:00:44.112467",
+    "lastLocation": "Corvallis, Oregon",
+    "locations": [
+      "Houston, Texas",
+      "Unknown Location",
+      "Corvallis, Oregon"
+    ]
+  },
+  "fardet-hd/fardet-hd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_nu_1x2x6__prodgenie_nue_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 14,
+    "lastAccessed": "2026-04-21T08:42:58.747038",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Houston, Texas",
+      "Unknown Location",
+      "Shropshire, England",
+      "Milan, Lombardy"
+    ]
+  },
+  "fardet-hd/fardet-hd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_anu_1x2x6__prodgenie_anue_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 4,
+    "lastAccessed": "2026-06-03T06:49:11.087997",
     "lastLocation": "Unknown Location",
     "locations": [
       "Houston, Texas",
       "Unknown Location"
     ]
   },
-  "fardet-hd/fardet-hd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_anu_1x2x6__prodgenie_anu_dune10kt_1x2x6__out1__v1_official": {
+  "fardet-hd/fardet-hd__le_mc_2024a__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodbackground_radiological_decay0_cavernneutrons_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 17,
+    "lastAccessed": "2026-05-24T20:20:49.922198",
+    "lastLocation": "Durham, North Carolina",
+    "locations": [
+      "Unknown Location",
+      "Harris County, Texas",
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes",
+      "Houston, Texas",
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+      "Kane County, Illinois",
+      "DuPage County, Illinois",
+      "Durham, North Carolina"
+    ]
+  },
+  "pdsp_mc_reco/protodune-sp__full-reconstructed__v09_17_01__out1__MC_2GeV_sce_datadriven_set1_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-05-27T09:05:11.393230",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Houston, Texas",
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_nu_1x2x6__prodgenie_nu_dune10kt_1x2x6__out1__validation": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-07-31T18:31:16.116685",
+    "lastLocation": "DuPage County, Illinois",
+    "locations": [
+      "Unknown Location",
+      "DuPage County, Illinois"
+    ]
+  },
+  "fardet-vd/fardet-vd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__reco2_dunevd10kt_anu_1x8x6_3view_30deg_geov3__prodgenie_anu_dunevd10kt_1x8x6_3view_30deg__out1__v1_official": {
+    "timesAccessed": 17,
+    "lastAccessed": "2026-05-14T23:38:05.910767",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Houston, Texas",
+      "Corvallis, Oregon",
+      "Oxford, Mississippi",
+      "Durham, North Carolina",
+      "Suffolk County, New York"
+    ]
+  },
+  "vd-protodune/vd-protodune__simulated__v09_88_00d00__protodunevd_refactored_g4_stage1__gen_protodunevd_cosmics__Xedoping_validation": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-03-26T08:48:50.064108",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune__full-reconstructed__v09_88_00d00__protodunevd_reco__gen_protodunevd_electron_1GeV__out1__e1gev_validation": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-03-26T08:49:26.961618",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodbackground_radiological_decay0_dune10kt_1x2x6_lateralAPA__out1__v1_official": {
+    "timesAccessed": 7,
+    "lastAccessed": "2026-01-13T22:44:58.826194",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes"
+    ]
+  },
+  "pdsp_mc_reco/PDSPProd4a_MC_1GeV_reco1_sce_datadriven_v1_00": {
+    "timesAccessed": 21,
+    "lastAccessed": "2026-06-04T14:29:41.343274",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Houston, Texas",
+      "Unknown Location",
+      "Valencia, Valencian Community"
+    ]
+  },
+  "pdsp_mc_reco/protodune-sp__PDSPProd2025a__full-reconstructed__v10_03_01d01__protoDUNE_refactored_reco_35ms_sce_datadriven_stage1__pdsp_0.5GeV_h4input_cosmics__out1__v1_official": {
     "timesAccessed": 4,
-    "lastAccessed": "2025-02-26T22:09:50.264852",
+    "lastAccessed": "2026-05-27T09:38:48.948575",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Harris County, Texas",
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmics_runchunk0_v1_official": {
+    "timesAccessed": 8,
+    "lastAccessed": "2026-04-17T02:12:58.466089",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Fort Collins, Colorado"
+    ]
+  },
+  "hd-protodune/hd-protodune": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-09-11T15:11:05.439444",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_0": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-06-05T14:54:28.568258",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Ain, Auvergne-Rh\u00f4ne-Alpes"
+    ]
+  },
+  "hd-protodune/hd-protodune__full-reconstructed__v09_85_00d00__standard_reco_protodunehd__prod_beam_cosmics_1GeV_protodunehd__out1__sce_OFF_v1_official": {
+    "timesAccessed": 12,
+    "lastAccessed": "2026-05-11T16:38:35.386653",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Mato Grosso"
+    ]
+  },
+  "fardet-hd/fardet-hd__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_anu_1x2x6__prodgenie_anu_dune10kt_1x2x6__out1__v2_official": {
+    "timesAccessed": 6,
+    "lastAccessed": "2026-04-20T22:55:35.041426",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Harris County, Texas",
+      "Warwickshire, England",
+      "Fargo, North Dakota",
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/nu_dune10kt_1x2x6_1061_0_20230822T200326Z_gen_g4_detsim_hitreco.root": {
+    "timesAccessed": 6,
+    "lastAccessed": "2025-04-03T19:51:55.711542",
     "lastLocation": "Houston, Texas",
     "locations": [
       "Houston, Texas"
     ]
   },
-  "fardet-hd/fardet-hd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_nu_1x2x6__prodgenie_nu_dune10kt_1x2x6__out1__v1_official": {
+  "fardet-vd/fardet-vd__le_mc_2024a__hit-reconstructed__v09_91_04d00__standard_reco1_dunevd10kt_1x8x14_3view_30deg__prodbackground_radiological_decay0_dunevd10kt_1x8x14__out1__v1_official": {
+    "timesAccessed": 11,
+    "lastAccessed": "2026-01-19T14:38:49.120904",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "M\u00e9tropole de Lyon, Auvergne-Rh\u00f4ne-Alpes",
+      "Houston, Texas",
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes"
+    ]
+  },
+  "fardet-hd/fardet-hd__full-reconstructed__v09_85_00d00__reco2_atmos_dune10kt_1x2x6_geov5__prodgenie_atmnu_max_weighted_randompolicy_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 21,
+    "lastAccessed": "2026-05-27T23:22:25.774430",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "M\u00e9tropole de Lyon, Auvergne-Rh\u00f4ne-Alpes",
+      "Campinas, S\u00e3o Paulo",
+      "Warwickshire, England",
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/atmnu_max_weighted_randompolicy_dune10kt_1x2x6_1453_0_20231024T144032Z_gen_g4_detsim_hitreco.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-04-03T19:36:47.469776",
+    "lastLocation": "Houston, Texas",
+    "locations": [
+      "Houston, Texas"
+    ]
+  },
+  "usertests/caf_3170_20240910T101158Z.root": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-04-03T19:43:28.094624",
+    "lastLocation": "Houston, Texas",
+    "locations": [
+      "Unknown Location",
+      "Houston, Texas"
+    ]
+  },
+  "usertests/caf_fd_hd_atmo_3174_20240910T161912Z.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-04-03T19:49:24.965475",
+    "lastLocation": "Houston, Texas",
+    "locations": [
+      "Houston, Texas"
+    ]
+  },
+  "usertests/caf_3170_20240910T101213Z.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-04-03T19:49:37.949995",
+    "lastLocation": "Houston, Texas",
+    "locations": [
+      "Houston, Texas"
+    ]
+  },
+  "hd-coldbox/hd-coldbox_31358": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-04-09T09:51:35.550890",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__root-tuple__v09_85_00d00__cafmaker_atmos_dune10kt_1x2x6_runreco-nuenergy-nuangular_geov5__prodgenie_atmnu_max_weighted_randompolicy_dune10kt_1x2x6__physics__v1_official": {
+    "timesAccessed": 14,
+    "lastAccessed": "2026-06-03T22:32:21.424900",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Harris County, Texas",
+      "Kane County, Illinois",
+      "Unknown Location",
+      "Campinas, S\u00e3o Paulo",
+      "Fargo, North Dakota"
+    ]
+  },
+  "hd-protodune/hd-protodune_raw_29424": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-05-27T13:57:56.323106",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "DuPage County, Illinois",
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_raw_29421": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-04-15T17:40:09.899549",
+    "lastLocation": "DuPage County, Illinois",
+    "locations": [
+      "DuPage County, Illinois"
+    ]
+  },
+  "fardet-vd/fardet-vd__hit-reconstructed__v09_91_04d00__standard_reco1_dunevd10kt_1x8x14_3view_30deg__prodmarley_nue_cc_flat_dunevd10kt_1x8x14_3view_30deg__out1__official": {
+    "timesAccessed": 10,
+    "lastAccessed": "2026-01-13T07:36:39.277446",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes",
+      "Suffolk County, New York",
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+      "Raiguer, Balearic Islands"
+    ]
+  },
+  "hd-protodune-det-reco/calcuttj_keepup_cal_cal_062024_ntuple_2370": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-04-16T17:33:15.233278",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/1519allmcfiles": {
     "timesAccessed": 4,
-    "lastAccessed": "2025-02-26T22:08:10.337115",
+    "lastAccessed": "2026-04-20T13:27:12.132792",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-coldbox-bottom/vd_coldbox_bottom.run00012461": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-04-18T07:12:47.258195",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune-detsim_2251": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-02-03T16:45:39.331161",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__bsm_raw_oct2024__raw__cosmics__v1_official": {
+    "timesAccessed": 13,
+    "lastAccessed": "2026-05-14T22:05:09.173387",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Kane County, Illinois",
+      "Unknown Location",
+      "Houston, Texas",
+      "Mato Grosso"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmic_runchunk19_v1_official": {
+    "timesAccessed": 22,
+    "lastAccessed": "2026-06-03T16:42:57.859153",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Houston, Texas",
+      "Unknown Location",
+      "Bunky\u014d",
+      "Fort Collins, Colorado"
+    ]
+  },
+  "fardet-vd/fardet-vd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__reco2_dunevd10kt_anu_1x8x6_3view_30deg_geov3__prodgenie_anu_numu2nue_nue2nutau_dunevd10kt_1x8x6_3view_30deg__out1__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-08-12T02:38:47.416317",
+    "lastLocation": "Corvallis, Oregon",
+    "locations": [
+      "Houston, Texas",
+      "Unknown Location",
+      "Corvallis, Oregon"
+    ]
+  },
+  "fardet-hd/fardet-hd__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_anu_1x2x6__prodgenie_anutau_dune10kt_1x2x6__out1__v2_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-05-07T18:41:50.989189",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Houston, Texas",
+      "Unknown Location"
+    ]
+  },
+  "pdsp_mc_reco/protodune-sp__full-reconstructed__v09_17_01__out1__MC_2GeV_sce_off_set1_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-05-08T15:14:23.456948",
+    "lastLocation": "Harris County, Texas",
+    "locations": [
+      "Houston, Texas",
+      "Harris County, Texas"
+    ]
+  },
+  "hd-protodune/hd-protodune_24165": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-04-17T15:05:07.010629",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmic_runchunk30_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-04-17T02:13:47.740362",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/w6266s1p1-QMUL": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-04-21T14:22:44.237102",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_35860": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-04-21T14:22:44.240490",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_32941": {
+    "timesAccessed": 4,
+    "lastAccessed": "2025-04-25T01:32:30.039291",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Harris County, Texas",
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/1533allmcfiles": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-04-25T13:38:45.134088",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodmarley_nue_cc_flat_radiological_decay0_dune10kt_1x2x6_lateralAPA__out1__v1_official": {
+    "timesAccessed": 6,
+    "lastAccessed": "2026-01-13T07:34:38.049727",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes",
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_32933": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-04-25T20:57:20.951420",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_26574": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-04-25T20:55:44.994665",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_32970": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-04-28T15:59:12.752940",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_32938": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-04-29T19:29:48.637791",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/hit-reconstructed__v09_91_04d00__standard_reco1_dunevd10kt_1x8x14_3view_30deg__prodmarley_nue_cc_flat_dunevd10kt_1x8x14_3view_30deg__physics__v1_official": {
+    "timesAccessed": 6,
+    "lastAccessed": "2026-01-09T15:45:33.760799",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes",
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+      "Madrid, Community of Madrid",
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__hit-reconstructed__v09_91_04d00__standard_reco1_dunevd10kt_1x8x14_3view_30deg__prodmarley_nue_cc_flat_radiological_decay0_dunevd10kt_1x8x14_3view_30deg__out1__v1_official": {
+    "timesAccessed": 31,
+    "lastAccessed": "2026-01-13T07:37:36.271242",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes",
+      "Unknown Location",
+      "Harris County, Texas",
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+      "Ain, Auvergne-Rh\u00f4ne-Alpes",
+      "Suffolk County, New York",
+      "Kane County, Illinois",
+      "New York, New York",
+      "Raiguer, Balearic Islands",
+      "Madrid, Community of Madrid"
+    ]
+  },
+  "fardet-vd/fardet-vd__le_mc_2024a__hit-reconstructed__v09_91_04d00__standard_reco1_dunevd10kt_1x8x14_3view_30deg__prodmarley_nue_es_flat_dunevd10kt_1x8x14_3view_30deg__out1__v1_official": {
+    "timesAccessed": 9,
+    "lastAccessed": "2026-01-13T07:45:16.968868",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes",
+      "Unknown Location",
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+      "Corvallis, Oregon"
+    ]
+  },
+  "fardet-vd/fardet-vd__le_mc_2024a__hit-reconstructed__v09_91_04d00__standard_reco1_dunevd10kt_1x8x14_3view_30deg__prodmarley_nue_es_flat_radiological_decay0_dunevd10kt_1x8x14_3view_30deg__out1__v1_official": {
+    "timesAccessed": 12,
+    "lastAccessed": "2026-01-13T07:50:20.810723",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes",
+      "Unknown Location",
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+      "Corvallis, Oregon"
+    ]
+  },
+  "fardet-hd/fardet-hd__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodmarley_nue_cc_flat_dune10kt_1x2x6__out1__official": {
+    "timesAccessed": 10,
+    "lastAccessed": "2026-05-19T21:43:25.148007",
+    "lastLocation": "Rapid City, South Dakota",
+    "locations": [
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes",
+      "Unknown Location",
+      "DuPage County, Illinois",
+      "Fargo, North Dakota",
+      "Rapid City, South Dakota"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodmarley_nue_es_flat_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 8,
+    "lastAccessed": "2026-05-24T20:20:19.619736",
+    "lastLocation": "Durham, North Carolina",
+    "locations": [
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes",
+      "Unknown Location",
+      "DuPage County, Illinois",
+      "Kane County, Illinois",
+      "Durham, North Carolina"
+    ]
+  },
+  "fardet-hd/fardet-hd__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodmarley_nue_cc_flat_radiological_decay0_dune10kt_1x2x6_centralAPA__out1__v1_official": {
+    "timesAccessed": 10,
+    "lastAccessed": "2026-05-24T16:35:04.116460",
+    "lastLocation": "Durham, North Carolina",
+    "locations": [
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes",
+      "Unknown Location",
+      "Dumfries and Galloway, Scotland",
+      "Ain, Auvergne-Rh\u00f4ne-Alpes",
+      "Madrid, Community of Madrid",
+      "Rapid City, South Dakota",
+      "Durham, North Carolina"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodmarley_nue_es_flat_radiological_decay0_dune10kt_1x2x6_centralAPA__out1__v1_official": {
+    "timesAccessed": 6,
+    "lastAccessed": "2026-01-12T17:16:53.898648",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes",
+      "Unknown Location",
+      "Kane County, Illinois",
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodmarley_nue_es_flat_radiological_decay0_dune10kt_1x2x6_lateralAPA__out1__v1_official": {
+    "timesAccessed": 5,
+    "lastAccessed": "2026-01-13T07:33:25.767582",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes",
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodbackground_radiological_decay0_dune10kt_1x2x6_centralAPA__out1__v1_official": {
+    "timesAccessed": 7,
+    "lastAccessed": "2026-02-02T02:13:54.165310",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Villeurbanne, Auvergne-Rh\u00f4ne-Alpes",
+      "Unknown Location",
+      "Corvallis, Oregon",
+      "Kane County, Illinois"
+    ]
+  },
+  "usertests/output-test-w6390s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-04-30T21:16:47.739181",
     "lastLocation": "Houston, Texas",
     "locations": [
       "Houston, Texas"
     ]
   },
-  "fardet-hd/fardet-hd__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_anu_1x2x6__prodgenie_anue_dune10kt_1x2x6__out1__v2_official": {
-    "timesAccessed": 1,
-    "lastAccessed": "2025-02-26T22:08:09.651594",
-    "lastLocation": "Houston, Texas",
+  "higuera/fardet-hd__fd_mc_he_2023a__mc__hit-reconstructed__prodgenie_atmnu_max_weighted_randompolicy_dune10kt_1x2x6.fcl__v09_79_00d02__preliminary": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-04-30T23:46:56.001745",
+    "lastLocation": "Unknown Location",
     "locations": [
-      "Houston, Texas"
+      "Unknown Location"
     ]
   },
-  "fardet-hd/fardet-hd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_nu_1x2x6__prodgenie_nue_dune10kt_1x2x6__out1__v1_official": {
-    "timesAccessed": 1,
-    "lastAccessed": "2025-02-26T22:08:18.707377",
-    "lastLocation": "Houston, Texas",
+  "hd-protodune-det-reco/hd-protodune-det-reco_bsm_2025a-w6521s1p1": {
+    "timesAccessed": 5,
+    "lastAccessed": "2025-05-05T09:35:02.503108",
+    "lastLocation": "Unknown Location",
     "locations": [
-      "Houston, Texas"
+      "Unknown Location"
     ]
   },
-  "fardet-hd/fardet-hd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_anu_1x2x6__prodgenie_anue_dune10kt_1x2x6__out1__v1_official": {
+  "hd-protodune-det-reco/hd-protodune-det-reco_bsm_2025a-w6521s1p1n002": {
     "timesAccessed": 1,
-    "lastAccessed": "2025-02-26T22:09:43.323299",
-    "lastLocation": "Houston, Texas",
+    "lastAccessed": "2025-05-02T16:38:11.351322",
+    "lastLocation": "Unknown Location",
     "locations": [
-      "Houston, Texas"
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune-det-reco_bsm_2025a-w6521s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-02T19:15:24.927351",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_32946": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-03T00:49:46.624268",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_32904": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-03T00:57:18.603486",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_32896": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-03T01:03:10.791183",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune-det-reco_bsm_2025a-w6627s1p1": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-05-05T08:35:18.126914",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune-det-reco_bsm_2025a-w6627s1p1n002": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-05T08:35:12.027396",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune-det-reco_bsm_2025a-w6620s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-05T08:40:29.907490",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_29390": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-06T00:03:05.717261",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_32766": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-06T01:15:30.658594",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__root-tuple__v09_91_02d01__cafmaker_dunevd10kt_1x8x6_3view_30deg_runreco-nuenergy_geov3__prodgenie_anu_numu2nue_nue2nutau_dunevd10kt_1x8x6_3view_30deg__physics__v1_official": {
+    "timesAccessed": 4,
+    "lastAccessed": "2026-04-15T13:24:50.640282",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Harris County, Texas",
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune__full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__physics__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-03-12T03:32:52.378729",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Harris County, Texas",
+      "Unknown Location"
+    ]
+  },
+  "usertests/reco2_w_lbl_model_6519-w6519s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-08T15:15:37.817309",
+    "lastLocation": "Harris County, Texas",
+    "locations": [
+      "Harris County, Texas"
+    ]
+  },
+  "usertests/fdvd_optimistic_bg-w6804s1p1": {
+    "timesAccessed": 5,
+    "lastAccessed": "2025-05-11T17:08:59.949678",
+    "lastLocation": "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/fdvd_optimistic_bg-w6804s1p1n001": {
+    "timesAccessed": 4,
+    "lastAccessed": "2025-05-11T15:23:07.375882",
+    "lastLocation": "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/pointing_fdvd_es-w6811s1p1": {
+    "timesAccessed": 7,
+    "lastAccessed": "2025-05-11T18:36:23.396836",
+    "lastLocation": "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/pointing_fdvd_es-w6811s1p1n001": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-05-11T17:09:23.941674",
+    "lastLocation": "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/fdvd_optimistic_bg-w6843s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-11T17:21:15.490467",
+    "lastLocation": "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/fdvd_optimistic_bg-w6847s1p1n001": {
+    "timesAccessed": 4,
+    "lastAccessed": "2025-05-28T22:10:04.740545",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+      "Unknown Location"
+    ]
+  },
+  "usertests/fdvd_optimistic_bg-w6847s1p1": {
+    "timesAccessed": 7,
+    "lastAccessed": "2025-05-28T22:10:36.799699",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+      "Unknown Location",
+      "Dumfries and Galloway, Scotland"
+    ]
+  },
+  "usertests/fdvd_marley_es_optimistic_bg-w6876s1p1": {
+    "timesAccessed": 4,
+    "lastAccessed": "2025-07-11T13:59:05.544771",
+    "lastLocation": "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_nu_1x2x6__prodgenie_nu_dune10kt_1x2x6__out1__v2_official": {
+    "timesAccessed": 13,
+    "lastAccessed": "2026-04-14T14:01:20.799800",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "ehn1-beam-np04/calcuttj_ehn1_np04_6421_merged-w6443s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-14T19:00:27.073268",
+    "lastLocation": "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo"
+    ]
+  },
+  "vd-protodune/vd-protodune__detector-simulated__v09_88_00d00__protodunevd_refactored_detsim_pureAr__gen_protodunevd_cosmics__pureAr_validation": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-05-16T12:18:09.593384",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune__simulated__v09_88_00d00__protodunevd_refactored_g4_stage2_pureAr__gen_protodunevd_cosmics__pureAr_validation": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-05-16T11:51:53.173049",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune__full-reconstructed__v09_88_00d00__protodunevd_reco__gen_protodunevd_cosmics__out1__pureAr_validation": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-16T12:01:32.152093",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/calcuttj_ehn1_np04_6308_merged-w6458s1p1": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-05-16T15:50:00.242405",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/calcuttj_ehn1_np04_6308_merged-w6458s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-16T15:49:33.516627",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "fardet-hd/fardet-hd__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_nu_1x2x6__prodgenie_nue_dune10kt_1x2x6__out1__v2_official": {
+    "timesAccessed": 7,
+    "lastAccessed": "2026-03-26T16:28:17.682836",
+    "lastLocation": "Kane County, Illinois",
+    "locations": [
+      "Unknown Location",
+      "Kane County, Illinois"
+    ]
+  },
+  "fardet-hd/fardet-hd-caf_3187": {
+    "timesAccessed": 4,
+    "lastAccessed": "2025-08-12T02:16:23.992585",
+    "lastLocation": "Corvallis, Oregon",
+    "locations": [
+      "Campinas, S\u00e3o Paulo",
+      "Unknown Location",
+      "Fargo, North Dakota",
+      "Corvallis, Oregon"
+    ]
+  },
+  "fardet-hd/fardet-hd-caf_3191": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-19T13:01:44.332729",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "fardet-hd/fardet-hd__root-tuple__v09_91_02d01__cafmaker_dune10kt_1x2x6_runreco-nuenergy_geov5__prodgenie_nu_dune10kt_1x2x6__physics__v1_official": {
+    "timesAccessed": 19,
+    "lastAccessed": "2026-04-15T13:01:32.384717",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Campinas, S\u00e3o Paulo",
+      "Oxford, England",
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-minerva/mx2_numib_raw_run0_prod_a": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-19T16:42:14.176147",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-lar-charge/ndlar_2x2_charge_raw_run1_prod_f": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-19T17:41:15.063714",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-coldbox/hd-coldbox_32674": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-20T14:48:17.090899",
+    "lastLocation": "Ain, Auvergne-Rh\u00f4ne-Alpes",
+    "locations": [
+      "Ain, Auvergne-Rh\u00f4ne-Alpes"
+    ]
+  },
+  "fardet-vd/fardet-vd-reco_4901-w4901s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-21T22:07:52.916592",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/fardet-vd-reco2-ritm2440929_6859-w6859s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-22T16:12:17.128311",
+    "lastLocation": "Lancaster, England",
+    "locations": [
+      "Lancaster, England"
+    ]
+  },
+  "usertests/fardet-vd-reco2-ritm2440929_6927-w6927s1p1": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-05-22T17:20:12.133329",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/fardet-vd-reco2-ritm2440929_6927-w6927s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-22T17:20:05.212826",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/fardet-vd-reco2-ritm2440929_6868-w6868s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-22T20:50:30.790924",
+    "lastLocation": "Harris County, Texas",
+    "locations": [
+      "Harris County, Texas"
+    ]
+  },
+  "fardet-hd/fardet-hd__root-tuple__v09_91_02d01__cafmaker_dune10kt_1x2x6_runreco-nuenergy_geov5__prodgenie_anu_dune10kt_1x2x6__physics__v1_official": {
+    "timesAccessed": 10,
+    "lastAccessed": "2026-04-15T13:00:05.895432",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Campinas, S\u00e3o Paulo",
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-reco2_ritm1780305_nue_fhc_skip10000_limit5000_1601": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-25T22:12:03.310273",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-reco2ana_ritm1780305_anu_rhc_skip10000_limit5000_": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-25T22:12:05.105612",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-reco2_ritm1780305_anue_rhc_skip5000_limit10000_1607": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-25T22:12:07.577042",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-reco2_ritm1780305_anutau_rhc_skip5000_limit5000_1587": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-25T22:12:13.107497",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-reco2_ritm2032831_atmnu_skip25000_limit15000_2108": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-25T22:12:15.694441",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-reco2_ritm1780305_anutau_rhc_skip0_limit5000_1586": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-25T22:12:20.251436",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/duplicatesreco2ana1581": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-25T22:12:23.179102",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-reco2_ritm1780305_anu_rhc_skip0_end_1770": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-25T22:12:25.465960",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_nu_1x2x6__prodgenie_nue_dune10kt_1x2x6__out1__validation": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-25T22:17:28.728170",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-reco2ana_ritm1780305_nu_fhc_skip17000_end_1632": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-25T22:17:37.334032",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_anu_1x2x6__prodgenie_anu_dune10kt_1x2x6__out1__test": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-25T22:17:45.140106",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_raw_22965": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-05-27T00:37:50.373355",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_raw_27978": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-05-27T01:58:28.809977",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__root-tuple__v09_91_02d01__cafmaker_dune10kt_1x2x6_runreco-nuenergy_geov5__prodgenie_nutau_dune10kt_1x2x6__physics__v1_official": {
+    "timesAccessed": 6,
+    "lastAccessed": "2026-04-15T13:02:08.227482",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Campinas, S\u00e3o Paulo",
+      "Oxford, England",
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__full-reconstructed__v09_81_00d02__standard_reco2_dune10kt_nu_1x2x6__prodgenie_nutau_dune10kt_1x2x6__out1__v2_official": {
+    "timesAccessed": 7,
+    "lastAccessed": "2026-05-04T16:18:32.875253",
+    "lastLocation": "Corvallis, Oregon",
+    "locations": [
+      "Campinas, S\u00e3o Paulo",
+      "Unknown Location",
+      "Kane County, Illinois",
+      "Corvallis, Oregon"
+    ]
+  },
+  "fardet-vd/fardet-vd__hit-reconstructed__v09_91_04d00__standard_reco1_dunevd10kt_1x8x14_3view_30deg__prodmarley_nue_cc_flat_dunevd10kt_1x8x14_3view_30deg__out1__v1_official": {
+    "timesAccessed": 7,
+    "lastAccessed": "2025-08-18T14:19:58.316065",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Suffolk County, New York",
+      "Ain, Auvergne-Rh\u00f4ne-Alpes",
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__hit-reconstructed__v09_91_04d00__standard_reco1_dunevd10kt_1x8x14_3view_30deg__prodmarley_nue_cc_flat_radiological_decay0_dunevd10kt_1x8x14_3view_30deg__out1__validation": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-08-26T13:44:23.905902",
+    "lastLocation": "New York, New York",
+    "locations": [
+      "Suffolk County, New York",
+      "New York, New York"
+    ]
+  },
+  "ehn1-beam-np04/avizcaya_ehn1_np04_6482_step2_merge-w6544s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-13T16:50:57.156231",
+    "lastLocation": "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/avizcaya_ehn1_np04_6889_step2_merged-w6899s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-13T16:51:46.201127",
+    "lastLocation": "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/avizcaya_g4bl_mom5-w7584s1p1n006": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-13T17:07:56.461701",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/avizcaya_g4bl_mom5-w7583s1p1n007": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-13T17:08:50.965361",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/calcuttj_g4beamline-w7601s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-13T17:13:32.498244",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/calcuttj_g4beamline-w7603s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-13T17:14:47.626677",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/w7602s1p1-SURFSARA": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-13T17:15:11.764028",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/w7603s1p1-DUNE_US_FNAL_DISK_STAGE": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-13T17:15:19.972616",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/calcuttj_g4beamline-w7541s1p1n009": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-06-13T17:18:37.596760",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/calcuttj_g4beamline-w7604s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-13T17:15:53.212609",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/calcuttj_g4beamline-w7601s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-13T17:16:42.432978",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/calcuttj_g4beamline-w7604s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-13T17:17:23.932295",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/H4_v34b_5GeV_-27.7_1_396897_115_20250512T170045.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-13T17:17:56.732588",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/calcuttj_ehn1_np04_6421_merged-w6443s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-13T17:18:16.329725",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "vd-protodune-det-reco/w4979s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-16T11:23:18.911771",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_7GeV_period2_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-23T21:53:42.573640",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_1GeV_gain14_period1_v1_official": {
+    "timesAccessed": 4,
+    "lastAccessed": "2025-07-23T00:34:33.262450",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Mato Grosso"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune-det-reco_bsm_2025a-w6614s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-24T23:08:35.594106",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune__pdhd_data_bsm_reco2_2025a__full-reconstructed__v10_05_00d00__out1__v1_official": {
+    "timesAccessed": 4,
+    "lastAccessed": "2026-04-30T13:37:33.058444",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-lar-light/fsd_calibration_raw_run1_data_prod_04": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-25T16:49:24.504436",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-minerva/mx2_numib_reco_run1_standalone_prod_a_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-25T17:25:26.548649",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_7GeV_gain7_8_period2_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-09T17:40:53.783700",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "ehn1-beam-np04/H4_v34b_5GeV_-27.7_1_396898_0_20250512T170018.root": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-06-25T17:50:55.254646",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/H4_v34b_5GeV_-27.7_1_396898_101_20250512T170044.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-25T17:51:08.241862",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_negative7GeV_gain14_period1_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-25T17:55:56.703284",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_negative2GeV_gain14_period1_v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-07-29T16:44:50.155406",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "Unknown Location",
+      "Mato Grosso",
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_5GeV_gain14_period1_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-25T18:01:48.237232",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_2GeV_gain14_period1_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-25T18:07:16.082690",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_3GeV_gain14_period1_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-25T18:11:58.052737",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "ehn1-beam-np04/H4_v34b_1GeV_-27.7_009088_216118_94_20250607T143954.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-25T19:13:37.797778",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/H4_v34b_1GeV_-27.7_000053_216118_82_20250607T144323.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-25T19:13:54.192019",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/H4_v34b_1GeV_-27.7_009646_410164_33_20250610T142213.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-25T19:26:18.720278",
+    "lastLocation": "Campinas, S\u00e3o Paulo",
+    "locations": [
+      "Campinas, S\u00e3o Paulo"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_negative3GeV_gain14_period1_v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-06-26T20:43:56.289635",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_negative5GeV_gain14_period1_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-26T20:58:44.724638",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_7GeV_gain14_period2_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-26T21:18:36.098448",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_negative5GeV_gain7_8_period3_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-05-14T22:04:00.082673",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_negative1GeV_gain14_period1_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-26T21:37:02.734921",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_1GeV_gain14_period2_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-05-11T16:39:45.091447",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_negative1GeV_gain7_8_period2_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-26T21:43:04.170640",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_5GeV_gain7_8_period3_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-26T22:05:04.311108",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_negative1GeV_gain14_period2_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-26T22:07:45.252768",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_1GeV_gain7_8_period2_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-26T22:11:39.719204",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_1GeV_gain7_8_period3_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-06-26T22:24:21.662183",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_negative1GeV_gain7_8_period3_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-26T22:25:28.845688",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd-reco2-ritm2440929_7544-w7544s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-27T17:00:32.365466",
+    "lastLocation": "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo"
+    ]
+  },
+  "neardet-2x2-lar-charge/fsd_cosmics_raw_run1_prod_05_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-28T01:23:27.345217",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/pdhd_1gev_beam_cosmics_official_sce_e500_pandora_limit1000_skip0_1750": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-09T16:20:25.490575",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Mato Grosso",
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/pdhd_1gev_beam_cosmics_official_sce_e500_pandora_limit25000_skip39000_1768": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-06-30T02:10:58.679596",
+    "lastLocation": "Mato Grosso",
+    "locations": [
+      "Mato Grosso"
+    ]
+  },
+  "hd-protodune/pdhd_1gev_beam_cosmics_official_sce_off_pandora_limit1000_skip2000_1754": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-07-14T14:14:09.645119",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "Mato Grosso",
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "hd-protodune/hd-protodune__raw__physics__beam_2024_7GeV_gain14_period1_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-08-12T17:19:18.849828",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Mato Grosso",
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__full-reconstructed__v09_85_00d00__standard_reco_protodunehd_sce_E500__prod_beam_cosmics_1GeV_protodunehd__out1__v1_official": {
+    "timesAccessed": 5,
+    "lastAccessed": "2026-02-27T13:39:28.022880",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Mato Grosso",
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dunevd10kt_1x8x14_3view_30deg_prod2024__prodmarley_nue_cc_flat_dunevd10kt_1x8x14_3view_30deg__out1__v1_official": {
+    "timesAccessed": 22,
+    "lastAccessed": "2026-01-13T10:00:13.310921",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Madrid, Community of Madrid",
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo"
+    ]
+  },
+  "fardet-vd/le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dunevd10kt_1x8x14_3view_30deg_prod2024__prodmarley_nue_es_flat_dunevd10kt_1x8x14_3view_30deg__out1__v1_official": {
+    "timesAccessed": 8,
+    "lastAccessed": "2026-01-13T09:59:39.408194",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodmarley_nue_cc_flat_dune10kt_1x2x6__physics__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-01-09T15:24:29.029206",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "DuPage County, Illinois"
+    ]
+  },
+  "hd-protodune/pdhd_1gev_beam_cosmics_official_sce_off_reco_limit_end_skip64000_1782": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-10-09T17:51:32.365579",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo",
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/pdhd_1gev_beam_cosmics_official_sce_off_reco_limit1000_skip1000_1752": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-07-14T14:14:04.085828",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "ehn1-beam-np04/H4_v34b_1GeV_-27.7_1_394183_0_20250508T194009.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-07-14T14:14:40.891928",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "fardet-hd/fardet-hd__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodmarley_nue_es_flat_radiological_decay0_dune10kt_1x2x6_centralAPA__out1__validation": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-07-15T09:57:57.637507",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/w3809s1p1-MANCHESTER": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-07-15T13:43:26.217422",
+    "lastLocation": "Milan, Lombardy",
+    "locations": [
+      "Milan, Lombardy"
+    ]
+  },
+  "fardet-hd/w3843s1p1-CERN_PDUNE_EOS": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-07-15T13:43:50.602881",
+    "lastLocation": "Milan, Lombardy",
+    "locations": [
+      "Milan, Lombardy"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__physics__physics_runchunk0_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-07-21T15:19:50.919794",
+    "lastLocation": "Harris County, Texas",
+    "locations": [
+      "Harris County, Texas"
+    ]
+  },
+  "higuera/FD_VD_sample8_recovery": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-07-28T01:23:26.765967",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dune10kt_1x2x6__prodmarley_nue_cc_flat_radiological_decay0_dune10kt_1x2x6_centralAPA__out1__v1_official": {
+    "timesAccessed": 15,
+    "lastAccessed": "2026-06-04T15:11:51.990672",
+    "lastLocation": "Durham, North Carolina",
+    "locations": [
+      "Unknown Location",
+      "Kane County, Illinois",
+      "Ames, Iowa",
+      "S\u00e3o Jos\u00e9 dos Campos, S\u00e3o Paulo",
+      "Durham, North Carolina"
+    ]
+  },
+  "hd-protodune/pds_prebeam_runs": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-07-29T16:45:00.104624",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "fardet-vd/le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dunevd10kt_1x8x14_3view_30deg_prod2024__prodmarley_nue_es_flat_radiological_decay0_dunevd10kt_1x8x14_3view_30deg__out1__v1_official": {
+    "timesAccessed": 10,
+    "lastAccessed": "2026-05-14T22:14:14.434295",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "higuera/recovery_sample3": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-07-30T19:17:44.179051",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/H4_v34b_7GeV_-27.7_000345_20250730T195253Z_000345.root": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-07-30T20:02:29.063669",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/H4_v34b_7GeV_-27.7_000389_20250730T195216Z_000389.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-07-30T20:02:16.083670",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dune10kt_1x2x6__prodbackground_radiological_decay0_cavernneutrons_dune10kt_1x2x6__out1__vi_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-07-30T23:52:39.267289",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/H4_v34b_7GeV_-27.7_000097_20250731T012850Z_000097.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-07-31T12:21:06.010779",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/H4_v34b_7GeV_-27.7_000094_20250731T034900Z_000094.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-07-31T12:35:37.574210",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/H4_v34b_7GeV_-27.7_000057_13469_1_20250731T211330.root": {
+    "timesAccessed": 6,
+    "lastAccessed": "2025-08-01T17:21:18.703593",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/H4_v34b_7GeV_-27.7_000057_20006_0_20250731T222910.root": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-08-01T00:36:45.762562",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/pdhd_g4_Stage1.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-01T11:37:23.833843",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/pdhd_g4_Stage2_2025-08-01T_124359Z.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-01T17:01:33.000573",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/pdhd_g4_Stage2_2025-08-01T_125547Z.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-01T17:02:24.184875",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/pdhd_g4_Stage2_2025-08-01T_140140Z.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-01T17:03:11.880205",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/H4_v34b_7GeV_-27.7_000035_20266_0_20250801T182058.root": {
+    "timesAccessed": 5,
+    "lastAccessed": "2025-08-18T03:37:49.160210",
+    "lastLocation": "Minneapolis, Minnesota",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo",
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "usertests/H4_v34b_3GeV_-27.7_000254_20688_3_20250803T192402.root": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-08-30T13:49:48.453542",
+    "lastLocation": "Minneapolis, Minnesota",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo",
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "fardet-vd/le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dunevd10kt_1x8x14_3view_30deg_prod2024__prodmarley_nue_cc_flat_radiological_decay0_dunevd10kt_1x8x14_3view_30deg__out1__v1_official": {
+    "timesAccessed": 14,
+    "lastAccessed": "2026-05-14T23:34:22.339538",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Madrid, Community of Madrid"
+    ]
+  },
+  "usertests/g4_Stage2_protodunehd_hist.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-04T19:30:52.958273",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "neardet-2x2-minerva/mx2_numib_reco_run1_prod_f_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-05T03:42:50.365352",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/pdhd_g4_Stage2_2025-08-05T_143240Z.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-05T15:03:50.882763",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/pdhd_g4_Stage2_2025-08-05T_151850Z.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-05T16:38:39.598729",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "fardet-vd/le_mc_2024a__hit-reconstructed__v09_91_04d00__standard_reco1_dunevd10kt_1x8x14_3view_30deg__prodbackground_radiological_decay0_dunevd10kt_1x8x14__v2_official": {
+    "timesAccessed": 5,
+    "lastAccessed": "2026-01-19T14:41:47.693939",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Harris County, Texas"
+    ]
+  },
+  "neardet-2x2-lar-charge/ndlar_2x2_charge_raw_run1_prod_f_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-03-28T21:30:44.109248",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/pdhd_g4_Stage2_2025-08-05T_150917Z.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-05T23:35:54.284765",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "usertests/H4_v34b_3GeV_-27.7_000324_20688_13_20250803T192432.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-05T23:36:21.900296",
+    "lastLocation": "S\u00e3o Paulo, S\u00e3o Paulo",
+    "locations": [
+      "S\u00e3o Paulo, S\u00e3o Paulo"
+    ]
+  },
+  "neardet-2x2-minerva/mx2_numib_dst_run1_prod_f_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-06T01:54:49.303157",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-minerva/DUNE_US_FNAL_DISK_STAGE-w6903s1p2": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-06T22:09:06.452800",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-minerva/mx2_numib_raw_run1_prod_c_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-07T02:02:48.803244",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodbackground_radiological_decay0_dune10kt_1x2x6_lateralAPA__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-01-09T15:36:45.975186",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "DuPage County, Illinois",
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dune10kt_1x2x6__prodmarley_nue_cc_flat_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 21,
+    "lastAccessed": "2026-05-28T17:27:09.389640",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "DuPage County, Illinois",
+      "Unknown Location",
+      "Kane County, Illinois",
+      "Madrid, Community of Madrid",
+      "Durham, North Carolina",
+      "Corvallis, Oregon"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dune10kt_1x2x6__prodmarley_nue_cc_flat_radiological_decay0_dune10kt_1x2x6_lateralAPA__out1__v1_official": {
+    "timesAccessed": 6,
+    "lastAccessed": "2026-01-13T09:35:41.100825",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "DuPage County, Illinois",
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-minerva/mx2_linjc_raw_run1_prod_a_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-11T07:08:33.131523",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-minerva/mx2_numib_dst_run1_prod_b_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-11T07:08:48.819947",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dune10kt_1x2x6__prodmarley_radiological_decay0_dune10kt_1x2x6_centralAPA__out1__v1_official": {
+    "timesAccessed": 9,
+    "lastAccessed": "2026-02-02T14:13:55.776825",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dunevd10kt_1x8x14_3view_30deg_prod2024__prodbackground_radiological_decay0_dunevd10kt_1x8x14__out1__v1_official": {
+    "timesAccessed": 9,
+    "lastAccessed": "2026-02-23T14:55:26.105882",
+    "lastLocation": "City of London, England",
+    "locations": [
+      "Unknown Location",
+      "City of London, England"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dune10kt_1x2x6__prodmarley_radiological_decay0_dune10kt_1x2x6_lateralAPA__out1__v1_official": {
+    "timesAccessed": 9,
+    "lastAccessed": "2026-01-13T09:35:01.508419",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Corvallis, Oregon"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dune10kt_1x2x6__prodbackground_radiological_decay0_cavernneutrons_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 9,
+    "lastAccessed": "2026-02-02T02:15:43.677771",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Kane County, Illinois"
+    ]
+  },
+  "neardet-2x2-lar-charge/fsd_calibration_raw_run1_prod_05_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-11T20:33:08.673580",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dune10kt_1x2x6__prodmarley_nue_es_flat_radiological_decay0_dune10kt_1x2x6_centralAPA__out1__v1_official": {
+    "timesAccessed": 8,
+    "lastAccessed": "2026-06-04T15:26:34.200717",
+    "lastLocation": "Durham, North Carolina",
+    "locations": [
+      "Unknown Location",
+      "Durham, North Carolina"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dune10kt_1x2x6__prodmarley_nue_es_flat_radiological_decay0_dune10kt_1x2x6_lateralAPA__out1__v1_official": {
+    "timesAccessed": 6,
+    "lastAccessed": "2026-01-13T09:36:28.207460",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Corvallis, Oregon",
+      "Durham, North Carolina"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a_reco2__full-reconstructed__v09_91_04d01__reco2_supernova_dune10kt_1x2x6__prodmarley_nue_es_flat_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 7,
+    "lastAccessed": "2026-05-12T16:01:04.558039",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "DuPage County, Illinois",
+      "Durham, North Carolina"
+    ]
+  },
+  "fardet-vd/fardet-vd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__reco2_dunevd10kt_anu_1x8x6_3view_30deg_geov3__prodgenie_anu_numu2nutau_nue2numu_dunevd10kt_1x8x6_3view_30deg__out1__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-05-14T23:32:36.516895",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/pdhd_g4_Stage2_2025-08-07T_131731Z.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-13T19:45:05.901634",
+    "lastLocation": "Minneapolis, Minnesota",
+    "locations": [
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "usertests/pdhd_g4_Stage2_2025-08-05T_152037Z.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-15T16:34:19.900669",
+    "lastLocation": "Minneapolis, Minnesota",
+    "locations": [
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "usertests/pdhd_g4_Stage2_2025-08-05T_152032Z.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-15T16:34:26.321059",
+    "lastLocation": "Minneapolis, Minnesota",
+    "locations": [
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "usertests/pdhd_g4_Stage2_2025-08-05T_152034Z.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-15T16:34:28.151884",
+    "lastLocation": "Minneapolis, Minnesota",
+    "locations": [
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune-det-reco_np04hd_physics_run27331_calibana_merged": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-17T16:41:13.356527",
+    "lastLocation": "Corvallis, Oregon",
+    "locations": [
+      "Corvallis, Oregon"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune-det-reco_np04hd_physics_run28799_calibana_merged": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-08-26T21:38:48.893415",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/pdhd_g4_Stage2_2025-08-05T_153611Z.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-27T15:31:23.684413",
+    "lastLocation": "Ramsey County, Minnesota",
+    "locations": [
+      "Ramsey County, Minnesota"
+    ]
+  },
+  "hd-protodune/calcuttj_p05gev_generic_0_200_012725-w4955s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-27T21:40:02.315394",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_24164": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-27T21:40:14.851516",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x2_notpcsigproc__prodmarley_nue_flat_es_dune10kt_1x2x2__out1__validation": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-10-02T08:45:27.269149",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Geneva"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prodbackground_radiological_decay0_dune10kt_1x2x6_lateralAPA__out1__validation": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-09-03T12:29:00.257173",
+    "lastLocation": "Geneva",
+    "locations": [
+      "Unknown Location",
+      "Geneva"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x2_notpcsigproc__prodmarley_nue_flat_cc_dune10kt_1x2x2__out1__validation": {
+    "timesAccessed": 4,
+    "lastAccessed": "2025-09-03T12:23:16.232394",
+    "lastLocation": "Geneva",
+    "locations": [
+      "Unknown Location",
+      "Geneva"
+    ]
+  },
+  "hd-protodune/hd-protodune_28589": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-31T15:39:55.053532",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_raw_28589": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-08-31T16:21:08.872582",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prod_gamma_1-500MeV_dune10kt_1x2x6__out1__validation": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-03T12:26:32.835159",
+    "lastLocation": "Geneva",
+    "locations": [
+      "Geneva"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prodgenie_nue_dune10kt_1x2x6__out1__validation": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-08T20:39:35.791185",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Geneva",
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prodgenie_nu_dune10kt_1x2x6__out1__validation": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-03T12:27:28.288942",
+    "lastLocation": "Geneva",
+    "locations": [
+      "Geneva"
+    ]
+  },
+  "hd-protodune/hd-protodune_raw_31906": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-03T16:51:58.277300",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_31906": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-03T16:52:01.164955",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/H4_v34b_-7GeV_-27.7_000021_25651_7_20250818T034111.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-03T21:42:43.525722",
+    "lastLocation": "Minneapolis, Minnesota",
+    "locations": [
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "usertests/H4_v34b_-7GeV_-27.7_000851_25651_6_20250818T034106.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-03T21:45:41.041240",
+    "lastLocation": "Minneapolis, Minnesota",
+    "locations": [
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "fardet-hd/fardet-hd__fd_mc_he_2023a__hit-reconstructed__v09_79_00d02__prodgenie_atmnu_max_weighted_randompolicy_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-04-22T18:48:01.476427",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-lar-charge/ndlar_2x2_charge_raw_run1_sandbox_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-03-26T17:26:01.783464",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune-detsim_1846": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-11T15:10:01.668183",
+    "lastLocation": "Ain, Auvergne-Rh\u00f4ne-Alpes",
+    "locations": [
+      "Ain, Auvergne-Rh\u00f4ne-Alpes"
+    ]
+  },
+  "ehn1-beam-np04/ehn1-beam-np04__np04beam_2025__root-tuple__v3.06__g4beamline__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-09-11T20:19:34.968823",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "ehn1-beam-np04/ehn1-beam-np04__np04beam_2025__root-tuple__v3.06__g4beamline__1GeV_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-10T23:39:07.949328",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "ehn1-beam-np04/ehn1-beam-np04__np04beam_2025__root-tuple__v3.06__g4beamline__-1GeV_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-10T23:38:13.185584",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodbackground_radiological_decay0_dune10kt_1x2x6_centralAPA__v2_official": {
+    "timesAccessed": 6,
+    "lastAccessed": "2026-05-27T23:20:26.823687",
+    "lastLocation": "Corvallis, Oregon",
+    "locations": [
+      "Unknown Location",
+      "Madrid, Community of Madrid",
+      "Corvallis, Oregon"
+    ]
+  },
+  "vd-protodune/vd-protodune_39388": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-16T13:15:12.865532",
+    "lastLocation": "Bristol, England",
+    "locations": [
+      "Bristol, England"
+    ]
+  },
+  "vd-protodune/vd-protodune_39387": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-16T13:17:37.673209",
+    "lastLocation": "Bristol, England",
+    "locations": [
+      "Bristol, England"
+    ]
+  },
+  "hd-protodune/prelim_hd-protodune_bismuth_for_laura_zambelli": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-16T16:14:47.645279",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "ehn1-beam-np04/ehn1-beam-np04__np04beam_2025__root-tuple__v3.06__g4beamline__-5GeV_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-10T23:38:48.647691",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-minerva/DUNE_US_FNAL_DISK_STAGE-fnal-w668s1p2": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-05-22T19:59:22.386452",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-minerva/mx2_numib_dst_run1_v1_prod_f_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-09-16T19:21:11.927329",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-minerva/DUNE_US_FNAL_DISK_STAGE-fnal-w772s1p1_dst_prod_c": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-05-22T19:59:24.686473",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/H4_v34b_-7GeV_-27.7_000055_42255_13_20250918T151522.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-18T18:33:51.059437",
+    "lastLocation": "Minneapolis, Minnesota",
+    "locations": [
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "usertests/H4_v34b_-7GeV_-27.7_000225_42255_3_20250918T151539.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-18T18:34:12.887775",
+    "lastLocation": "Minneapolis, Minnesota",
+    "locations": [
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "vd-protodune/vd-protodune__raw__physics__beam_2025_0.5GeV__v1_official": {
+    "timesAccessed": 8,
+    "lastAccessed": "2025-10-20T09:56:08.189343",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Iowa City, Iowa"
+    ]
+  },
+  "vd-protodune/vd-protodune__raw__physics__beam_2025_1GeV_period1__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-10-08T08:35:32.162104",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune__raw__physics__beam_2025_2GeV__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-10-08T08:35:57.768831",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune__raw__physics__beam_2025_1GeV_period2__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-08T08:35:43.810825",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune__raw__physics__beam_2025_3GeV__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-09-25T08:55:49.924354",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune__raw__physics__beam_2025_4GeV__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-14T04:27:26.394184",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune__raw__physics__beam_2025_5GeV__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-25T09:00:16.367348",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune__raw__physics__beam_2025_8GeV__v1_official": {
+    "timesAccessed": 4,
+    "lastAccessed": "2026-05-20T13:14:50.329039",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/calcuttj_PDHD_MC_stage2-fnal-w2568s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-25T19:09:52.644267",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__pdhd_mc_2024a__full-reconstructed__v09_85_00d00__standard_reco_protodunehd_sce_E500__prod_beam_cosmics_1GeV_protodunehd__out1__v0": {
+    "timesAccessed": 4,
+    "lastAccessed": "2026-03-26T19:14:17.887871",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__pdhd_mc_2024a__full-reconstructed__v09_85_00d00__standard_reco_protodunehd__prod_beam_cosmics_1GeV_protodunehd__out1__v0": {
+    "timesAccessed": 6,
+    "lastAccessed": "2026-03-25T16:43:45.073600",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/pdhd_1gev_beam_cosmics_official_sce_off_reco_limit10000_skip29000_1767": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-09-26T20:54:24.793857",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/calcuttj_p05gev_generic_200_400_012725_0-w4960s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-26T20:53:51.425621",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/pdhd_1gev_beam_cosmics_official_sce_off_reco_limit5000_skip24000_1766": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-09-26T20:55:22.695279",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prodbackground_radiological_decay0_cavernneutrons_dune10kt_1x2x6__out1__validation": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-01T08:55:38.528450",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8278-fnal-w8278s1p1": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-20T12:37:34.653271",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8291-fnal-w8291s1p1n008": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:51:15.077878",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8291-fnal-w8291s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:51:15.090050",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8278-fnal-w8278s1p1n001": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-02T08:55:14.190138",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fnal-w8291s1p1-DUNE_US_BNL_SDCC": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:51:53.479110",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8303-fnal-w8303s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:54:50.369616",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8278-fnal-w8278s1p1n006": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:54:56.694026",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8291-fnal-w8291s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:55:04.914300",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8202-fnal-w8202s1p1n004": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:55:22.297497",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8201-fnal-w8201s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:55:31.642347",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fnal-w8191s1p1-DUNE_US_FNAL_DISK_STAGE": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:55:38.374991",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8191-fnal-w8191s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:55:40.448304",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8180-fnal-w8180s1p1n006": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:55:47.136154",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fnal-w8106s1p1-SURFSARA": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:55:49.542695",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8180-fnal-w8180s1p1": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-02T08:55:59.463012",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fnal-w8146s1p1-SURFSARA": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:55:56.256310",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8146-fnal-w8146s1p1n008": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-02T08:57:48.676914",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8428-fnal-w8428s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:59:20.093445",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8378-fnal-w8378s1p1n002": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-20T12:38:18.470847",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8106-fnal-w8106s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:59:41.343376",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8111-fnal-w8111s1p1n003": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T08:59:48.232707",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8146-fnal-w8146s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T09:00:47.708068",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__pdhd_mc_bsm_reco2_2025a__full-reconstructed__v10_05_00d00__standard_reco_stage2_protodunehd_MC_nophoton_elecgain7d8__out1__validation": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T09:56:21.990645",
+    "lastLocation": "Padua, Veneto",
+    "locations": [
+      "Padua, Veneto"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8111-fnal-w8111s1p1": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-02T16:08:30.884758",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8111-fnal-w8111s1p1n001": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-02T15:55:01.674905",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8428-fnal-w8428s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T15:52:36.883723",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8146-fnal-w8146s1p1n007": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-02T15:54:52.500478",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prodbackground_radiological_decay0_dune10kt_1x2x6_centralAPA__out1__v1_official": {
+    "timesAccessed": 12,
+    "lastAccessed": "2026-05-29T22:23:39.027843",
+    "lastLocation": "DuPage County, Illinois",
+    "locations": [
+      "Unknown Location",
+      "Milan, Lombardy",
+      "Corvallis, Oregon",
+      "Rapid City, South Dakota",
+      "DuPage County, Illinois"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x2_notpcsigproc__prodmarley_nue_flat_cc_dune10kt_1x2x2__out1__v1_official": {
+    "timesAccessed": 16,
+    "lastAccessed": "2026-06-01T22:06:52.884610",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "DuPage County, Illinois",
+      "Geneva"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prodbackground_radiological_decay0_dune10kt_1x2x6_lateralAPA__out1__v1_official": {
+    "timesAccessed": 7,
+    "lastAccessed": "2026-01-13T22:44:26.900974",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x2_notpcsigproc__prodmarley_nue_flat_es_dune10kt_1x2x2__out1__v1_official": {
+    "timesAccessed": 8,
+    "lastAccessed": "2026-06-01T22:11:04.242113",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prodbackground_radiological_decay0_cavernneutrons_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 6,
+    "lastAccessed": "2026-01-13T14:23:38.306232",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prod_eminus_1-500MeV_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 5,
+    "lastAccessed": "2026-01-13T14:26:31.481185",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prod_muminus_1-500MeV_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 5,
+    "lastAccessed": "2026-01-13T14:37:16.819718",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prod_p_1-500MeV_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 4,
+    "lastAccessed": "2026-01-13T14:38:58.609042",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prod_gamma_1-500MeV_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-09T08:20:47.139685",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prodgenie_nu_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 9,
+    "lastAccessed": "2026-03-04T12:49:44.964510",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Oxford, England"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a__detector-simulated__v10_06_00d01__detsim_dune10kt_1x2x6_notpcsigproc__prodgenie_nue_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 5,
+    "lastAccessed": "2026-06-01T22:08:40.465982",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__le_mc_2024a__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodbackground_radiological_decay0_dune10kt_1x2x6_lateralAPA__v2_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-01-13T07:32:03.342157",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Milan, Lombardy",
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_10_00d00__standard_reco_stage1_protodunevd_keepup_all__physics__0.5GeV__v1_official": {
+    "timesAccessed": 11,
+    "lastAccessed": "2026-01-27T11:57:07.134773",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_10_00d00__standard_reco_stage1_protodunevd_keepup_all__physics__1GeV_period1__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-01-19T15:52:14.260624",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_10_00d00__standard_reco_stage1_protodunevd_keepup_all__physics__2GeV__v1_official": {
+    "timesAccessed": 6,
+    "lastAccessed": "2026-01-19T15:52:45.800665",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune__raw__physics__beam_2025_1.5GeV__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-08T08:35:13.654620",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-reco2-ritm2440929_59-fnal-w59s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-08T13:55:57.571980",
+    "lastLocation": "Milan, Lombardy",
+    "locations": [
+      "Milan, Lombardy"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_10_00d00__standard_reco_stage1_protodunevd_keepup_all__physics__3GeV__v1_official": {
+    "timesAccessed": 4,
+    "lastAccessed": "2026-01-19T15:53:10.515624",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "pdsp_mc_reco/protodune-sp__PDSPProd2025a__full-reconstructed__v10_03_01d01__protoDUNE_refactored_reco_35ms_sce_datadriven_stage1__pdsp_0.5GeV_h4input_cosmics__out1__v2_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2025-10-10T23:36:26.410608",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_10_00d00__standard_reco_stage1_protodunevd_keepup_all__physics__1.5GeV__v1_official": {
+    "timesAccessed": 5,
+    "lastAccessed": "2026-01-19T15:51:52.045101",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_10_00d00__standard_reco_stage1_protodunevd_keepup_all__physics__1GeV_period2__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-01-14T15:52:10.710581",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_10_00d00__standard_reco_stage1_protodunevd_keepup_all__physics__4GeV__v1_official": {
+    "timesAccessed": 4,
+    "lastAccessed": "2026-04-29T00:40:06.454886",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_10_00d00__standard_reco_stage1_protodunevd_keepup_all__physics__5GeV__v1_official": {
+    "timesAccessed": 5,
+    "lastAccessed": "2026-01-19T15:53:50.670720",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_10_00d00__standard_reco_stage1_protodunevd_keepup_all__physics__8GeV__v1_official": {
+    "timesAccessed": 11,
+    "lastAccessed": "2026-04-19T14:06:54.289173",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/calcuttj_p05gev_generic_0_200_012725_0-w4958s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-09T12:29:00.515489",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/pdhd_1gev_beam_cosmics_official_sce_e500_pandora_limit10000_skip8000_1763": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-09T17:44:34.720233",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/bsmMC_2025a_reco2-fnal-w8696s1p1": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-10T13:49:36.180296",
+    "lastLocation": "Geneva",
+    "locations": [
+      "Geneva"
+    ]
+  },
+  "hd-protodune/hd-protodune__pdhd_mc_bsm_reco2_2025a__full-reconstructed__v10_05_00d00__standard_reco_stage2_protodunehd_MC_nophoton_elecgain7d8__prod_w133_beamneutrino_cosmic_protodunehd__out1__133__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-05-04T22:50:14.797435",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "ehn1-beam-np04/ehn1-beam-np04__np04beam_2025__root-tuple__v3.06__g4beamline__5GeV_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-10T23:39:39.431777",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmic_runchunk27_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-17T11:43:54.840699",
+    "lastLocation": "Geneva",
+    "locations": [
+      "Geneva"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune__full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmics__v1_official": {
+    "timesAccessed": 17,
+    "lastAccessed": "2026-04-17T02:33:49.157772",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Fort Collins, Colorado"
+    ]
+  },
+  "fardet-hd/prodmarley_nue_flat_es_dune10kt_1x2x2_20250927T175236Z_gen_004334_supernova_g4_detsim.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:29:48.676779",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8106-fnal-w8106s1p1n002": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:31:22.304692",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8145-fnal-w8145s1p1": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-20T12:36:18.115649",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_1843-fnal-w1843s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:34:29.289430",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_1845-fnal-w1845s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:35:09.291334",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_1851-fnal-w1851s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:35:23.399810",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_1854-fnal-w1854s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:35:32.846545",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_1860-fnal-w1860s1p1n002": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:35:40.499313",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_1864-fnal-w1864s1p1": {
+    "timesAccessed": 2,
+    "lastAccessed": "2025-10-20T12:39:34.027451",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_1876-fnal-w1876s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:35:55.819346",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_1883-fnal-w1883s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:36:02.040578",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_1887-fnal-w1887s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:36:07.553294",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_1888-fnal-w1888s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:36:12.535391",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8146-fnal-w8146s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:36:35.229748",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8169-fnal-w8169s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:36:41.854448",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8180-fnal-w8180s1p1n004": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:36:46.783419",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8188-fnal-w8188s1p1n005": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:36:50.356768",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8190-fnal-w8190s1p1n002": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:36:55.777905",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8191-fnal-w8191s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:36:59.223952",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8191-fnal-w8191s1p1n008": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:37:07.270428",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8199-fnal-w8199s1p1n002": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:37:13.877217",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8202-fnal-w8202s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:37:17.933627",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8204-fnal-w8204s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:37:24.660336",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8215-fnal-w8215s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:37:27.238673",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8291-fnal-w8291s1p1n003": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:37:42.327472",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8499-fnal-w8499s1p1n004": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:37:47.846788",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8497-fnal-w8497s1p1n005": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:37:53.244126",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8443-fnal-w8443s1p1n005": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:37:58.207618",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8378-fnal-w8378s1p1n009": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:38:02.965207",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8303-fnal-w8303s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:38:06.962549",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8291-fnal-w8291s1p1n007": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:38:10.600020",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8303-fnal-w8303s1p1n003": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:38:13.941276",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8503-fnal-w8503s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:38:25.548880",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8503-fnal-w8503s1p1n005": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:38:29.165398",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8525-fnal-w8525s1p1n008": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:38:33.411768",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8528-fnal-w8528s1p1n005": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:38:37.149248",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8528-fnal-w8528s1p1n010": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:38:42.498834",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8146-fnal-w8146s1p1n005": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:39:01.015210",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-detsim_8145-fnal-w8145s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T12:39:16.824131",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_26482": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T14:38:33.976427",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_raw_26482": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T14:39:02.279758",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmic_runchunk20_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T20:13:59.098923",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune_reconstruction_keepup_ntuples_20240712_set0_v09_91_02d00_v0_2512": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T20:27:40.080479",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune_reconstruction_keepup_ntuples_20240716_set0_v09_91_02d01_v0_2523": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T20:27:51.821214",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune_reconstruction_keepup_ntuples_20240713_set1_v09_91_02d00_v0_2515": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-20T20:30:43.045421",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__reco2_dunevd10kt_nu_1x8x6_3view_30deg_geov3__prodgenie_nu_dunevd10kt_1x8x6_3view_30deg__out1__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-21T15:41:51.968861",
+    "lastLocation": "Suffolk County, New York",
+    "locations": [
+      "Suffolk County, New York"
+    ]
+  },
+  "neardet-2x2-lar-light/neardet-2x2-lar-light_60011": {
+    "timesAccessed": 4,
+    "lastAccessed": "2025-10-23T18:14:31.137495",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-lar-light/neardet-2x2-lar-light_60019": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-23T20:48:34.926910",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-lar-light/neardet-2x2-lar-light_60010": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-23T20:49:38.537912",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-lar-light/ndlar_fsd_light_raw_run1_dataset": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-27T16:22:43.318395",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__root-tuple__v09_91_02d01__cafmaker_dune10kt_1x2x6_runreco-nuenergy_geov5__prodgenie_nue_dune10kt_1x2x6__physics__v1_official": {
+    "timesAccessed": 4,
+    "lastAccessed": "2026-04-15T13:01:49.281221",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Oxford, England",
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_30896": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-29T10:15:30.740149",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_raw_30896": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-29T10:15:42.876858",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_trigprim_30896": {
+    "timesAccessed": 1,
+    "lastAccessed": "2025-10-29T10:15:48.715752",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__root-tuple__v10_12_01d01__triggerana_dune10kt_1x2x2__prodmarley_nue_flat_cc_dune10kt_1x2x2__out1__v1_official": {
+    "timesAccessed": 9,
+    "lastAccessed": "2026-05-27T15:27:58.290626",
+    "lastLocation": "New York, New York",
+    "locations": [
+      "Unknown Location",
+      "Corvallis, Oregon",
+      "Geneva",
+      "Kane County, Illinois",
+      "New York, New York"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_spill_full_sanddrift": {
+    "timesAccessed": 5,
+    "lastAccessed": "2026-05-19T14:29:06.610966",
+    "lastLocation": "Rapid City, South Dakota",
+    "locations": [
+      "Unknown Location",
+      "Rapid City, South Dakota"
+    ]
+  },
+  "hd-protodune/hd-protodune__pdhd_mc_2025a__full-reconstructed__10_10_04d01__standard_reco_protodunehd_MC__pdhd_1GeV_h4input_cosmics__out1__1GeV__v1_official": {
+    "timesAccessed": 14,
+    "lastAccessed": "2026-04-06T16:26:36.414452",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__trigger-primitives__v10_12_01d01__tpg_dune10kt_1x2x6__prod_gamma_1-500MeV_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-01-14T12:37:13.267628",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__trigger-primitives__v10_12_01d01__tpg_dune10kt_1x2x6__prodgenie_nue_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-01-14T12:40:29.990417",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Corvallis, Oregon",
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__root-tuple__v10_12_01d01__triggerana_dune10kt_1x2x6__prodgenie_nu_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 4,
+    "lastAccessed": "2026-03-04T12:33:31.549485",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Corvallis, Oregon",
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune__raw__cosmics__39350_v1_official": {
+    "timesAccessed": 10,
+    "lastAccessed": "2026-06-03T16:37:41.247681",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_11_00d00__standard_reco_stage1_protodunevd_keepup_all__cosmics__hvscan_hv154_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-07T22:37:30.333448",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_10_00d00__standard_reco_stage1_protodunevd_keepup_all__cosmics__39350_v1_official": {
+    "timesAccessed": 6,
+    "lastAccessed": "2026-03-23T19:15:51.662310",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_11_00d00__standard_reco_stage1_protodunevd_keepup_all__cosmics__hvscan_hv188_period1_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-08T22:06:47.580549",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_11_00d00__standard_reco_stage1_protodunevd_keepup_all__cosmics__hvscan_hv200_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-08T22:21:01.335566",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_11_00d00__standard_reco_stage1_protodunevd_keepup_all__cosmics__hvscan_hv230_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-01-10T00:46:56.334800",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_11_00d00__standard_reco_stage1_protodunevd_keepup_all__cosmics__hvscan_hv240_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-02-04T04:19:33.708758",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/fnal-w10084s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-09T19:01:44.628350",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/fnal-w10084s1p1": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-01-09T19:08:32.878790",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-reco-keepup-v0__full-reconstructed__v10_10_05d00__standard_reco_stage1_protodunevd_keepup_all__cosmics__hvscan_hv171_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-12T21:45:09.583895",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__trigger-primitives__v10_12_01d01__tpg_dune10kt_1x2x6__prodbackground_radiological_decay0_dune10kt_1x2x6_lateralAPA__out1__v1_official": {
+    "timesAccessed": 5,
+    "lastAccessed": "2026-02-01T14:43:01.375627",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Geneva"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__trigger-primitives__v10_12_01d01__tpg_dune10kt_1x2x6__prodbackground_radiological_decay0_dune10kt_1x2x6_centralAPA__out1__v1_official": {
+    "timesAccessed": 4,
+    "lastAccessed": "2026-05-19T16:22:57.711050",
+    "lastLocation": "Rapid City, South Dakota",
+    "locations": [
+      "Unknown Location",
+      "Rapid City, South Dakota"
+    ]
+  },
+  "hd-protodune/hd-protodune__pdhd_mc_bsm_reco2_2025a__full-reconstructed__v10_05_00d00__standard_reco_stage2_protodunehd_MC_nophoton_elecgain7d8__prod_wnp04_beamneutrino_cosmic_protodunehd__out1__np04__v1_official": {
+    "timesAccessed": 5,
+    "lastAccessed": "2026-05-12T18:56:03.187752",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__trigger-primitives__v10_12_01d01__tpg_dune10kt_1x2x2__prodmarley_nue_flat_es_dune10kt_1x2x2__out1__v1_official": {
+    "timesAccessed": 5,
+    "lastAccessed": "2026-04-02T17:19:42.684769",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Corvallis, Oregon"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__trigger-primitives__v10_12_01d01__tpg_dune10kt_1x2x2__prodmarley_nue_flat_cc_dune10kt_1x2x2__out1__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-14T11:37:12.329457",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__trigger-primitives__v10_12_01d01__tpg_dune10kt_1x2x6__prodbackground_radiological_decay0_cavernneutrons_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-02-01T14:42:54.483443",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__trigger-primitives__v10_12_01d01__tpg_dune10kt_1x2x6__prod_eminus_1-500MeV_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-14T12:30:39.828147",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__trigger-primitives__v10_12_01d01__tpg_dune10kt_1x2x6__prod_muminus_1-500MeV_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-14T12:32:36.259517",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__trigger-primitives__v10_12_01d01__tpg_dune10kt_1x2x6__prod_p_1-500MeV_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-14T12:35:20.160509",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__trigger-primitives__v10_12_01d01__tpg_dune10kt_1x2x6__prodgenie_nu_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-14T12:38:32.096892",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_spill_full_sanddrift_nueelastic_overlay": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-15T11:16:07.677953",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__physics__physics_runchunk1_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-16T22:02:56.720703",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/w7966s1p1-DUNE_UK_MANCHESTER_CEPH": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-20T15:46:06.184343",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune__raw__cosmics__hvscan_hv154_2025_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-26T12:35:51.695867",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd-reco2_ritm2032831_atmnu_skip0_limit10000_2073": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-26T13:28:37.238703",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__pdhd_mc_2025a__full-reconstructed__10_10_04d01__standard_reco_protodunehd_MC__pdhd_1GeV_h4input_cosmics__out1__-1GeV__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-03-24T11:28:52.301508",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune-det-reco_np04hd_cosmics_run32672_calibana_merged": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-01-28T12:11:02.782436",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_39344": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-02T13:12:26.996558",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune-g4_stage2_2251": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-03T16:46:09.121619",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_42421": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-04T00:08:03.487736",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_42287": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-04T00:09:04.085658",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune-det-reco_np04hd_cosmics_run29004_calibana_merged": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-04T09:55:44.933391",
+    "lastLocation": "Naples, Campania",
+    "locations": [
+      "Naples, Campania"
+    ]
+  },
+  "hd-protodune/hd-protodune__pdhd_mc_2025a__full-reconstructed__10_10_04d01__standard_reco_protodunehd_MC__pdhd_5GeV_h4input_cosmics__out1__5GeV__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-04T16:14:56.398739",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__pdhd_mc_2025a__full-reconstructed__10_10_04d01__standard_reco_protodunehd_MC__pdhd_5GeV_h4input_cosmics__out1__-5GeV__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-04-03T12:34:06.033615",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "pdsp_mc_reco/PDSPProd4a_MC_1GeV_reco1_sce_datadriven_v1_02": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-09T10:32:47.591868",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/w7828s1p1-PRAGUE": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-09T13:14:22.961165",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__root-tuple__v10_12_01d01__triggerana_dune10kt_1x2x6__prodgenie_nue_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-17T20:03:30.443247",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "pdsp_mc_reco/PDSPProd4a_MC_1GeV_reco1_sce_datadriven_v1_07": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-23T09:19:25.119177",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "pdsp_mc_reco/PDSPProd4a_MC_1GeV_reco1_sce_datadriven_v1_03": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-23T09:25:26.429756",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune-reco_2251": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-24T10:14:14.687476",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_35837": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-24T10:14:45.309194",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_35828": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-24T10:15:09.283484",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_42546": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-24T10:20:51.295324",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__root-tuple__v10_12_01d01__triggerana_dune10kt_1x2x2__prodmarley_nue_flat_es_dune10kt_1x2x2__out1__v1_official": {
+    "timesAccessed": 7,
+    "lastAccessed": "2026-05-27T15:29:24.502140",
+    "lastLocation": "New York, New York",
+    "locations": [
+      "Unknown Location",
+      "Corvallis, Oregon",
+      "Rapid City, South Dakota",
+      "New York, New York"
+    ]
+  },
+  "hd-protodune/hd-protodune_24794": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-27T13:34:47.104911",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_24788": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-27T13:35:22.906864",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_25016": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-27T13:35:23.187655",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__full-reconstructed__v09_81_00d02__reco2_dunevd10kt_nu_1x8x6_3view_30deg_geov3__prodgenie_nu_dunevd10kt_1x8x6_3view_30deg__out1__v2_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-03-27T15:46:38.117399",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__full-reconstructed__v09_81_00d02__reco2_dunevd10kt_nu_1x8x6_3view_30deg_geov3__prodgenie_nu_numu2nue_nue2nutau_dunevd10kt_1x8x6_3view_30deg__out1__v2_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-27T15:12:35.916903",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__full-reconstructed__v09_81_00d02__reco2_dunevd10kt_nu_1x8x6_3view_30deg_geov3__prodgenie_nu_numu2nutau_nue2numu_dunevd10kt_1x8x6_3view_30deg__out1__v2_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-02-27T15:13:23.636095",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_42929": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-03-04T08:39:20.193693",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_hadd_ndlarfid_sandstt": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-03-03T23:08:49.931682",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "pdsp_mc_reco/PDSPProd4a_MC_1GeV_reco1_sce_datadriven_v1_01": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-05-27T08:30:25.145016",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmic_runchunk1_v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-03-12T03:27:18.522960",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Fort Collins, Colorado",
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune__hd-protodune-reco-keepup-v0__root-tuple__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmics__v1_official": {
+    "timesAccessed": 11,
+    "lastAccessed": "2026-04-08T22:34:56.627681",
+    "lastLocation": "Fort Collins, Colorado",
+    "locations": [
+      "Unknown Location",
+      "Fort Collins, Colorado"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune__hd-protodune-reco-keepup-v0__root-tuple__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__physics__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-03-12T03:28:01.607659",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__physics__physics_runchunk2_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-03-12T03:28:55.113455",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/hd-protodune-det-reco_bsm_2025a-w7280s1p1n001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-03-12T07:42:13.890715",
+    "lastLocation": "Coventry, England",
+    "locations": [
+      "Coventry, England"
+    ]
+  },
+  "pdsp_mc_reco/PDSPProd4a_MC_1GeV_reco1_sce_datadriven_v1_09": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-03-12T14:39:02.788917",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_tmsreco_full_sanddrift": {
+    "timesAccessed": 7,
+    "lastAccessed": "2026-06-03T16:14:30.178008",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "Cook County, Illinois"
+    ]
+  },
+  "fardet-vd/fardet-vd__full-reconstructed__v09_81_00d02__reco2_dunevd10kt_anu_1x8x6_3view_30deg_geov3__prodgenie_anu_numu2nutau_nue2numu_dunevd10kt_1x8x6_3view_30deg__out1__v2_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-03-27T15:51:54.399304",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location",
+      "DuPage County, Illinois"
+    ]
+  },
+  "fardet-hd/fardet-hd__root-tuple__v09_91_02d01__cafmaker_dune10kt_1x2x6_runreco-nuenergy_geov5__prodgenie_anutau_dune10kt_1x2x6__physics__v1_official": {
+    "timesAccessed": 4,
+    "lastAccessed": "2026-05-04T16:13:45.972844",
+    "lastLocation": "Corvallis, Oregon",
+    "locations": [
+      "Unknown Location",
+      "Corvallis, Oregon"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmic_runchunk9_v1_official": {
+    "timesAccessed": 7,
+    "lastAccessed": "2026-04-17T02:40:19.407676",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Fort Collins, Colorado",
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__root-tuple__v09_91_02d01__cafmaker_dunevd10kt_1x8x6_3view_30deg_runreco-nuenergy_geov3__prodgenie_anu_numu2nutau_nue2numu_dunevd10kt_1x8x6_3view_30deg__physics__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-04-15T13:25:39.808733",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "DuPage County, Illinois",
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_24177": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-03-25T16:31:23.443176",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_24726": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-03-25T16:31:25.106673",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/DetsimReco1_-1GeV_ritm2592486-fnal-w10075s1p1": {
+    "timesAccessed": 6,
+    "lastAccessed": "2026-06-03T19:42:25.562145",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_25546": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-03-25T16:40:49.085087",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune_25540": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-03-25T16:40:57.262613",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__root-tuple__v09_91_02d01__cafmaker_dunevd10kt_1x8x6_3view_30deg_runreco-nuenergy_geov3__prodgenie_anu_dunevd10kt_1x8x6_3view_30deg__physics__v1_official": {
+    "timesAccessed": 4,
+    "lastAccessed": "2026-04-15T13:14:26.191651",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__root-tuple__v09_91_02d01__cafmaker_dunevd10kt_1x8x6_3view_30deg_runreco-nuenergy_geov3__prodgenie_nu_dunevd10kt_1x8x6_3view_30deg__physics__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-04-15T13:28:53.699243",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__root-tuple__v09_91_02d01__cafmaker_dunevd10kt_1x8x6_3view_30deg_runreco-nuenergy_geov3__prodgenie_nu_numu2nue_nue2nutau_dunevd10kt_1x8x6_3view_30deg__physics__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-04-15T13:30:04.004003",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__root-tuple__v09_91_02d01__cafmaker_dunevd10kt_1x8x6_3view_30deg_runreco-nuenergy_geov3__prodgenie_nu_numu2nutau_nue2numu_dunevd10kt_1x8x6_3view_30deg__physics__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-04-15T13:31:05.957454",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__root-tuple__v09_91_02d01__cafmaker_dune10kt_1x2x6_runreco-nuenergy_geov5__prodgenie_anue_dune10kt_1x2x6__physics__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-04-15T13:00:49.186556",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__root-tuple__v10_12_01d01__triggerana_dune10kt_1x2x6__prod_p_1-500MeV_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-03-29T14:51:47.370007",
+    "lastLocation": "Corvallis, Oregon",
+    "locations": [
+      "Corvallis, Oregon"
+    ]
+  },
+  "fardet-vd/fardet-vd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__reco2_dunevd10kt_nu_1x8x6_3view_30deg_geov3__prodgenie_nu_numu2nutau_nue2numu_dunevd10kt_1x8x6_3view_30deg__out1__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-05-14T22:14:42.786539",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__root-tuple__v10_12_01d01__triggerana_dune10kt_1x2x6__prodbackground_radiological_decay0_dune10kt_1x2x6_centralAPA__out1__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-05-20T21:11:08.217767",
+    "lastLocation": "Rapid City, South Dakota",
+    "locations": [
+      "Unknown Location",
+      "Rapid City, South Dakota"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmic_runchunk26_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-08T22:08:16.745138",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmic_runchunk28_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-17T02:13:34.556315",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmic_runchunk29_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-17T02:13:38.251452",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmic_runchunk2_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-17T02:13:42.155355",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmic_runchunk3_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-17T02:18:27.326043",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune-det-reco/full-reconstructed__v09_91_02d01__standard_reco_stage2_calibration_protodunehd_keepup__cosmic_runchunk5_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-17T02:22:47.505428",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p2_NDComplex_RHC_tmsrecoreadout_full_sandstt_merged_tar": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-17T20:46:16.072995",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_tmsreco_full_sanddrift_merged_tar": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-17T20:48:35.383531",
+    "lastLocation": "Cook County, Illinois",
+    "locations": [
+      "Cook County, Illinois"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_tmsrecoreadout_full_sanddrift": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-17T20:48:47.922469",
+    "lastLocation": "Cook County, Illinois",
+    "locations": [
+      "Cook County, Illinois"
+    ]
+  },
+  "fardet-hd/1528allmcfiles": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-20T13:27:20.746033",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__hit-reconstructed__v09_91_04d00__standard_reco1_dunevd10kt_1x8x14_3view_30deg__prodmarley_nue_cc_flat_dunevd10kt_1x8x14_3view_30deg__physics__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-20T15:52:18.114306",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "usertests/H4_v34b_-7GeV_-27.7_000170_301208_4_20260215T024036.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-22T19:29:09.095059",
+    "lastLocation": "Minneapolis, Minnesota",
+    "locations": [
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "usertests/H4_v34b_-7GeV_-27.7_000259_301208_3_20260215T024028.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-22T19:29:11.353360",
+    "lastLocation": "Minneapolis, Minnesota",
+    "locations": [
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "usertests/H4_v34b_-7GeV_-27.7_000884_301208_11_20260215T024030.root": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-22T19:29:16.451278",
+    "lastLocation": "Minneapolis, Minnesota",
+    "locations": [
+      "Minneapolis, Minnesota"
+    ]
+  },
+  "neardet-lar-tms-sand/MicroProdN4p1_NDComplex_FHC_caf_full_light_spineonly_respin": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-04-28T01:52:40.659831",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__trg_mc_2025a_tpg__root-tuple__v10_12_01d01__triggerana_dune10kt_1x2x6__prod_eminus_1-500MeV_dune10kt_1x2x6__out1__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-05-04T11:11:44.611121",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-det-reco__full-reconstructed__v10_20_05d01__standard_reco_stage2_protodunevd_offline__cosmics__v1_official": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-05-27T19:46:52.869293",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-det-reco__full-reconstructed__v10_20_05d01__standard_reco_stage2_protodunevd_beam__physics__4GeV__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-05T17:50:35.837364",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-lar-light/fsd_cosmics_raw_run1_prod_04_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-08T09:58:04.789673",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_larnd_full_sanddrift": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-14T01:53:53.271857",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune-det-reco/vd-protodune__vd-protodune-det-reco__full-reconstructed__v10_20_05d01__standard_reco_stage2_protodunevd_beam__physics__0.5GeV__v1_official": {
+    "timesAccessed": 3,
+    "lastAccessed": "2026-05-21T16:50:18.090394",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "protodune-sp/protodune-sp__PDSPProd4a__full-reconstructed__v09_17_01__out1__MC_2GeV_sce_datadriven_set2_v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-14T22:09:00.903319",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-lar-charge/fsd_calibration_raw_run1_data": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-14T22:09:40.591204",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-vd/fardet-vd__fd_mc_2023a_reco2__full-reconstructed__v09_81_00d02__reco2_dunevd10kt_nu_1x8x6_3view_30deg_geov3__prodgenie_nu_numu2nue_nue2nutau_dunevd10kt_1x8x6_3view_30deg__out1__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-14T23:29:01.758900",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p2_NDComplex_RHC_tmsreco_full_sandstt": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-18T19:02:40.823794",
+    "lastLocation": "Kane County, Illinois",
+    "locations": [
+      "Kane County, Illinois"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_edep_ndlarfid_sanddrift": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-05-18T22:15:06.091758",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_spill_ndlarfid_sanddrift_nueelastic_singles": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-19T00:45:33.943112",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/neardet-lar-tms-sand_7000": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-19T04:38:51.812383",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/fardet-hd__hit-reconstructed__v09_91_04d00__reco1_supernova_dune10kt_1x2x6__prodbackground_radiological_decay0_cavernneutrons_dune10kt_1x2x6__out1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-19T16:06:11.204807",
+    "lastLocation": "Rapid City, South Dakota",
+    "locations": [
+      "Rapid City, South Dakota"
+    ]
+  },
+  "neardet-2x2-minerva/DUNE_US_FNAL_DISK_STAGE-fnal-w772s1p1": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-22T19:59:05.641601",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-minerva/DUNE_US_FNAL_DISK_STAGE-fnal-w772s1p1_dst_prod_a": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-22T19:59:33.714873",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-minerva/DUNE_US_FNAL_DISK_STAGE-fnal-w774s1p1n001_numib_recoonly": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-22T20:02:22.915342",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_genie_ndlarfid_sanddrift_ghep_merged_tar": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-22T20:03:36.413280",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_edep_ndlarfid_sanddrift_merged_tar": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-22T20:04:42.195069",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_edep_ndlarfid_sanddrift_nueelastic_merged_tar": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-22T20:22:28.640110",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_edep_ndlarfid_sandstt_merged_tar": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-22T20:22:59.622791",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-lar/DUNE_US_FNAL_DISK_STAGE-w7434s1p3": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-22T21:06:24.867256",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_39510": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-25T22:58:15.470522",
+    "lastLocation": "Naples, Campania",
+    "locations": [
+      "Naples, Campania"
+    ]
+  },
+  "pdsp_mc_reco/pdsp_mc_reco_prod_beam_p0.5GeV_protodunesp_combined10_gen_g4_stage1_g4_stage2_detsim_stage1_detsim_stage2_reco": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-27T09:04:26.115447",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_39528": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-05-28T13:59:21.105108",
+    "lastLocation": "Naples, Campania",
+    "locations": [
+      "Unknown Location",
+      "Naples, Campania"
+    ]
+  },
+  "vd-protodune/vd-protodune_39527": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-05-29T20:51:49.246723",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Naples, Campania",
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_39511": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-28T14:31:41.412461",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_41001": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-28T15:10:43.023947",
+    "lastLocation": "Naples, Campania",
+    "locations": [
+      "Naples, Campania"
+    ]
+  },
+  "vd-protodune/vd-protodune_41059": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-28T15:11:09.160718",
+    "lastLocation": "Naples, Campania",
+    "locations": [
+      "Naples, Campania"
+    ]
+  },
+  "fardet-hd/w3800s1p1-DUNE_US_FNAL_DISK_STAGE": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-28T17:25:08.126189",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/w3313s1p1-FNAL_DCACHE": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-28T17:25:30.094805",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "fardet-hd/w3202s1p1-DUNE_US_FNAL_DISK_STAGE": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-28T17:25:51.746910",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_41263": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-29T11:42:13.786975",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "vd-protodune/vd-protodune_39357": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-05-29T19:49:48.865164",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-2x2-lar/neardet-2x2-lar_20029": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-06-03T17:21:27.201389",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_convert2h5_full_sandstt": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-06-03T17:44:35.548407",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "neardet-lar-tms-sand/MiniProdN5p1_NDComplex_FHC_convert2h5_full_sanddrift": {
+    "timesAccessed": 2,
+    "lastAccessed": "2026-06-03T17:57:49.116590",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
+    ]
+  },
+  "hd-protodune/hd-protodune__pdhd_mc_bsm_reco2_2026a__full-reconstructed__v10_17_02d00__standard_reco_stage2_protodunehd_MC_nophoton_elecgain7d8__prod_wnp04_beamneutrino_cosmic_protodunehd__out1__v1_official": {
+    "timesAccessed": 1,
+    "lastAccessed": "2026-06-03T19:53:21.537349",
+    "lastLocation": "Unknown Location",
+    "locations": [
+      "Unknown Location"
     ]
   }
 }
