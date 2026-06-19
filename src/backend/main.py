@@ -2,14 +2,14 @@ import os
 import json
 from datetime import datetime
 from typing import Dict, List, Optional, Any
-from fastapi import FastAPI, HTTPException, Header, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 import logging
 import tempfile
 import shutil
 from src.lib.mcatapi import MetaCatAPI
+from src.backend import auth
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,8 +22,9 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000", 
-        "https://dune-tech.rice.edu/dunecatalog"
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "https://dune-tech.rice.edu"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -38,7 +39,8 @@ metacat_api = MetaCatAPI()
 async def startup_event():
     global admin_usernames
     admin_usernames = get_admin_usernames()
-    
+    auth.set_admin_emails(admin_usernames)
+
 
 # Get the absolute path to the project root directory
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -46,39 +48,38 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..
 # Path to the configuration directory
 CONFIG_PATH = os.path.join(PROJECT_ROOT, 'src', 'config')
 
-# Security
-security = HTTPBearer()
-
-# Admin usernames (will be loaded from config)
+# Admin emails (will be loaded from config/admins.json)
 admin_usernames = []
 
 
-class LoginRequest(BaseModel):
-    username: str
-    password: str
+# ---------------------------------------------------------------------------
+# CILogon OIDC authentication routes (see src/backend/auth.py)
+# ---------------------------------------------------------------------------
 
 
-@app.post("/login")
-async def login(request: LoginRequest):
-    """
-    Log in to MetaCat using the username and password provided.
+@app.get("/auth/login")
+async def auth_login():
+    """Start the CILogon OIDC authorization flow (redirects to CILogon)."""
+    return await auth.login_start()
 
-    Args:
-        request (LoginRequest): The request body containing the username and password.
 
-    Returns:
-        A JSON response with a "token" key containing the authentication token if the login is successful.
-        If the login fails, an HTTPException is raised with a status code of 401.
-    """
-    result = metacat_api.login(request.username, request.password)
-    if result["success"]:
-        token = result["token"]
-        return {
-            "token": token, 
-            "username": request.username
-        }
-    else:
-        raise HTTPException(status_code=401, detail="Login failed")
+@app.get("/auth/callback")
+async def auth_callback(request: Request):
+    """Handle the CILogon redirect, issue a session cookie, and bounce the
+    user back to the configured frontend URL."""
+    return await auth.login_callback(request)
+
+
+@app.post("/auth/logout")
+async def auth_logout(response: Response):
+    """Clear the authentication cookie."""
+    return await auth.logout(response)
+
+
+@app.get("/auth/me", response_model=auth.AuthResponse)
+async def auth_me(request: Request):
+    """Return the current session's authentication state and user info."""
+    return await auth.check_auth(request)
 
 
 class DatasetRequest(BaseModel):
@@ -305,43 +306,18 @@ def get_admin_usernames() -> List[str]:
         return []
 
 
-@app.get("/verify_admin")
-def verify_admin(credentials: HTTPAuthorizationCredentials = Depends(security), x_username: Optional[str] = Header(None)) -> str:
+def verify_admin(user: auth.UserInfo = Depends(auth.require_admin)) -> str:
     """
-    Verify that the request is from an admin user
-    
-    Args:
-        credentials: HTTP Authorization credentials
-        x_username: Username from X-Username header
-        
-    Returns:
-        str: Username if admin, raises HTTPException otherwise
+    FastAPI dependency: require an authenticated admin (CILogon session cookie
+    + email on the allowlist). Returns the admin's email, or raises 401/403.
     """
-    logger.info(f"Verifying admin access. X-Username header: {x_username}")
-    logger.info(f"Token present: {bool(credentials and credentials.credentials)}")
-    
-    # Get username from token using auth_info
-    username = None
-    if credentials and credentials.credentials:
-        token = credentials.credentials
-        token_username = metacat_api.get_username()
-        logger.info(f"Token username: {token_username}")
-        if token_username:
-            username = token_username
-            logger.info(f"Using username from token auth_info: {username}")
-        
-    if not username:
-        logger.warning("Admin verification failed: Could not determine username")
-        raise HTTPException(status_code=401, detail="Authentication failed - could not determine username")
-    isAdmin = username in admin_usernames
+    return user.email or user.sub
 
-    # Check if user is admin
-    if not isAdmin:
-        logger.warning(f"Admin verification failed: User '{username}' is not an admin")
-        raise HTTPException(status_code=403, detail="Not authorized as admin")
-    
-    logger.info(f"Admin verification successful for user: {username}")
-    return username
+
+@app.get("/verify_admin")
+def verify_admin_route(admin_user: str = Depends(verify_admin)) -> str:
+    """Return the current admin's email if the session is an admin, else 401/403."""
+    return admin_user
 
 
 class ConfigRequest(BaseModel):
@@ -418,10 +394,11 @@ async def save_config(file: str, data: ConfigData, admin_user: str = Depends(ver
         # Replace the original file with the temporary file
         shutil.move(temp_file.name, config_file)
         
-        # If we're updating the admins file, reload the admin usernames
+        # If we're updating the admins file, reload the admin allowlist
         if file == 'admins.json':
             global admin_usernames
             admin_usernames = get_admin_usernames()
+            auth.set_admin_emails(admin_usernames)
         
         return {"success": True, "message": f"Config file {file} updated successfully"}
     except Exception as e:

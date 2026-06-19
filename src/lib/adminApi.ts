@@ -1,7 +1,11 @@
-import { getStoredToken } from '@/lib/auth';
+import { apiClient } from '@/lib/apiClient';
 
 /**
- * Helper functions to interact with the unified admin config API
+ * Helper functions to interact with the unified admin config API.
+ *
+ * Admin endpoints are gated by the CILogon session cookie (email allowlist) on
+ * the backend. `apiClient` sends that cookie automatically via
+ * `withCredentials`, so no token handling is needed here.
  */
 
 /**
@@ -10,28 +14,10 @@ import { getStoredToken } from '@/lib/auth';
  * @returns The configuration data
  */
 export async function getConfigData(filename: string) {
-  const token = getStoredToken();
-  
-  if (!token) {
-    throw new Error('Authentication required');
-  }
-  
-  // Use the backend endpoint instead of Next.js API route
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-  const response = await fetch(`${apiUrl}/admin/config?file=${filename}`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`
-      // No need to send X-Username header as the server will extract it from the token
-    }
+  const response = await apiClient.get(`/admin/config`, {
+    params: { file: filename },
   });
-  
-  if (!response.ok) {
-    throw new Error(`Error loading configuration: ${response.statusText}`);
-  }
-  
-  const data = await response.json();
-  return data.data; // The backend returns data inside a data property
+  return response.data.data; // The backend returns data inside a data property
 }
 
 /**
@@ -41,29 +27,12 @@ export async function getConfigData(filename: string) {
  * @returns The API response
  */
 export async function saveConfigData(filename: string, data: Record<string, unknown>) {
-  const token = getStoredToken();
-  
-  if (!token) {
-    throw new Error('Authentication required');
-  }
-  
-  // Use the backend endpoint instead of Next.js API route
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-  const response = await fetch(`${apiUrl}/admin/config?file=${filename}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ data }) // Wrap data in a data property as expected by the backend
-  });
-  
-  if (!response.ok) {
-    throw new Error(`Error saving configuration: ${response.statusText}`);
-  }
-  
-  const responseData = await response.json();
-  return responseData;
+  const response = await apiClient.post(
+    `/admin/config`,
+    { data }, // Wrap data in a data property as expected by the backend
+    { params: { file: filename } }
+  );
+  return response.data;
 }
 
 /**
@@ -71,28 +40,10 @@ export async function saveConfigData(filename: string, data: Record<string, unkn
  * @returns Array of configuration filenames
  */
 export async function listConfigFiles() {
-  const token = getStoredToken();
-  
-  if (!token) {
-    throw new Error('Authentication required');
-  }
-  
-  // Use the backend endpoint instead of Next.js API route
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-  const response = await fetch(`${apiUrl}/admin/config?list=true`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`
-      // No need to send X-Username header as the server will extract it from the token
-    }
+  const response = await apiClient.get(`/admin/config`, {
+    params: { list: true },
   });
-  
-  if (!response.ok) {
-    throw new Error(`Error listing configuration files: ${response.statusText}`);
-  }
-  
-  const data = await response.json();
-  return data.configFiles;
+  return response.data.configFiles;
 }
 
 // Common config filenames for convenience
