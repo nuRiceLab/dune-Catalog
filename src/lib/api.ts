@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { getStoredToken } from './auth';
 import config from '@/config/config.json';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -72,15 +71,13 @@ function sanitizeMQLQuery(query: string): string {
  */
 export async function searchDataSets(query: string, category: string, tab: string, officialOnly: boolean, customMql?: string): Promise<{ results: Dataset[], mqlQuery: string }> {
   try {
-    const token = getStoredToken();
     const sanitizedQuery = sanitizeMQLQuery(query);
     // Don't sanitize custom MQL queries to preserve quotes and syntax
     const sanitizedMql = customMql ? customMql.trim().slice(0, 2000) : undefined;
 
-    const response = await axios.post<ApiResponse<Dataset>>(`${API_URL}/queryDatasets`, 
+    const response = await axios.post<ApiResponse<Dataset>>(`${API_URL}/queryDatasets`,
       { query: sanitizedQuery, category, tab, officialOnly, customMql: sanitizedMql },
-      { 
-        headers: { Authorization: `Bearer ${token}` },
+      {
         timeout: API_TIMEOUT
       }
     );
@@ -113,13 +110,9 @@ export async function searchDataSets(query: string, category: string, tab: strin
  */
 export async function searchFiles(namespace: string, name: string): Promise<{ files: File[], mqlQuery: string }> {
   try {
-    // Prepare to send file search request
-    const token = getStoredToken();
-
     const response = await axios.post<ApiResponse<File>>(`${API_URL}/queryFiles`,
       { name, namespace },
-      { 
-        headers: { Authorization: `Bearer ${token}` },
+      {
         timeout: API_TIMEOUT
       }
     );
@@ -227,10 +220,9 @@ export async function getUserLocation(): Promise<string> {
 export async function recordDatasetAccess(namespace: string, name: string): Promise<void> {
   try {
     const location = await getUserLocation();
-    await axios.post(`${API_URL}/recordDatasetAccess`, 
+    await axios.post(`${API_URL}/recordDatasetAccess`,
       { namespace, name, location },
-      { 
-        headers: { Authorization: `Bearer ${getStoredToken()}` },
+      {
         timeout: API_TIMEOUT
       }
     );

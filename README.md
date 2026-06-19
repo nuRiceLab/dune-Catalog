@@ -48,12 +48,21 @@ DUNE Catalog is a web application designed to provide an interface for searching
    ```
 
 4. Set up environment variables:
-   - Create a `.env` file in the root directory
-   - Required environment variables:
+   - Copy `.env.example` to `.env` in the root directory and fill in the values.
+   - MetaCat + API:
      ```
      METACAT_SERVER_URL=your_metacat_server_url
      METACAT_AUTH_SERVER_URL=your_metacat_auth_server_url
-     NEXT_PUBLIC_API_URL=the_url/api
+     NEXT_PUBLIC_API_URL=the_url/api      # e.g. http://localhost:8080 in dev
+     ```
+   - CILogon authentication (see "Authentication (CILogon)" below):
+     ```
+     CILOGON_CLIENT_ID=...
+     CILOGON_CLIENT_SECRET=...
+     CILOGON_REDIRECT_URI=http://localhost:8080/auth/callback
+     FRONTEND_URL=http://localhost:3001/dunecatalog
+     JWT_SECRET_KEY=<random; python -c "import secrets;print(secrets.token_urlsafe(48))">
+     ENVIRONMENT=development
      ```
 5. Set up Python virtual environment:
    ```bash
@@ -101,6 +110,53 @@ The application's configuration is centralized in `src/config/config.json`:
 - `app.info`: Application information
 - `savedSearches`: Predefined search queries
 - `tabs`: Tab configurations and categories
+
+## Authentication (CILogon)
+
+DUNE Catalog uses **CILogon** (OpenID Connect) for single sign-on. The FastAPI
+backend runs the OIDC authorization-code + PKCE flow, mints a short-lived
+session JWT, and stores it in an httpOnly cookie. The frontend never handles a
+token — it asks the backend who the user is via `/auth/me`.
+
+Browsing and searching datasets is open to everyone (MetaCat reads are
+anonymous). Logging in is only used for **identity** and to gate the **admin**
+panel.
+
+### Registering a CILogon client
+
+1. Register a client at https://cilogon.org/oauth2/register with:
+   - **Client Type:** Confidential
+   - **Scopes:** `openid`, `email`, `profile`, `org.cilogon.userinfo`
+   - **Callback URLs** (one per line):
+     - Dev: `http://localhost:8080/auth/callback`
+     - Prod: `https://dune-tech.rice.edu/dunecatalog/api/auth/callback`
+2. CILogon issues a **Client ID** and **Client Secret** → put them in `.env`
+   (`CILOGON_CLIENT_ID` / `CILOGON_CLIENT_SECRET`). New clients may require
+   CILogon admin approval before they work.
+3. Set `CILOGON_REDIRECT_URI` to the callback URL for the environment you're
+   running, and `FRONTEND_URL` to where users should land after login
+   (include the `/dunecatalog` basePath).
+
+### Admin access
+
+Admins are listed by **email** in `src/config/admins.json`:
+
+```json
+{ "admins": ["you@fnal.gov", "colleague@rice.edu"] }
+```
+
+The backend checks the email claim from CILogon against this list and exposes
+`is_admin` via `/auth/me`. The list can also be edited from the in-app Admin →
+Admins page, and changes take effect immediately.
+
+### Auth endpoints (backend)
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/auth/login` | Start the CILogon flow (302 to CILogon). |
+| GET | `/auth/callback` | Handle the redirect, set the session cookie. |
+| POST | `/auth/logout` | Clear the session cookie. |
+| GET | `/auth/me` | Current auth state + user info (incl. `is_admin`). |
 
 ## Project Structure
 

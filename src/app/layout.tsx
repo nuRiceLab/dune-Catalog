@@ -8,6 +8,7 @@ import {
 } from 'next/font/google'
 import './globals.css'
 import { Toaster } from "@/components/ui/toaster"
+import { AuthProvider } from "@/context/AuthContext"
 import React from "react";
 
 // const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'] })
@@ -23,8 +24,10 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
         <body className={font.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
-            <Toaster />
+            <AuthProvider>
+                {children}
+                <Toaster />
+            </AuthProvider>
         </ThemeProvider>
         </body>
         </html>

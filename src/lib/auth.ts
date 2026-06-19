@@ -1,170 +1,82 @@
-import axios, { isAxiosError} from 'axios';
+import { apiClient } from './apiClient';
 
+/**
+ * Authentication helpers for the CILogon (OIDC) session.
+ *
+ * The backend (src/backend/auth.py) runs the OIDC flow and stores an httpOnly
+ * session cookie. The frontend never sees a token; it just asks the backend
+ * who the current user is via `/auth/me` (cookie sent automatically by the
+ * shared `apiClient`).
+ */
+
+export interface UserInfo {
+  sub: string;
+  email?: string | null;
+  name?: string | null;
+  given_name?: string | null;
+  family_name?: string | null;
+  idp_name?: string | null;
+  is_admin?: boolean;
+}
+
+export interface AuthMeResponse {
+  authenticated: boolean;
+  message: string;
+  user?: UserInfo | null;
+}
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-interface LoginCredentials {
-  username: string;
-  password: string;
-}
-
-interface LoginResponse {
-  success: boolean;
-  message?: string;
-  token?: string;
+/**
+ * Start the CILogon login flow. This is a full-page navigation (not an XHR) so
+ * the browser follows the redirects through CILogon and back to the backend
+ * callback, which sets the session cookie and returns us to the app.
+ */
+export function login(): void {
+  if (typeof window !== 'undefined') {
+    window.location.href = `${API_URL}/auth/login`;
+  }
 }
 
 /**
- * Logs a user in to the MetaCat server.
- *
- * @param credentials - The username and password of the user to log in.
- * @returns A promise that resolves with an object containing a success flag,
- *          a message, and optionally a token. The success flag is true if the
- *          login was successful, and false otherwise. The message is a human-readable
- *          string describing the result of the login attempt. If the login was
- *          successful, the token is the JWT token that can be used to authenticate
- *          further requests to the MetaCat server.
+ * Log out by clearing the backend session cookie.
  */
-export async function login(credentials: LoginCredentials): Promise<LoginResponse> {
+export async function logout(): Promise<void> {
   try {
-    const response = await axios.post(`${API_URL}/login`, credentials);
-    const { token } = response.data;
-    // Process login response
-    
-    if (typeof window !== 'undefined') {
-      // Store only the token in localStorage
-      localStorage.setItem('metacatToken', token);
-      // User authenticated successfully
-    }
-    return { success: true, token };
-  } catch (error: unknown) {
-    if (isAxiosError(error)) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      if (error.response) {
-        return {
-          success: false,
-          message: getErrorMessageFromResponseStatus(error.response.status),
-        };
-      } else if (error.request) {
-        // The request was made but no response was received
-        return { success: false, message: 'No response received from server. Please check your internet connection.' };
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        return {
-          success: false,
-          message: `Error setting up the request: ${error.message}`,
-        };
-      }
-    } else if (error instanceof Error) {
-      return {
-        success: false,
-        message: `An unexpected error occurred: ${error.message}`,
-      };
-    } else {
-      return {
-        success: false,
-        message: 'An unknown error occurred during login.',
-      };
-    }
+    await apiClient.post('/auth/logout');
+  } catch (error) {
+    console.error('Logout failed:', error);
   }
 }
 
 /**
- * Maps a status code to a human-readable error message.
- *
- * @param status - The status code from the server.
- * @returns A human-readable error message.
+ * Fetch the current session/user from the backend.
  */
-function getErrorMessageFromResponseStatus(status: number): string {
-  switch (status) {
-    case 400:
-    case 401:
-      return 'Invalid credentials. Please check your username and password.';
-    case 403:
-      return 'Access forbidden. You may not have the necessary permissions.';
-    case 404:
-      return 'Login service not found. Please try again later.';
-    case 500:
-      return 'Internal server error. Please try again later.';
-    default:
-      return `Server responded with error: ${status}`;
+export async function getSession(): Promise<AuthMeResponse> {
+  try {
+    const response = await apiClient.get<AuthMeResponse>('/auth/me');
+    return response.data;
+  } catch {
+    return { authenticated: false, message: 'Not authenticated' };
   }
 }
 
 /**
- * Removes the stored token from local storage.
+ * Checks if the user is currently authenticated via CILogon.
  */
-export function logout(): void {
-  // Remove the stored token from local storage
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('metacatToken');
-  }
+export async function isLoggedIn(): Promise<boolean> {
+  const session = await getSession();
+  return session.authenticated;
 }
 
 /**
- * Retrieves the stored token from local storage.
- *
- * @returns The stored token, or null if no token is stored.
- */
-export function getStoredToken(): string | null {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('metacatToken');
-  }
-  return null;
-}
-
-/**
- * Gets the current user by making an API call to check the token.
- * This is more secure than storing the username in localStorage.
- *
- * @returns A promise that resolves to the username or null if not authenticated
- */
-
-
-/**
- * Checks if the user is an admin by verifying with the backend.
- * All admin checks should go through the backend for security.
+ * Checks if the current user is an admin. Admin status is determined entirely
+ * by the backend (email allowlist in src/config/admins.json), surfaced as the
+ * `is_admin` flag on the user returned by `/auth/me`.
  *
  * @returns Promise that resolves to a boolean indicating if the user is an admin
  */
 export async function isUserAdmin(): Promise<boolean> {
-  
-  try {
-    const token = getStoredToken();
-    if (!token) {
-      return false;
-    }
-    
-    // Make API call to the verify_admin endpoint
-    // If the user is an admin, the endpoint will return successfully
-    // If not, it will throw a 403 error
-    await axios.get(`${API_URL}/verify_admin`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    
-    // If we get here, the user is an admin (endpoint didn't throw an error)
-    return true;
-  } catch (error: unknown) {
-    const err = error as { response?: { status: number } };
-    // Check if this is a 403 error (not authorized as admin)
-    if (err.response && err.response.status === 403) {
-      return false;
-    }
-    
-    // For other errors (like 401 unauthorized or network errors)
-    console.error('Error checking admin status:', error);
-    return false;
-  }
-}
-
-/**
- * Checks if the user is logged in.
- *
- * @returns True if the user is logged in, false otherwise.
- */
-export function isLoggedIn(): boolean {
-  return !!getStoredToken();
+  const session = await getSession();
+  return session.authenticated && session.user?.is_admin === true;
 }
