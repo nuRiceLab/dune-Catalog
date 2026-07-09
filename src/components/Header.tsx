@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { ThemeToggle } from './ThemeToggle'
 import { HelpDialog } from './HelpDialog'
+import FeedbackDialog from "@/components/FeedbackDialog";
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button";
@@ -59,6 +60,7 @@ export function Header() {
                     </Link>
                 </div>
                 <div className="flex items-center gap-2">
+                    <FeedbackDialog />
                     <HelpDialog />
                     <ThemeToggle />
                     {isAdmin && (
