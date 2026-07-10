@@ -91,7 +91,10 @@ class DatasetRequest(BaseModel):
 
 
 @app.post("/queryDatasets")
-async def get_datasets(request: DatasetRequest) -> dict:
+async def get_datasets(
+    request: DatasetRequest,
+    user: auth.UserInfo = Depends(auth.get_current_user),
+) -> dict:
     """
     Queries MetaCat for datasets based on user input.
 
@@ -144,7 +147,10 @@ class FileRequest(BaseModel):
 
 
 @app.post("/queryFiles")
-async def get_files(request: FileRequest):
+async def get_files(
+    request: FileRequest,
+    user: auth.UserInfo = Depends(auth.get_current_user),
+):
     """
     Queries MetaCat for files given namespace and name.
 
@@ -176,7 +182,10 @@ class DatasetStatsRequest(BaseModel):
     location: str | None = None  # Optional location field
 
 @app.post("/recordDatasetAccess")
-async def record_dataset_access(request: DatasetStatsRequest):
+async def record_dataset_access(
+    request: DatasetStatsRequest,
+    user: auth.UserInfo = Depends(auth.get_current_user),
+):
     """
     Record access for a specific dataset.
     

@@ -78,7 +78,8 @@ export async function searchDataSets(query: string, category: string, tab: strin
     const response = await axios.post<ApiResponse<Dataset>>(`${API_URL}/queryDatasets`,
       { query: sanitizedQuery, category, tab, officialOnly, customMql: sanitizedMql },
       {
-        timeout: API_TIMEOUT
+        timeout: API_TIMEOUT,
+        withCredentials: true  // send the CILogon session cookie
       }
     );
 
@@ -113,7 +114,8 @@ export async function searchFiles(namespace: string, name: string): Promise<{ fi
     const response = await axios.post<ApiResponse<File>>(`${API_URL}/queryFiles`,
       { name, namespace },
       {
-        timeout: API_TIMEOUT
+        timeout: API_TIMEOUT,
+        withCredentials: true  // send the CILogon session cookie
       }
     );
 
@@ -223,7 +225,8 @@ export async function recordDatasetAccess(namespace: string, name: string): Prom
     await axios.post(`${API_URL}/recordDatasetAccess`,
       { namespace, name, location },
       {
-        timeout: API_TIMEOUT
+        timeout: API_TIMEOUT,
+        withCredentials: true  // send the CILogon session cookie
       }
     );
   } catch (error) {

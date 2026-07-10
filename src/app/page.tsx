@@ -6,12 +6,14 @@ import  { Footer }  from '@/components/Footer'
 import { SearchBar } from '@/components/SearchBar'
 import { DatasetTable } from '@/components/DatasetTable'
 import { searchDataSets, Dataset } from '@/lib/api'
+import { useAuth } from '@/context/AuthContext'
 import config from '@/config/config.json';
 
 // Add 'Other' to the tabs list for MQL queries
 const tabs = [...Object.keys(config.tabs), 'Other'];
 
 export default function Home() {
+  const { isAuthenticated, isLoading } = useAuth()
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [sliderStyle, setSliderStyle] = useState({ width: 0, left: 0 })
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
@@ -99,18 +101,33 @@ export default function Home() {
                 </TabsTrigger>
               ))}
             </TabsList>
-            <div className="mt-6">
-              <SearchBar 
-                onSearch={handleSearch} 
-                activeTab={tabs[activeTabIndex]} 
-                onTabChange={handleTabChange}
-              />
-            </div>
-            {tabs.map((tab) => (
-              <TabsContent key={tab} value={tab} className="mt-4">
-                <DatasetTable results={results}/>
-              </TabsContent>
-            ))}
+            {isLoading ? (
+              /* Session check in flight — avoid flashing the login prompt */
+              <div className="mt-6 h-24" />
+            ) : !isAuthenticated ? (
+              /* Not logged in: prompt instead of search UI */
+              <div className="mt-6 flex flex-col items-center gap-3 rounded-lg border p-8 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Searching the DUNE Catalog requires signing in. Use the
+                  Login button in the upper-right corner.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="mt-6">
+                  <SearchBar 
+                    onSearch={handleSearch} 
+                    activeTab={tabs[activeTabIndex]} 
+                    onTabChange={handleTabChange}
+                  />
+                </div>
+                {tabs.map((tab) => (
+                  <TabsContent key={tab} value={tab} className="mt-4">
+                    <DatasetTable results={results}/>
+                  </TabsContent>
+                ))}
+              </>
+            )}
           </Tabs>
         </div>
       </main>

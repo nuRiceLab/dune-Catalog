@@ -10,10 +10,6 @@
       "content": "Each tab has specific categories. Select the appropriate category for your search to narrow down results."
     },
     {
-      "title": "Saved Searches",
-      "content": "Use the \"Saved Searches\" dropdown to quickly access commonly used search configurations. Selecting a saved search will automatically switch to the appropriate tab and populate the search fields."
-    },
-    {
       "title": "Authentication",
       "content": "You must be signed in to perform searches. Click the login button in the top right to sign in."
     },
