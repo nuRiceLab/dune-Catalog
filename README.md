@@ -118,9 +118,17 @@ backend runs the OIDC authorization-code + PKCE flow, mints a short-lived
 session JWT, and stores it in an httpOnly cookie. The frontend never handles a
 token — it asks the backend who the user is via `/auth/me`.
 
-Browsing and searching datasets is open to everyone (MetaCat reads are
-anonymous). Logging in is only used for **identity** and to gate the **admin**
-panel.
+
+**Searching and browsing datasets requires logging in.** The dataset and file
+query endpoints only accept requests carrying a valid session cookie;
+anonymous requests receive `401 Unauthorized`, and the home page shows a
+sign-in prompt in place of the search bar until the user logs in (via the
+Login button in the header). Logging in also establishes **identity** and
+gates the **admin** panel.
+
+Note: this gate applies to the DUNE Catalog app itself. The underlying
+MetaCat instance serves reads anonymously, so the login requirement provides
+usage accountability within the app rather than protection of the data.
 
 ### Registering a CILogon client
 
