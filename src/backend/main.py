@@ -176,6 +176,42 @@ async def get_files(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+class FileDetailsRequest(BaseModel):
+    namespace: str
+    name: str
+
+
+@app.post("/fileDetails")
+async def get_file_details(
+    request: FileDetailsRequest,
+    user: auth.UserInfo = Depends(auth.get_current_user),
+):
+    """
+    Returns full details for a single file: metadata, checksums,
+    provenance (parents/children), and containing datasets.
+
+    Args:
+        request: A `FileDetailsRequest` object with namespace and name fields
+    Returns:
+        A dictionary with a "results" dict (success=True)
+    Raises:
+        HTTPException 404 if the file is not found, 500 on server errors
+    """
+    try:
+        result = metacat_api.get_file_details(request.namespace, request.name)
+        if not result["success"]:
+            raise HTTPException(
+                status_code=404,
+                detail=result.get("message", "File not found")
+            )
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        print('Error in get_file_details:', str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 class DatasetStatsRequest(BaseModel):
     namespace: str
     name: str

@@ -182,6 +182,7 @@ class MetaCatAPI:
                 {
                     "fid": str(result.get("fid", "")),  # Ensure fid is a string
                     "name": str(result.get("name", "")),  # Ensure name is a string
+                    "namespace": str(result.get("namespace", "")),  # Needed for file detail links
                     "updated": format_timestamp(result.get("updated_timestamp", 0)),  # Use 0 as default
                     "created": format_timestamp(result.get("created_timestamp", 0)),  # Use 0 as default
                     "size": int(result.get("size", 0)),  # Ensure size is an integer
@@ -201,6 +202,86 @@ class MetaCatAPI:
                 "message": str(e)
             }
             
+    def get_file_details(self, namespace: str, name: str):
+        """
+        Get full details for a single file: metadata, checksums, provenance
+        (parents/children), and containing datasets.
+
+        Args:
+            namespace (str): The file's namespace
+            name (str): The file's name
+
+        Returns:
+            A dictionary with a boolean "success" key and a dict "results" key,
+            or a string "message" key if the lookup fails.
+        """
+        MAX_RELATIVES = 50  # cap parents/children returned; raw files can have thousands
+        try:
+            f = self.client.get_file(
+                did=f"{namespace}:{name}",
+                with_metadata=True,
+                with_provenance=True,
+                with_datasets=True,
+            )
+            if f is None:
+                return {"success": False, "message": "File not found"}
+
+            def to_refs(items):
+                """Normalize provenance entries to {fid, namespace, name} dicts."""
+                out = []
+                for item in (items or [])[:MAX_RELATIVES]:
+                    if isinstance(item, dict):
+                        out.append({
+                            "fid": str(item.get("fid", "")),
+                            "namespace": item.get("namespace"),
+                            "name": item.get("name"),
+                        })
+                    else:  # bare fid string
+                        out.append({"fid": str(item), "namespace": None, "name": None})
+                return out
+
+            parents = to_refs(f.get("parents"))
+            children = to_refs(f.get("children"))
+
+            # Some MetaCat versions return provenance as bare fids; resolve
+            # them to human-readable namespace:name with one batch lookup.
+            unresolved = [r["fid"] for r in parents + children if not r["name"] and r["fid"]]
+            if unresolved:
+                try:
+                    resolved = self.client.get_files([{"fid": fid} for fid in unresolved])
+                    by_fid = {str(r.get("fid")): r for r in (resolved or [])}
+                    for ref in parents + children:
+                        info = by_fid.get(ref["fid"])
+                        if info:
+                            ref["namespace"] = info.get("namespace")
+                            ref["name"] = info.get("name")
+                except Exception as e:
+                    logger.warning(f"Provenance name resolution failed: {e}")
+
+            details = {
+                "fid": str(f.get("fid", "")),
+                "namespace": f.get("namespace", namespace),
+                "name": f.get("name", name),
+                "size": int(f.get("size", 0) or 0),
+                "created": format_timestamp(f.get("created_timestamp")),
+                "updated": format_timestamp(f.get("updated_timestamp")),
+                "checksums": f.get("checksums") or {},
+                "metadata": f.get("metadata") or {},
+                "parents": parents,
+                "children": children,
+                "total_parents": len(f.get("parents") or []),
+                "total_children": len(f.get("children") or []),
+                "datasets": [
+                    {"namespace": d.get("namespace"), "name": d.get("name")}
+                    for d in (f.get("datasets") or [])
+                    if isinstance(d, dict)
+                ],
+            }
+            return {"success": True, "results": details}
+        except Exception as e:
+            logger.error(f"get_file_details failed for {namespace}:{name}: {str(e)}")
+            return {"success": False, "message": str(e)}
+
     def get_username(self):
         """
         Returns username and token expiration timestamp.

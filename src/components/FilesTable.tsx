@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Pagination } from './Pagination';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { File } from '@/lib/api';
@@ -75,7 +76,17 @@ export function FilesTable({ files, isLoading, totalCount }: FilesTableProps) {
                     {paginatedFiles.map((file) => (
                         <TableRow key={file.fid}>
                             <TableCell className="max-w-[200px] break-words">
-                                {file.name}
+                                {file.namespace ? (
+                                    <Link
+                                        href={`/file/${encodeURIComponent(file.namespace)}/${encodeURIComponent(file.name)}`}
+                                        className="text-blue-500 hover:underline"
+                                        title="View file details and provenance"
+                                    >
+                                        {file.name}
+                                    </Link>
+                                ) : (
+                                    file.name
+                                )}
                             </TableCell>
                             <TableCell>{formatFileSize(file.size)}</TableCell>
                             <TableCell>{file.created}</TableCell>
