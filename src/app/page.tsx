@@ -1,5 +1,5 @@
 'use client'
-import React, {useState, useEffect, useRef, useCallback} from 'react'
+import React, {useState, useEffect, useRef, useCallback, Suspense} from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import  { Header }  from '@/components/Header'
 import  { Footer }  from '@/components/Footer'
@@ -13,7 +13,7 @@ import config from '@/config/config.json';
 // Add 'Other' to the tabs list for MQL queries
 const tabs = [...Object.keys(config.tabs), 'Other'];
 
-export default function Home() {
+function HomeContent() {
   const { isAuthenticated, isLoading } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -59,52 +59,51 @@ export default function Home() {
     setActiveTabIndex(newIndex);
   };
 
+  // Searching only writes the search into the URL; the effect below is the
+  // single place that fetches. This makes back-navigation, reloads, shared
+  // links, and repeated searches all behave identically.
   const handleSearch = async (
     query: string, category: string, tab: string, officialOnly: boolean,
-    customMql?: string, skipUrlUpdate?: boolean
+    customMql?: string
   ) => {
-    try {
-      const { results } = await searchDataSets(query, category, tab, officialOnly, customMql);
-      setResults(results);
-      if (!skipUrlUpdate) {
-        // Put the search in the URL so back-navigation (e.g. from a file
-        // detail page) and shared links restore this dataset list.
-        const p = new URLSearchParams();
-        p.set('tab', tab);
-        if (query) p.set('q', query);
-        if (category) p.set('category', category);
-        if (officialOnly) p.set('official', '1');
-        if (customMql) p.set('mql', customMql);
-        const searchUrl = `/?${p.toString()}`;
-        router.replace(searchUrl, { scroll: false });
-        // Let detail pages link straight back to these results.
-        try { sessionStorage.setItem('dunecat-search-url', searchUrl) } catch {}
-      }
-    } catch (error) {
-      console.error('Search failed:', error);
-      // Handle error (e.g., show error message to user)
-    }
+    const p = new URLSearchParams();
+    p.set('tab', tab);
+    if (query) p.set('q', query);
+    if (category) p.set('category', category);
+    if (officialOnly) p.set('official', '1');
+    if (customMql) p.set('mql', customMql);
+    const searchUrl = `/?${p.toString()}`;
+    // Let detail pages link straight back to these results.
+    try { sessionStorage.setItem('dunecat-search-url', searchUrl) } catch {}
+    router.replace(searchUrl, { scroll: false });
   };
 
-  // On mount (or after login), restore a search encoded in the URL.
-  const restoredRef = useRef(false);
+  // Run the search encoded in the URL whenever it changes (and once auth
+  // is ready). Repeating an identical search leaves the URL unchanged, so
+  // the current results simply stay on screen.
   useEffect(() => {
-    if (restoredRef.current || isLoading || !isAuthenticated) return;
+    if (isLoading || !isAuthenticated) return;
     const tab = searchParams?.get('tab') ?? '';
     if (!tab || !tabs.includes(tab)) return;
-    restoredRef.current = true;
-    const idx = tabs.indexOf(tab);
-    if (idx !== activeTabIndex) setActiveTabIndex(idx);
-    handleSearch(
-      searchParams?.get('q') ?? '',
-      searchParams?.get('category') ?? '',
-      tab,
-      searchParams?.get('official') === '1',
-      searchParams?.get('mql') ?? undefined,
-      true  // the URL already has these params
-    );
+    setActiveTabIndex(tabs.indexOf(tab));
+    let cancelled = false;
+    (async () => {
+      try {
+        const { results } = await searchDataSets(
+          searchParams?.get('q') ?? '',
+          searchParams?.get('category') ?? '',
+          tab,
+          searchParams?.get('official') === '1',
+          searchParams?.get('mql') ?? undefined
+        );
+        if (!cancelled) setResults(results);
+      } catch (error) {
+        console.error('Search failed:', error);
+      }
+    })();
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading, isAuthenticated]);
+  }, [searchParams, isLoading, isAuthenticated]);
 
   if (!isClient || !isLoaded) {
     return null;
@@ -173,5 +172,15 @@ export default function Home() {
       </main>
       <Footer/>
     </div>
+  )
+}
+
+// useSearchParams() forces client-side rendering for this page; Next.js
+// requires an explicit Suspense boundary around it for the production build.
+export default function Home() {
+  return (
+    <Suspense fallback={null}>
+      <HomeContent />
+    </Suspense>
   )
 }
