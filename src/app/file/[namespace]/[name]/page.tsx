@@ -16,6 +16,7 @@ import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { getFileDetails, FileDetails, FileRef } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
+import { formatSize } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -24,14 +25,6 @@ import {
 import { ArrowLeft, Copy, CheckCircle, ExternalLink } from 'lucide-react'
 
 const METACAT_GUI_BASE = 'https://metacat.fnal.gov:9443/dune_meta_prod/app/gui'
-
-function formatFileSize(bytes: number): string {
-  if (!bytes) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
 
 /** Renders a list of parent/child file references as clickable chips. */
 function FileRefList({ refs, emptyText }: {
@@ -168,7 +161,7 @@ export default function FileDetailPage() {
           <section className="grid grid-cols-2 gap-x-8 gap-y-2 rounded-lg border p-4 text-sm sm:grid-cols-4">
             <div>
               <p className="text-muted-foreground">Size</p>
-              <p>{formatFileSize(details.size)}</p>
+              <p>{formatSize(details.size)}</p>
             </div>
             <div>
               <p className="text-muted-foreground">Created</p>

@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { Dataset, getDatasetSizes } from '@/lib/api';
+import { formatSize } from '@/lib/format';
 import { Pagination } from './Pagination';
 import { DatasetDialog } from './DatasetDialog';
 
@@ -12,15 +13,6 @@ interface ResultsTableProps {
 
 const SIZE_BATCH = 25;          // matches the backend per-request cap
 const SIZE_FETCH_LIMIT = 500;   // don't hammer MetaCat for huge result sets
-
-function formatDatasetSize(bytes: number | undefined): string {
-    if (bytes === undefined) return '…';   // still loading
-    if (!bytes) return '—';                // unknown / zero
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
 
 const dsKey = (d: Dataset) => `${d.namespace}:${d.name}`;
 
@@ -127,7 +119,7 @@ export function DatasetTable({ results }: ResultsTableProps) {
                             <TableCell>{new Date(result.created).toLocaleDateString()}</TableCell>
                             <TableCell>{result.files}</TableCell>
                             <TableCell className="whitespace-nowrap">
-                                {formatDatasetSize(effectiveSize(result))}
+                                {formatSize(effectiveSize(result))}
                             </TableCell>
                         </TableRow>
                     ))}
