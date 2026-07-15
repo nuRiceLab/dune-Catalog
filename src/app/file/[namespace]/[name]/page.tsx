@@ -13,7 +13,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { getFileDetails, FileDetails, FileRef } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
 import { formatSize } from '@/lib/format'
@@ -57,7 +57,6 @@ function FileRefList({ refs, emptyText }: {
 
 export default function FileDetailPage() {
   const params = useParams<{ namespace: string; name: string }>()
-  const router = useRouter()
   const { isAuthenticated, isLoading: authLoading } = useAuth()
 
   const namespace = decodeURIComponent(params.namespace ?? '')
@@ -68,6 +67,15 @@ export default function FileDetailPage() {
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [metaFilter, setMetaFilter] = useState('')
+  const [searchHref, setSearchHref] = useState('/')
+
+  // The home page stores its current search URL (tab/query params) here,
+  // so "Back to search results" returns to the exact dataset list.
+  useEffect(() => {
+    try {
+      setSearchHref(sessionStorage.getItem('dunecat-search-url') ?? '/')
+    } catch { /* keep '/' */ }
+  }, [])
 
   useEffect(() => {
     if (authLoading || !isAuthenticated || !namespace || !name) return
@@ -117,11 +125,13 @@ export default function FileDetailPage() {
 
   return (
     <main className="container mx-auto flex flex-col gap-6 p-4">
-      {/* Top bar: back + external link */}
+      {/* Top bar: back to the dataset search + external link */}
       <div className="flex items-center justify-between">
-        <Button variant="outline" size="sm" onClick={() => router.back()} className="gap-1.5">
-          <ArrowLeft className="h-4 w-4" /> Back
-        </Button>
+        <Link href={searchHref}>
+          <Button variant="outline" size="sm" className="gap-1.5">
+            <ArrowLeft className="h-4 w-4" /> Back to search results
+          </Button>
+        </Link>
         {details?.fid && (
           <a
             href={`${METACAT_GUI_BASE}/show_file?fid=${encodeURIComponent(details.fid)}`}
@@ -223,6 +233,7 @@ export default function FileDetailPage() {
               </p>
             )}
           </section>
+
           {/* Provenance */}
           <section className="rounded-lg border p-4">
             <h2 className="mb-3 text-lg font-semibold">Provenance</h2>
@@ -274,7 +285,6 @@ export default function FileDetailPage() {
               )}
             </div>
           </section>
-
         </>
       )}
     </main>
