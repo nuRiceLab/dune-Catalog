@@ -23,14 +23,43 @@ export interface Dataset {
   creator: string;
   created: number;
   files: number;
+  size: number;
   namespace: string;
 }
 export interface File {
   fid: string;
   name: string;
+  namespace?: string;
   updated: number;
   created: number;
   size: number;
+}
+
+export interface FileRef {
+  fid: string;
+  namespace: string | null;
+  name: string | null;
+}
+
+export interface DatasetRef {
+  namespace: string;
+  name: string;
+}
+
+export interface FileDetails {
+  fid: string;
+  namespace: string;
+  name: string;
+  size: number;
+  created: string;
+  updated: string;
+  checksums: Record<string, string>;
+  metadata: Record<string, unknown>;
+  parents: FileRef[];
+  children: FileRef[];
+  total_parents: number;
+  total_children: number;
+  datasets: DatasetRef[];
 }
 
 // The isAdmin function has been moved to the backend for better security
@@ -232,4 +261,45 @@ export async function recordDatasetAccess(namespace: string, name: string): Prom
   } catch (error) {
     console.error('Error recording dataset access:', error);
   }
+}
+
+/**
+ * Fetches full details for a single file: metadata, checksums,
+ * provenance (parents/children), and containing datasets.
+ * Requires the user to be logged in (session cookie is sent).
+ */
+export async function getFileDetails(namespace: string, name: string): Promise<FileDetails> {
+  const response = await axios.post<ApiResponse<FileDetails>>(
+    `${API_URL}/fileDetails`,
+    { namespace, name },
+    {
+      timeout: API_TIMEOUT,
+      withCredentials: true  // send the CILogon session cookie
+    }
+  );
+  if (!response.data.success || !response.data.results) {
+    throw new Error(response.data.message || 'Failed to load file details');
+  }
+  return response.data.results as FileDetails;
+}
+
+/**
+ * Fetches total sizes (bytes) for a batch of datasets (max 25).
+ * Returns a map keyed by "namespace:name".
+ */
+export async function getDatasetSizes(
+  datasets: { namespace: string; name: string }[]
+): Promise<Record<string, number>> {
+  const response = await axios.post<ApiResponse<Record<string, number>>>(
+    `${API_URL}/datasetSizes`,
+    { datasets },
+    {
+      timeout: API_TIMEOUT,
+      withCredentials: true  // send the CILogon session cookie
+    }
+  );
+  if (!response.data.success || !response.data.results) {
+    throw new Error(response.data.message || 'Failed to load dataset sizes');
+  }
+  return response.data.results as Record<string, number>;
 }

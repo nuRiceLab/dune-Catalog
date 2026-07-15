@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Pagination } from './Pagination';
+import { formatSize } from '@/lib/format';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { File } from '@/lib/api';
 import config from '@/config/config.json';
@@ -75,9 +77,19 @@ export function FilesTable({ files, isLoading, totalCount }: FilesTableProps) {
                     {paginatedFiles.map((file) => (
                         <TableRow key={file.fid}>
                             <TableCell className="max-w-[200px] break-words">
-                                {file.name}
+                                {file.namespace ? (
+                                    <Link
+                                        href={`/file/${encodeURIComponent(file.namespace)}/${encodeURIComponent(file.name)}`}
+                                        className="text-blue-500 hover:underline"
+                                        title="View file details and provenance"
+                                    >
+                                        {file.name}
+                                    </Link>
+                                ) : (
+                                    file.name
+                                )}
                             </TableCell>
-                            <TableCell>{formatFileSize(file.size)}</TableCell>
+                            <TableCell>{formatSize(file.size)}</TableCell>
                             <TableCell>{file.created}</TableCell>
                             <TableCell>{file.updated}</TableCell>
                             <TableCell>{file.fid}</TableCell>
@@ -95,12 +107,4 @@ export function FilesTable({ files, isLoading, totalCount }: FilesTableProps) {
             />
         </div>
     );
-}
-
-function formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }

@@ -7,6 +7,7 @@ import { SearchBar } from '@/components/SearchBar'
 import { DatasetTable } from '@/components/DatasetTable'
 import { searchDataSets, Dataset } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
+import { useRouter, useSearchParams } from 'next/navigation'
 import config from '@/config/config.json';
 
 // Add 'Other' to the tabs list for MQL queries
@@ -14,6 +15,8 @@ const tabs = [...Object.keys(config.tabs), 'Other'];
 
 export default function Home() {
   const { isAuthenticated, isLoading } = useAuth()
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [sliderStyle, setSliderStyle] = useState({ width: 0, left: 0 })
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
@@ -56,15 +59,49 @@ export default function Home() {
     setActiveTabIndex(newIndex);
   };
 
-  const handleSearch = async (query: string, category: string, tab: string, officialOnly: boolean, customMql?: string) => {
+  const handleSearch = async (
+    query: string, category: string, tab: string, officialOnly: boolean,
+    customMql?: string, skipUrlUpdate?: boolean
+  ) => {
     try {
       const { results } = await searchDataSets(query, category, tab, officialOnly, customMql);
       setResults(results);
+      if (!skipUrlUpdate) {
+        // Put the search in the URL so back-navigation (e.g. from a file
+        // detail page) and shared links restore this dataset list.
+        const p = new URLSearchParams();
+        p.set('tab', tab);
+        if (query) p.set('q', query);
+        if (category) p.set('category', category);
+        if (officialOnly) p.set('official', '1');
+        if (customMql) p.set('mql', customMql);
+        router.replace(`/?${p.toString()}`, { scroll: false });
+      }
     } catch (error) {
       console.error('Search failed:', error);
       // Handle error (e.g., show error message to user)
     }
   };
+
+  // On mount (or after login), restore a search encoded in the URL.
+  const restoredRef = useRef(false);
+  useEffect(() => {
+    if (restoredRef.current || isLoading || !isAuthenticated) return;
+    const tab = searchParams?.get('tab') ?? '';
+    if (!tab || !tabs.includes(tab)) return;
+    restoredRef.current = true;
+    const idx = tabs.indexOf(tab);
+    if (idx !== activeTabIndex) setActiveTabIndex(idx);
+    handleSearch(
+      searchParams?.get('q') ?? '',
+      searchParams?.get('category') ?? '',
+      tab,
+      searchParams?.get('official') === '1',
+      searchParams?.get('mql') ?? undefined,
+      true  // the URL already has these params
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, isAuthenticated]);
 
   if (!isClient || !isLoaded) {
     return null;

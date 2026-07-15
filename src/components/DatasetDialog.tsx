@@ -131,7 +131,7 @@ export function DatasetDialog({ result, className }: ResultDialogProps) {
                     </div>
                 )}
                 <div className="w-full">
-                    <h3 className="text-lg font-semibold mb-2">Files in this dataset (DUNE Catalog is only able to display the first {config.app.files.maxToShow} files):</h3>
+                    <h3 className="text-lg font-semibold mb-2">Files in this dataset (DUNE catalog will only display the first {config.app.files.maxToShow} files):</h3>
                     <FilesTable files={files} isLoading={isLoadingFiles} totalCount={result.files} />
                 </div>
             </DialogContent>
