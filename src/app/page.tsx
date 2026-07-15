@@ -75,7 +75,10 @@ export default function Home() {
         if (category) p.set('category', category);
         if (officialOnly) p.set('official', '1');
         if (customMql) p.set('mql', customMql);
-        router.replace(`/?${p.toString()}`, { scroll: false });
+        const searchUrl = `/?${p.toString()}`;
+        router.replace(searchUrl, { scroll: false });
+        // Let detail pages link straight back to these results.
+        try { sessionStorage.setItem('dunecat-search-url', searchUrl) } catch {}
       }
     } catch (error) {
       console.error('Search failed:', error);

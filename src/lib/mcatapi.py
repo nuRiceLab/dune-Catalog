@@ -96,8 +96,10 @@ class MetaCatAPI:
                 having_conditions = []
                 # Add search condition if query_text is provided
                 if query_text:
-                    # Escape the query text for use in the MQL query
-                    escaped_query = re.escape(query_text.replace("'", "\\'"))
+                    # Escape the query text for regex use, but let '*' act as
+                    # a wildcard (e.g. atmos*reco2*official -> atmos.*reco2.*official)
+                    sanitized = query_text.replace("'", "\\'")
+                    escaped_query = ".*".join(re.escape(part) for part in sanitized.split("*"))
                     # Add the search condition to the list of conditions
                     having_conditions.append(f"name ~* '(?i){escaped_query}'")
 
