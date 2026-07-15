@@ -122,6 +122,7 @@ class MetaCatAPI:
                     "creator": result.get("creator", ""),
                     "created": format_timestamp(result.get("created_timestamp", "")),
                     "files": result.get("file_count", 0),
+                    "size": int(result.get("total_size", 0) or 0),  # total bytes
                     "namespace": result.get("namespace", "")
                 }
                 for result in raw_results
@@ -280,6 +281,42 @@ class MetaCatAPI:
             return {"success": True, "results": details}
         except Exception as e:
             logger.error(f"get_file_details failed for {namespace}:{name}: {str(e)}")
+            return {"success": False, "message": str(e)}
+
+    def get_dataset_sizes(self, datasets):
+        """
+        Compute total sizes for a list of datasets using MetaCat summary
+        file queries: `files from ns:name` with summary="count" returns
+        {"count": n, "total_size": nbytes} without listing the files.
+
+        Args:
+            datasets: list of {"namespace": ..., "name": ...} dicts
+
+        Returns:
+            A dictionary with a boolean "success" key and a "results" dict
+            mapping "namespace:name" -> total size in bytes.
+        """
+        from concurrent.futures import ThreadPoolExecutor
+
+        def one(ds):
+            did = f"{ds['namespace']}:{ds['name']}"
+            try:
+                res = self.client.query(f"files from {did}", summary="count")
+                # Depending on client version this is a dict or a 1-element list
+                if not isinstance(res, dict):
+                    res = list(res)
+                    res = res[0] if res else {}
+                return did, int((res or {}).get("total_size", 0) or 0)
+            except Exception as e:
+                logger.warning(f"Size summary query failed for {did}: {e}")
+                return did, 0
+
+        try:
+            with ThreadPoolExecutor(max_workers=8) as pool:
+                sizes = dict(pool.map(one, datasets))
+            return {"success": True, "results": sizes}
+        except Exception as e:
+            logger.error(f"get_dataset_sizes failed: {str(e)}")
             return {"success": False, "message": str(e)}
 
     def get_username(self):

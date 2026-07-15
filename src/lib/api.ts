@@ -23,6 +23,7 @@ export interface Dataset {
   creator: string;
   created: number;
   files: number;
+  size: number;
   namespace: string;
 }
 export interface File {
@@ -280,4 +281,25 @@ export async function getFileDetails(namespace: string, name: string): Promise<F
     throw new Error(response.data.message || 'Failed to load file details');
   }
   return response.data.results as FileDetails;
+}
+
+/**
+ * Fetches total sizes (bytes) for a batch of datasets (max 25).
+ * Returns a map keyed by "namespace:name".
+ */
+export async function getDatasetSizes(
+  datasets: { namespace: string; name: string }[]
+): Promise<Record<string, number>> {
+  const response = await axios.post<ApiResponse<Record<string, number>>>(
+    `${API_URL}/datasetSizes`,
+    { datasets },
+    {
+      timeout: API_TIMEOUT,
+      withCredentials: true  // send the CILogon session cookie
+    }
+  );
+  if (!response.data.success || !response.data.results) {
+    throw new Error(response.data.message || 'Failed to load dataset sizes');
+  }
+  return response.data.results as Record<string, number>;
 }

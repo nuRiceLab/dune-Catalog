@@ -212,6 +212,43 @@ async def get_file_details(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+class DatasetKey(BaseModel):
+    namespace: str
+    name: str
+
+
+class DatasetSizesRequest(BaseModel):
+    datasets: list[DatasetKey]
+
+
+@app.post("/datasetSizes")
+async def get_dataset_sizes(
+    request: DatasetSizesRequest,
+    user: auth.UserInfo = Depends(auth.get_current_user),
+):
+    """
+    Computes total sizes for a batch of datasets (max 25 per request)
+    via MetaCat summary queries.
+
+    Returns:
+        {"success": True, "results": {"namespace:name": bytes, ...}}
+    """
+    if len(request.datasets) > 25:
+        raise HTTPException(status_code=413, detail="Max 25 datasets per request")
+    try:
+        result = metacat_api.get_dataset_sizes(
+            [{"namespace": d.namespace, "name": d.name} for d in request.datasets]
+        )
+        if not result["success"]:
+            raise HTTPException(status_code=500, detail=result.get("message", "Size lookup failed"))
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        print('Error in get_dataset_sizes:', str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 class DatasetStatsRequest(BaseModel):
     namespace: str
     name: str
