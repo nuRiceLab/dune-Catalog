@@ -91,7 +91,7 @@ class DatasetRequest(BaseModel):
 
 
 @app.post("/queryDatasets")
-async def get_datasets(
+def get_datasets(
     request: DatasetRequest,
     user: auth.UserInfo = Depends(auth.get_current_user),
 ) -> dict:
@@ -147,7 +147,7 @@ class FileRequest(BaseModel):
 
 
 @app.post("/queryFiles")
-async def get_files(
+def get_files(
     request: FileRequest,
     user: auth.UserInfo = Depends(auth.get_current_user),
 ):
@@ -182,7 +182,7 @@ class FileDetailsRequest(BaseModel):
 
 
 @app.post("/fileDetails")
-async def get_file_details(
+def get_file_details(
     request: FileDetailsRequest,
     user: auth.UserInfo = Depends(auth.get_current_user),
 ):
@@ -222,7 +222,7 @@ class DatasetSizesRequest(BaseModel):
 
 
 @app.post("/datasetSizes")
-async def get_dataset_sizes(
+def get_dataset_sizes(
     request: DatasetSizesRequest,
     user: auth.UserInfo = Depends(auth.get_current_user),
 ):
@@ -255,7 +255,7 @@ class DatasetStatsRequest(BaseModel):
     location: str | None = None  # Optional location field
 
 @app.post("/recordDatasetAccess")
-async def record_dataset_access(
+def record_dataset_access(
     request: DatasetStatsRequest,
     user: auth.UserInfo = Depends(auth.get_current_user),
 ):

@@ -11,8 +11,7 @@ interface ResultsTableProps {
     results: Dataset[];
 }
 
-const SIZE_BATCH = 25;          // matches the backend per-request cap
-const SIZE_FETCH_LIMIT = 500;   // don't hammer MetaCat for huge result sets
+const SIZE_BATCH = 5;           // small parallel batches: one huge dataset delays at most 4 others
 
 const dsKey = (d: Dataset) => `${d.namespace}:${d.name}`;
 
@@ -24,38 +23,6 @@ export function DatasetTable({ results }: ResultsTableProps) {
     const [sizeMap, setSizeMap] = useState<Record<string, number>>({});
     const requestedRef = useRef<Set<string>>(new Set());
 
-    // Fetch dataset sizes in batches after results arrive. Datasets whose
-    // record already carries a size (result.size > 0) are skipped.
-    useEffect(() => {
-        let cancelled = false;
-        const missing = results
-            .filter((r) => !r.size && !requestedRef.current.has(dsKey(r)))
-            .slice(0, SIZE_FETCH_LIMIT);
-        if (!missing.length) return;
-        missing.forEach((r) => requestedRef.current.add(dsKey(r)));
-
-        (async () => {
-            for (let i = 0; i < missing.length && !cancelled; i += SIZE_BATCH) {
-                const chunk = missing
-                    .slice(i, i + SIZE_BATCH)
-                    .map(({ namespace, name }) => ({ namespace, name }));
-                try {
-                    const sizes = await getDatasetSizes(chunk);
-                    if (!cancelled) setSizeMap((prev) => ({ ...prev, ...sizes }));
-                } catch {
-                    // Leave these as unknown; cells fall back to '—'
-                    if (!cancelled) {
-                        setSizeMap((prev) => {
-                            const next = { ...prev };
-                            chunk.forEach((d) => { next[`${d.namespace}:${d.name}`] ??= 0; });
-                            return next;
-                        });
-                    }
-                }
-            }
-        })();
-        return () => { cancelled = true; };
-    }, [results]);
 
     /** Effective size: from the dataset record if present, else the fetched map. */
     const effectiveSize = (r: Dataset): number | undefined =>
@@ -71,6 +38,50 @@ export function DatasetTable({ results }: ResultsTableProps) {
 
     const totalPages = Math.ceil(sortedResults.length / pageSize);
     const paginatedResults = sortedResults.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+    // Fetch sizes only for the datasets on the current page (each size is a
+    // real aggregate query on MetaCat, so fetching all results is too costly).
+    // Batches run in parallel and are retried once, and results are merged
+    // whenever they arrive — a size that takes minutes to compute still shows
+    // up when ready (sizeMap is keyed by dataset, so late answers are always
+    // safe to apply).
+    useEffect(() => {
+        const missing = paginatedResults
+            .filter((r) => !r.size && !requestedRef.current.has(dsKey(r)));
+        if (!missing.length) return;
+        missing.forEach((r) => requestedRef.current.add(dsKey(r)));
+
+        const chunks: { namespace: string; name: string }[][] = [];
+        for (let i = 0; i < missing.length; i += SIZE_BATCH) {
+            chunks.push(
+                missing.slice(i, i + SIZE_BATCH)
+                    .map(({ namespace, name }) => ({ namespace, name }))
+            );
+        }
+        chunks.forEach(async (chunk) => {
+            for (let attempt = 0; attempt < 2; attempt++) {
+                try {
+                    const sizes = await getDatasetSizes(chunk);
+                    setSizeMap((prev) => ({ ...prev, ...sizes }));
+                    return;
+                } catch {
+                    if (attempt === 0) {
+                        // Brief pause, then one retry (transient failure or a
+                        // proxy cutoff); the backend caches finished
+                        // computations, so the retry is usually instant.
+                        await new Promise((res) => setTimeout(res, 3000));
+                    }
+                }
+            }
+            // Both attempts failed: show '—' rather than a permanent spinner.
+            setSizeMap((prev) => {
+                const next = { ...prev };
+                chunk.forEach((d) => { next[`${d.namespace}:${d.name}`] ??= 0; });
+                return next;
+            });
+        });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [results, currentPage, pageSize, sortColumn, sortDirection]);
 
     const toggleSort = (column: keyof Dataset) => {
         if (column === sortColumn) {

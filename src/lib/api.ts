@@ -294,7 +294,7 @@ export async function getDatasetSizes(
     `${API_URL}/datasetSizes`,
     { datasets },
     {
-      timeout: API_TIMEOUT,
+      timeout: 0,  // no client timeout: huge datasets take as long as they take
       withCredentials: true  // send the CILogon session cookie
     }
   );

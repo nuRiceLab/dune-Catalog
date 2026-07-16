@@ -6,6 +6,11 @@ import re
 import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Computed dataset sizes are expensive (one MetaCat aggregate query each),
+# so cache them briefly. Keyed by "namespace:name" -> (timestamp, bytes).
+_dataset_size_cache: dict[str, tuple[float, int]] = {}
+_DATASET_SIZE_CACHE_TTL_S = 900  # 15 minutes
 def format_timestamp(timestamp):
     """
     Format a given timestamp (in seconds) into a human-readable string
@@ -298,20 +303,26 @@ class MetaCatAPI:
             A dictionary with a boolean "success" key and a "results" dict
             mapping "namespace:name" -> total size in bytes.
         """
+        import time
         from concurrent.futures import ThreadPoolExecutor
 
         def one(ds):
             did = f"{ds['namespace']}:{ds['name']}"
+            cached = _dataset_size_cache.get(did)
+            if cached and time.time() - cached[0] < _DATASET_SIZE_CACHE_TTL_S:
+                return did, cached[1]
             try:
                 res = self.client.query(f"files from {did}", summary="count")
                 # Depending on client version this is a dict or a 1-element list
                 if not isinstance(res, dict):
                     res = list(res)
                     res = res[0] if res else {}
-                return did, int((res or {}).get("total_size", 0) or 0)
+                size = int((res or {}).get("total_size", 0) or 0)
+                _dataset_size_cache[did] = (time.time(), size)
+                return did, size
             except Exception as e:
                 logger.warning(f"Size summary query failed for {did}: {e}")
-                return did, 0
+                return did, 0  # failures are not cached, so a retry recomputes
 
         try:
             with ThreadPoolExecutor(max_workers=8) as pool:
