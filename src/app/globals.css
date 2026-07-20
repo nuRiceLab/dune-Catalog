@@ -32,6 +32,7 @@
         --ring: #7CAED5;
         --radius: 0.5rem;
         --headfoot-background: #dfe8f3;
+        --headfoot-foreground: #1A202C;
     }
 
     .dark {
@@ -55,6 +56,7 @@
         --input: #4A5568;
         --ring: #F3A054;
         --headfoot-background: #383f48;
+        --headfoot-foreground: #F7FAFC;
     }
 }
 

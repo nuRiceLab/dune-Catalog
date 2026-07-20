@@ -154,7 +154,7 @@ export default function FeedbackDialog() {
           size="sm"
           aria-label="Report an issue or give feedback"
           title="Report an issue or give feedback"
-          className="gap-1.5 text-white hover:text-white hover:bg-gray-700"
+          className="gap-1.5 text-headfoot-foreground hover:text-headfoot-foreground hover:bg-headfoot-foreground/10"
         >
           <SearchAlertIcon className="h-4 w-4" />
           <span className="hidden sm:inline">Report issue</span>

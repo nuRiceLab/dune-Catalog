@@ -46,7 +46,7 @@ export function Header() {
     }, [searchParams, pathname, router, toast]);
 
     return (
-        <header className="w-full bg-headfoot-background text-white p-4">
+        <header className="w-full bg-headfoot-background text-headfoot-foreground p-4">
             <div className="flex justify-between items-center">
                 <div className="flex items-center gap-4">
                     <Link href="/">
@@ -67,7 +67,7 @@ export function Header() {
                         <Link href="/admin">
                             <Button
                                 variant="outline"
-                                className="text-white hover:text-white hover:bg-gray-700"
+                                className="text-headfoot-foreground hover:text-headfoot-foreground hover:bg-headfoot-foreground/10"
                             >
                                 Admin
                             </Button>
@@ -77,7 +77,7 @@ export function Header() {
                         <Button
                             variant="outline"
                             onClick={() => logout()}
-                            className="flex items-center gap-2 text-white hover:text-white hover:bg-gray-700"
+                            className="flex items-center gap-2 text-headfoot-foreground hover:text-headfoot-foreground hover:bg-headfoot-foreground/10"
                         >
                             <LogOut className="w-4 h-4" />
                             Logout
@@ -86,7 +86,7 @@ export function Header() {
                         <Button
                             variant="outline"
                             onClick={() => login()}
-                            className="flex items-center gap-2 text-white hover:text-white hover:bg-gray-700"
+                            className="flex items-center gap-2 text-headfoot-foreground hover:text-headfoot-foreground hover:bg-headfoot-foreground/10"
                         >
                             <LogIn className="w-4 h-4" />
                             Login with CILogon
