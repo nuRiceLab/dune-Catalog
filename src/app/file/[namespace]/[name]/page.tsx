@@ -23,6 +23,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import { ArrowLeft, Copy, CheckCircle, ExternalLink } from 'lucide-react'
+import { ReplicasCard } from '@/components/ReplicasCard'
 
 const METACAT_GUI_BASE = 'https://metacat.fnal.gov:9443/dune_meta_prod/app/gui'
 
@@ -192,6 +193,9 @@ export default function FileDetailPage() {
               </div>
             ))}
           </section>
+
+          {/* Rucio replicas */}
+          <ReplicasCard scope={namespace} name={name} />
 
           {/* Metadata */}
           <section className="rounded-lg border p-4">

@@ -10,6 +10,7 @@ import tempfile
 import shutil
 from src.lib.mcatapi import MetaCatAPI
 from src.backend import auth
+from src.backend import rucio_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -18,6 +19,7 @@ logger = logging.getLogger(__name__)
 # Create the FastAPI app
 app = FastAPI()
 
+app.include_router(rucio_router.router)
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
