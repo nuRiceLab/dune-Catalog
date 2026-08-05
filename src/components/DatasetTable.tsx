@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown } from 'lucide-react';
@@ -9,13 +10,18 @@ import { DatasetDialog } from './DatasetDialog';
 
 interface ResultsTableProps {
     results: Dataset[];
+    /** 'file' when the underlying query returned files rather than datasets
+     *  (e.g. a custom "files from ..." MQL query on the Other tab) -- files
+     *  have no meaningful Files/Size columns and open the file detail page
+     *  on click instead of the dataset dialog. Defaults to 'dataset'. */
+    mode?: 'dataset' | 'file';
 }
 
 const SIZE_BATCH = 5;           // small parallel batches: one huge dataset delays at most 4 others
 
 const dsKey = (d: Dataset) => `${d.namespace}:${d.name}`;
 
-export function DatasetTable({ results }: ResultsTableProps) {
+export function DatasetTable({ results, mode = 'dataset' }: ResultsTableProps) {
     const [sortColumn, setSortColumn] = useState<keyof Dataset>('name');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
     const [currentPage, setCurrentPage] = useState(1);
@@ -44,8 +50,10 @@ export function DatasetTable({ results }: ResultsTableProps) {
     // Batches run in parallel and are retried once, and results are merged
     // whenever they arrive — a size that takes minutes to compute still shows
     // up when ready (sizeMap is keyed by dataset, so late answers are always
-    // safe to apply).
+    // safe to apply). Skipped entirely in 'file' mode -- individual files
+    // already carry their own size, there's no dataset size to compute.
     useEffect(() => {
+        if (mode === 'file') return;
         const missing = paginatedResults
             .filter((r) => !r.size && !requestedRef.current.has(dsKey(r)));
         if (!missing.length) return;
@@ -81,7 +89,7 @@ export function DatasetTable({ results }: ResultsTableProps) {
             });
         });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [results, currentPage, pageSize, sortColumn, sortDirection]);
+    }, [results, currentPage, pageSize, sortColumn, sortDirection, mode]);
 
     const toggleSort = (column: keyof Dataset) => {
         if (column === sortColumn) {
@@ -100,12 +108,14 @@ export function DatasetTable({ results }: ResultsTableProps) {
         );
     }
 
+    const headers = mode === 'file' ? ['Name', 'Creator', 'Created'] : ['Name', 'Creator', 'Created', 'Files', 'Size'];
+
     return (
         <div>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        {['Name', 'Creator', 'Created', 'Files', 'Size'].map((header) => (
+                        {headers.map((header) => (
                             <TableHead key={header}>
                                 <Button
                                     variant="ghost"
@@ -124,14 +134,27 @@ export function DatasetTable({ results }: ResultsTableProps) {
                     {paginatedResults.map((result, index) => (
                         <TableRow key={index}>
                             <TableCell className="max-w-[200px] break-words">
-                                <DatasetDialog result={result} />
+                                {mode === 'file' ? (
+                                    <Link
+                                        href={`/file/${encodeURIComponent(result.namespace)}/${encodeURIComponent(result.name)}`}
+                                        className="text-blue-500 hover:underline"
+                                    >
+                                        {result.name}
+                                    </Link>
+                                ) : (
+                                    <DatasetDialog result={result} />
+                                )}
                             </TableCell>
                             <TableCell>{result.creator}</TableCell>
                             <TableCell>{new Date(result.created).toLocaleDateString()}</TableCell>
-                            <TableCell>{result.files}</TableCell>
-                            <TableCell className="whitespace-nowrap">
-                                {formatSize(effectiveSize(result))}
-                            </TableCell>
+                            {mode !== 'file' && (
+                                <>
+                                    <TableCell>{result.files}</TableCell>
+                                    <TableCell className="whitespace-nowrap">
+                                        {formatSize(effectiveSize(result))}
+                                    </TableCell>
+                                </>
+                            )}
                         </TableRow>
                     ))}
                 </TableBody>

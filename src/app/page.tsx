@@ -13,6 +13,23 @@ import config from '@/config/config.json';
 // Add 'Other' to the tabs list for MQL queries
 const tabs = [...Object.keys(config.tabs), 'Other'];
 
+/**
+ * A custom MQL query (Other tab) can return either files or datasets --
+ * e.g. "files from ns:*" vs "datasets matching ns:*". The results table
+ * needs to know which, since files have no meaningful "Files"/"Size"
+ * columns and shouldn't open the dataset dialog on click. Whichever
+ * keyword ("files" or "datasets") appears first in the query decides it;
+ * defaults to 'datasets' (today's behavior) when neither is found.
+ */
+function classifyMqlQuery(mql: string): 'files' | 'datasets' {
+  const q = mql.toLowerCase();
+  const filesIdx = q.search(/\bfiles\s+(from|matching)\b/);
+  const datasetsIdx = q.search(/\bdatasets\s+(from|matching)\b/);
+  if (filesIdx === -1) return 'datasets';
+  if (datasetsIdx === -1) return 'files';
+  return filesIdx < datasetsIdx ? 'files' : 'datasets';
+}
+
 function HomeContent() {
   const { isAuthenticated, isLoading } = useAuth()
   const router = useRouter()
@@ -21,6 +38,7 @@ function HomeContent() {
   const [sliderStyle, setSliderStyle] = useState({ width: 0, left: 0 })
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
   const [results, setResults] = useState<Dataset[]>([]);
+  const [resultsMode, setResultsMode] = useState<'file' | 'dataset'>('dataset');
   const [isClient, setIsClient] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -87,6 +105,8 @@ function HomeContent() {
     if (!tab || !tabs.includes(tab)) return;
     setActiveTabIndex(tabs.indexOf(tab));
     let cancelled = false;
+    const mql = searchParams?.get('mql') ?? undefined;
+    setResultsMode(tab === 'Other' && mql && classifyMqlQuery(mql) === 'files' ? 'file' : 'dataset');
     (async () => {
       try {
         const { results } = await searchDataSets(
@@ -94,7 +114,7 @@ function HomeContent() {
           searchParams?.get('category') ?? '',
           tab,
           searchParams?.get('official') === '1',
-          searchParams?.get('mql') ?? undefined
+          mql
         );
         if (!cancelled) setResults(results);
       } catch (error) {
@@ -162,7 +182,7 @@ function HomeContent() {
                 </div>
                 {tabs.map((tab) => (
                   <TabsContent key={tab} value={tab} className="mt-4">
-                    <DatasetTable results={results}/>
+                    <DatasetTable results={results} mode={resultsMode}/>
                   </TabsContent>
                 ))}
               </>
