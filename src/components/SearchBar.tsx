@@ -14,6 +14,7 @@ import {
 import { Loader2 } from "lucide-react"
 import config from '@/config/config.json';
 import { Textarea } from "@/components/ui/textarea"
+import { ConditionsDbPanel } from "@/components/ConditionsDbPanel"
 
 interface SearchBarProps {
   onSearch: (query: string, category: string, tab: string, officialOnly: boolean, customMql?: string) => void;
@@ -155,12 +156,37 @@ export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarPro
     <div className="space-y-4">
       <form onSubmit={handleSubmit} className="flex flex-col space-y-2">
         {activeTab === 'Other' ? (
-          <Textarea
-            value={customMql}
-            onChange={(e) => setCustomMql(e.target.value)}
-            placeholder="Enter MQL query..."
-            className="min-h-[100px] font-mono"
-          />
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="mql-query">MetaCat query</Label>
+              <Textarea
+                id="mql-query"
+                value={customMql}
+                onChange={(e) => setCustomMql(e.target.value)}
+                placeholder={
+                  "Enter MQL query, e.g. files from datasets matching vd-protodune:vd-protodune_3934*\n\n" +
+                  "Example of a complex query to both the conditions DB and MetaCat:\n" +
+                  "filter dune_runshistdb() (files from datasets matching hd-protodune:hd-protodune_2919*) where runs_history.gain = 7.8"
+                }
+                className="min-h-[200px] font-mono"
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="relative self-end"
+            >
+              <span className={`${isLoading ? 'invisible' : 'visible'}`}>
+                Search
+              </span>
+              {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Loader2 className="h-4 w-4 animate-spin"/>
+                </div>
+              )}
+            </Button>
+            <ConditionsDbPanel />
+          </div>
         ) : (
           <div className="flex space-x-2">
             <Input
@@ -192,20 +218,22 @@ export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarPro
             </div>
           </div>
         )}
-        <Button
-          type="submit"
-          disabled={isLoading}
-          className="relative self-end"
-        >
-          <span className={`${isLoading ? 'invisible' : 'visible'}`}>
-            Search
-          </span>
-          {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Loader2 className="h-4 w-4 animate-spin"/>
-            </div>
-          )}
-        </Button>
+        {activeTab !== 'Other' && (
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="relative self-end"
+          >
+            <span className={`${isLoading ? 'invisible' : 'visible'}`}>
+              Search
+            </span>
+            {isLoading && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Loader2 className="h-4 w-4 animate-spin"/>
+              </div>
+            )}
+          </Button>
+        )}
       </form>
       {/*
       <div className="flex space-x-2 items-center">

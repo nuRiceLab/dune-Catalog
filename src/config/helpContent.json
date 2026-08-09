@@ -20,6 +20,10 @@
     {
       "title": "Sorting Results",
       "content": "To sort the results of a query, click the column name to sort the column by ascending order, clicking it again will switch to descending."
+    },
+    {
+      "title": "Other Tab",
+      "content": "The Other tab is for advanced use. Enter a custom MetaCat query (MQL) directly, such as \"files from datasets matching hd-protodune:hd-protodune_2919*\" to search with your own criteria beyond the standard categories. Below the query box, the Conditions Database panel lets you look up a run by number, or search for runs by beam momentum or by a start/stop time range, and shows the full recorded conditions for each run. You can also combine both: a suggested MetaCat query is generated from your conditions lookup, which you can copy into the query box and extend with additional conditions (for example, \"filter dune_runshistdb() (files from datasets matching hd-protodune:hd-protodune_2919*) where runs_history.gain = 7.8\") to find files matching specific run conditions in one search."
     }
   ]
 }

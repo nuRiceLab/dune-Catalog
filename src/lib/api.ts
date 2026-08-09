@@ -303,3 +303,114 @@ export async function getDatasetSizes(
   }
   return response.data.results as Record<string, number>;
 }
+
+// --- Conditions DB (issue #9, Phase 1) --------------------------------------
+
+export interface CondbFolder {
+  folder: string;
+  label: string;
+  namespace?: string;
+}
+
+export interface CondbFieldMeta {
+  label: string;
+  unit: string | null;
+  description: string | null;
+}
+
+export interface CondbPreviewEntry {
+  label: string;
+  unit: string | null;
+  value: string | number | boolean | null;
+  raw_key: string;
+}
+
+export interface RunConditions {
+  results: Record<string, string | number | boolean | Record<string, unknown> | null>;
+  preview: Record<string, CondbPreviewEntry>;
+  fieldMetadata: Record<string, CondbFieldMeta>;
+  folder: string;
+  namespace: string | null;
+}
+
+export async function getCondbFolders(): Promise<{ folders: CondbFolder[]; default: string }> {
+  const response = await axios.get<{ folders: CondbFolder[]; default: string }>(
+    `${API_URL}/runConditions/folders`,
+    { timeout: API_TIMEOUT, withCredentials: true }
+  );
+  return response.data;
+}
+
+export interface RunSearchCondition {
+  field: string;
+  op: '<' | '<=' | '=' | '!=' | '>=' | '>';
+  value: number | string;
+}
+
+export interface RunSearchResult {
+  results: Record<string, unknown>;
+  preview: Record<string, CondbPreviewEntry>;
+}
+
+export async function searchRuns(
+  conditions: RunSearchCondition[],
+  folder?: string
+): Promise<{ runs: RunSearchResult[]; truncated: boolean; fieldMetadata: Record<string, CondbFieldMeta> }> {
+  try {
+    const response = await axios.post<{
+      success: boolean;
+      runs: RunSearchResult[];
+      truncated: boolean;
+      field_metadata: Record<string, CondbFieldMeta>;
+    }>(
+      `${API_URL}/searchRuns`,
+      { folder, conditions },
+      { timeout: API_TIMEOUT, withCredentials: true }
+    );
+    if (!response.data.success) {
+      throw new Error('Search failed');
+    }
+    return {
+      runs: response.data.runs,
+      truncated: response.data.truncated,
+      fieldMetadata: response.data.field_metadata ?? {},
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.data?.detail) {
+      throw new Error(error.response.data.detail);
+    }
+    throw error;
+  }
+}
+
+export async function getRunConditions(run: number, folder?: string): Promise<RunConditions> {
+  try {
+    const response = await axios.post<{
+      success: boolean;
+      results?: Record<string, unknown>;
+      preview?: RunConditions['preview'];
+      field_metadata?: RunConditions['fieldMetadata'];
+      folder: string;
+      namespace: string | null;
+    }>(
+      `${API_URL}/runConditions`,
+      { run, folder },
+      { timeout: API_TIMEOUT, withCredentials: true }
+    );
+    if (!response.data.success || !response.data.results) {
+      throw new Error('Failed to load run conditions');
+    }
+    return {
+      results: response.data.results as RunConditions['results'],
+      preview: response.data.preview ?? {},
+      fieldMetadata: response.data.field_metadata ?? {},
+      folder: response.data.folder,
+      namespace: response.data.namespace,
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.data?.detail) {
+      throw new Error(error.response.data.detail);
+    }
+    throw error;
+  }
+}
