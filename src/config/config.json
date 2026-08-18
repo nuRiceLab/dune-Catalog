@@ -10,7 +10,7 @@
       "timeout": 10000
     },
     "info": {
-      "lastUpdated": "07/15/2026"
+      "lastUpdated": "08/01/2026"
     }
   },
   "savedSearches": [
@@ -38,7 +38,7 @@
     "Protodune-HD": {
       "categories": [
         {
-          "name": "Keep-up reco",
+          "name": "Keep-up and reco",
           "namespace": "hd-protodune-det-reco"
         },
         {
@@ -52,13 +52,17 @@
         {
           "name": "Raw data",
           "namespace": "hd-protodune"
+        },
+	{
+          "name":"MC beam input files",
+	  "namespace":"ehn1-beam-np04"
         }
       ]
     },
     "ProtoDune-VD": {
       "categories": [
         {
-          "name": "Keep-up reco",
+          "name": "Keep-up and reco",
           "namespace": "vd-protodune-det-reco"
         },
         {
@@ -76,7 +80,11 @@
         {
           "name": "Raw data ",
           "namespace": "vd-protodune"
-        }
+        },
+	{
+          "name":"MC beam input files",
+	  "namespace":"ehn1-beam-np02"
+        }		
       ]
     },
     "ProtoDUNE-SP": {
