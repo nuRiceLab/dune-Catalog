@@ -3,7 +3,43 @@ import config from '@/config/config.json';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const API_TIMEOUT = config.app.api.timeout; 
+const API_TIMEOUT = config.app.api.timeout;
+
+// Dataset size aggregates can legitimately take minutes on MetaCat (up to the
+// backend's 5-minute per-dataset cap), so they don't use the short default
+// request timeout. This client-side timeout sits above the backend's size
+// budget so the request waits long enough to receive the computed sizes (or
+// the "unavailable" verdict) rather than aborting first; callers additionally
+// abort the request when the user navigates away or the result page changes.
+const SIZE_REQUEST_TIMEOUT = 6 * 60 * 1000; // 6 minutes
+
+/**
+ * True if an error is an aborted/cancelled request (from an AbortController).
+ * Callers use this to ignore the expected error that fires when they abort an
+ * in-flight request on unmount, navigation, or a superseding search — it is
+ * not a real failure and must not overwrite state or trigger a retry.
+ */
+export function isAbortError(error: unknown): boolean {
+  return (
+    axios.isCancel(error) ||
+    (error instanceof Error && error.name === 'CanceledError') ||
+    (error instanceof DOMException && error.name === 'AbortError')
+  );
+}
+
+/**
+ * True if an error is a timeout: either the client-side request timeout fired
+ * (axios ECONNABORTED / ETIMEDOUT) or the backend gave up and returned 504.
+ * Distinct from isAbortError, which is a deliberate cancellation.
+ */
+export function isTimeoutError(error: unknown): boolean {
+  if (!axios.isAxiosError(error)) return false;
+  return (
+    error.code === 'ECONNABORTED' ||
+    error.code === 'ETIMEDOUT' ||
+    error.response?.status === 504
+  );
+}
 
 interface ApiResponse<T> {
   success: boolean;
@@ -98,7 +134,7 @@ function sanitizeMQLQuery(query: string): string {
  *
  * @returns {Promise<{ results: Dataset[], mqlQuery: string }>} A promise that resolves with an array of datasets and the MQL query.
  */
-export async function searchDataSets(query: string, category: string, tab: string, officialOnly: boolean, customMql?: string): Promise<{ results: Dataset[], mqlQuery: string }> {
+export async function searchDataSets(query: string, category: string, tab: string, officialOnly: boolean, customMql?: string, signal?: AbortSignal): Promise<{ results: Dataset[], mqlQuery: string }> {
   try {
     const sanitizedQuery = sanitizeMQLQuery(query);
     // Don't sanitize custom MQL queries to preserve quotes and syntax
@@ -108,7 +144,8 @@ export async function searchDataSets(query: string, category: string, tab: strin
       { query: sanitizedQuery, category, tab, officialOnly, customMql: sanitizedMql },
       {
         timeout: API_TIMEOUT,
-        withCredentials: true  // send the CILogon session cookie
+        withCredentials: true,  // send the CILogon session cookie
+        signal  // abort the in-flight request when the caller cancels
       }
     );
 
@@ -120,7 +157,11 @@ export async function searchDataSets(query: string, category: string, tab: strin
       results: normalizeResults(response.data.results),
       mqlQuery: response.data.mqlQuery || ''
     };
-  } catch {
+  } catch (error) {
+    // Aborted (superseded search / navigation) and timeouts must reach the
+    // caller so it can react — ignore the abort, but show a timeout message.
+    // Returning empty results here would masquerade as "no datasets found".
+    if (isAbortError(error) || isTimeoutError(error)) throw error;
     return {
       results: [],
       mqlQuery: ''
@@ -138,13 +179,14 @@ export async function searchDataSets(query: string, category: string, tab: strin
  * @param {string} name The name to search for.
  * @returns {Promise<{ files: File[], mqlQuery: string }>}A promise that resolves with an array of files and the MQL query.
  */
-export async function searchFiles(namespace: string, name: string): Promise<{ files: File[], mqlQuery: string }> {
+export async function searchFiles(namespace: string, name: string, signal?: AbortSignal): Promise<{ files: File[], mqlQuery: string }> {
   try {
     const response = await axios.post<ApiResponse<File>>(`${API_URL}/queryFiles`,
       { name, namespace },
       {
         timeout: API_TIMEOUT,
-        withCredentials: true  // send the CILogon session cookie
+        withCredentials: true,  // send the CILogon session cookie
+        signal  // abort the in-flight request when the caller cancels
       }
     );
 
@@ -167,6 +209,9 @@ export async function searchFiles(namespace: string, name: string): Promise<{ fi
       mqlQuery: response.data.mqlQuery || ''
     };
   } catch (error) {
+    // An aborted request (dialog closed / navigation) is expected — surface
+    // it so the caller can ignore it instead of showing an empty file list.
+    if (isAbortError(error)) throw error;
     // Log the error for debugging
     console.error('Error searching files:', error);
     if (axios.isAxiosError(error)) {
@@ -248,17 +293,19 @@ export async function getUserLocation(): Promise<string> {
  * @param namespace The namespace of the dataset
  * @param name The name of the dataset
  */
-export async function recordDatasetAccess(namespace: string, name: string): Promise<void> {
+export async function recordDatasetAccess(namespace: string, name: string, signal?: AbortSignal): Promise<void> {
   try {
     const location = await getUserLocation();
     await axios.post(`${API_URL}/recordDatasetAccess`,
       { namespace, name, location },
       {
         timeout: API_TIMEOUT,
-        withCredentials: true  // send the CILogon session cookie
+        withCredentials: true,  // send the CILogon session cookie
+        signal
       }
     );
   } catch (error) {
+    if (isAbortError(error)) return;  // dialog closed before it recorded — fine
     console.error('Error recording dataset access:', error);
   }
 }
@@ -268,13 +315,14 @@ export async function recordDatasetAccess(namespace: string, name: string): Prom
  * provenance (parents/children), and containing datasets.
  * Requires the user to be logged in (session cookie is sent).
  */
-export async function getFileDetails(namespace: string, name: string): Promise<FileDetails> {
+export async function getFileDetails(namespace: string, name: string, signal?: AbortSignal): Promise<FileDetails> {
   const response = await axios.post<ApiResponse<FileDetails>>(
     `${API_URL}/fileDetails`,
     { namespace, name },
     {
       timeout: API_TIMEOUT,
-      withCredentials: true  // send the CILogon session cookie
+      withCredentials: true,  // send the CILogon session cookie
+      signal  // abort if the user navigates away before it loads
     }
   );
   if (!response.data.success || !response.data.results) {
@@ -288,14 +336,18 @@ export async function getFileDetails(namespace: string, name: string): Promise<F
  * Returns a map keyed by "namespace:name".
  */
 export async function getDatasetSizes(
-  datasets: { namespace: string; name: string }[]
+  datasets: { namespace: string; name: string }[],
+  signal?: AbortSignal
 ): Promise<Record<string, number>> {
   const response = await axios.post<ApiResponse<Record<string, number>>>(
     `${API_URL}/datasetSizes`,
     { datasets },
     {
-      timeout: 0,  // no client timeout: huge datasets take as long as they take
-      withCredentials: true  // send the CILogon session cookie
+      // Generous but finite: sizes can take minutes, but must never hang
+      // forever. Callers also abort via `signal` on page/result change.
+      timeout: SIZE_REQUEST_TIMEOUT,
+      withCredentials: true,  // send the CILogon session cookie
+      signal
     }
   );
   if (!response.data.success || !response.data.results) {
@@ -333,10 +385,10 @@ export interface RunConditions {
   namespace: string | null;
 }
 
-export async function getCondbFolders(): Promise<{ folders: CondbFolder[]; default: string }> {
+export async function getCondbFolders(signal?: AbortSignal): Promise<{ folders: CondbFolder[]; default: string }> {
   const response = await axios.get<{ folders: CondbFolder[]; default: string }>(
     `${API_URL}/runConditions/folders`,
-    { timeout: API_TIMEOUT, withCredentials: true }
+    { timeout: API_TIMEOUT, withCredentials: true, signal }
   );
   return response.data;
 }
@@ -354,7 +406,8 @@ export interface RunSearchResult {
 
 export async function searchRuns(
   conditions: RunSearchCondition[],
-  folder?: string
+  folder?: string,
+  signal?: AbortSignal
 ): Promise<{ runs: RunSearchResult[]; truncated: boolean; fieldMetadata: Record<string, CondbFieldMeta> }> {
   try {
     const response = await axios.post<{
@@ -365,7 +418,7 @@ export async function searchRuns(
     }>(
       `${API_URL}/searchRuns`,
       { folder, conditions },
-      { timeout: API_TIMEOUT, withCredentials: true }
+      { timeout: API_TIMEOUT, withCredentials: true, signal }
     );
     if (!response.data.success) {
       throw new Error('Search failed');
@@ -376,6 +429,7 @@ export async function searchRuns(
       fieldMetadata: response.data.field_metadata ?? {},
     };
   } catch (error) {
+    if (isAbortError(error)) throw error;
     if (axios.isAxiosError(error) && error.response?.data?.detail) {
       throw new Error(error.response.data.detail);
     }
@@ -383,7 +437,7 @@ export async function searchRuns(
   }
 }
 
-export async function getRunConditions(run: number, folder?: string): Promise<RunConditions> {
+export async function getRunConditions(run: number, folder?: string, signal?: AbortSignal): Promise<RunConditions> {
   try {
     const response = await axios.post<{
       success: boolean;
@@ -395,7 +449,7 @@ export async function getRunConditions(run: number, folder?: string): Promise<Ru
     }>(
       `${API_URL}/runConditions`,
       { run, folder },
-      { timeout: API_TIMEOUT, withCredentials: true }
+      { timeout: API_TIMEOUT, withCredentials: true, signal }
     );
     if (!response.data.success || !response.data.results) {
       throw new Error('Failed to load run conditions');
@@ -408,6 +462,7 @@ export async function getRunConditions(run: number, folder?: string): Promise<Ru
       namespace: response.data.namespace,
     };
   } catch (error) {
+    if (isAbortError(error)) throw error;
     if (axios.isAxiosError(error) && error.response?.data?.detail) {
       throw new Error(error.response.data.detail);
     }

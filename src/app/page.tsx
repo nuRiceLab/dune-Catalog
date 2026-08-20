@@ -5,7 +5,8 @@ import  { Header }  from '@/components/Header'
 import  { Footer }  from '@/components/Footer'
 import { SearchBar } from '@/components/SearchBar'
 import { DatasetTable } from '@/components/DatasetTable'
-import { searchDataSets, Dataset } from '@/lib/api'
+import { SearchProgress } from '@/components/SearchProgress'
+import { searchDataSets, Dataset, isAbortError, isTimeoutError } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import config from '@/config/config.json';
@@ -15,16 +16,23 @@ const tabs = [...Object.keys(config.tabs), 'Other'];
 
 /**
  * A custom MQL query (Other tab) can return either files or datasets --
- * e.g. "files from ns:*" vs "datasets matching ns:*". The results table
- * needs to know which, since files have no meaningful "Files"/"Size"
- * columns and shouldn't open the dataset dialog on click. Whichever
- * keyword ("files" or "datasets") appears first in the query decides it;
- * defaults to 'datasets' (today's behavior) when neither is found.
+ * e.g. "files from ns:*", "files where namespace=...", or "datasets matching
+ * ns:*". The results table needs to know which, since files have no meaningful
+ * "Files"/"Size" columns and should navigate straight to the file detail page
+ * on click rather than opening the dataset dialog.
+ *
+ * MQL queries lead with their subject keyword -- `files ...` or `datasets ...`
+ * -- which may be followed by `from`, `where`, `matching`, `having`, a pattern,
+ * etc. So classification keys off whichever subject keyword ("file(s)" or
+ * "dataset(s)") appears first, not on a fixed following keyword. The `\b`
+ * boundaries keep it from matching the word inside identifiers like
+ * `core.files_count` or a quoted value. Defaults to 'datasets' when neither
+ * subject is present.
  */
 function classifyMqlQuery(mql: string): 'files' | 'datasets' {
   const q = mql.toLowerCase();
-  const filesIdx = q.search(/\bfiles\s+(from|matching)\b/);
-  const datasetsIdx = q.search(/\bdatasets\s+(from|matching)\b/);
+  const filesIdx = q.search(/\bfiles?\b/);
+  const datasetsIdx = q.search(/\bdatasets?\b/);
   if (filesIdx === -1) return 'datasets';
   if (datasetsIdx === -1) return 'files';
   return filesIdx < datasetsIdx ? 'files' : 'datasets';
@@ -39,6 +47,9 @@ function HomeContent() {
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
   const [results, setResults] = useState<Dataset[]>([]);
   const [resultsMode, setResultsMode] = useState<'file' | 'dataset'>('dataset');
+  const [searching, setSearching] = useState(false);
+  const [searched, setSearched] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -98,15 +109,19 @@ function HomeContent() {
 
   // Run the search encoded in the URL whenever it changes (and once auth
   // is ready). Repeating an identical search leaves the URL unchanged, so
-  // the current results simply stay on screen.
+  // the current results simply stay on screen. Superseding the search (or
+  // unmounting) aborts the in-flight request so it stops running on the
+  // backend and against MetaCat rather than finishing in the background.
   useEffect(() => {
     if (isLoading || !isAuthenticated) return;
     const tab = searchParams?.get('tab') ?? '';
     if (!tab || !tabs.includes(tab)) return;
     setActiveTabIndex(tabs.indexOf(tab));
-    let cancelled = false;
+    const controller = new AbortController();
     const mql = searchParams?.get('mql') ?? undefined;
     setResultsMode(tab === 'Other' && mql && classifyMqlQuery(mql) === 'files' ? 'file' : 'dataset');
+    setSearching(true);
+    setSearchError(null);
     (async () => {
       try {
         const { results } = await searchDataSets(
@@ -114,14 +129,31 @@ function HomeContent() {
           searchParams?.get('category') ?? '',
           tab,
           searchParams?.get('official') === '1',
-          mql
+          mql,
+          controller.signal
         );
-        if (!cancelled) setResults(results);
+        if (!controller.signal.aborted) {
+          setResults(results);
+          setSearchError(null);
+          setSearched(true);
+        }
       } catch (error) {
-        console.error('Search failed:', error);
+        // An aborted request is expected when the search is superseded; ignore.
+        if (isAbortError(error)) return;
+        if (controller.signal.aborted) return;
+        if (isTimeoutError(error)) {
+          setSearchError('MetaCat timeout, server is busy now… reload or try again later.');
+        } else {
+          console.error('Search failed:', error);
+        }
+      } finally {
+        // Only clear the indicator if this search still owns it. If it was
+        // superseded (aborted), a newer search has already taken over the
+        // loading state and must keep it running.
+        if (!controller.signal.aborted) setSearching(false);
       }
     })();
-    return () => { cancelled = true; };
+    return () => { controller.abort(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, isLoading, isAuthenticated]);
 
@@ -180,11 +212,20 @@ function HomeContent() {
                     onTabChange={handleTabChange}
                   />
                 </div>
-                {tabs.map((tab) => (
-                  <TabsContent key={tab} value={tab} className="mt-4">
-                    <DatasetTable results={results} mode={resultsMode}/>
-                  </TabsContent>
-                ))}
+                <div className="mt-2">
+                  <SearchProgress active={searching} durationMs={config.app.api.timeout} />
+                </div>
+                {searchError ? (
+                  <div className="mt-4 rounded-lg border border-destructive/50 bg-destructive/5 p-4 text-center text-sm text-destructive">
+                    {searchError}
+                  </div>
+                ) : (
+                  tabs.map((tab) => (
+                    <TabsContent key={tab} value={tab} className="mt-4">
+                      <DatasetTable results={results} mode={resultsMode} hasSearched={searched && !searching}/>
+                    </TabsContent>
+                  ))
+                )}
               </>
             )}
           </Tabs>

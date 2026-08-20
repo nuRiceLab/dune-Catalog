@@ -13,7 +13,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { getFileDetails, FileDetails, FileRef } from '@/lib/api'
+import { getFileDetails, FileDetails, FileRef, isAbortError } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
 import { formatSize } from '@/lib/format'
 import { Button } from '@/components/ui/button'
@@ -70,17 +70,22 @@ export default function FileDetailPage() {
 
   useEffect(() => {
     if (authLoading || !isAuthenticated || !namespace || !name) return
-    let cancelled = false
+    const controller = new AbortController()
+    const { signal } = controller
     setLoading(true)
     setError(null)
     setDetails(null)
-    getFileDetails(namespace, name)
-      .then((d) => { if (!cancelled) setDetails(d) })
+    getFileDetails(namespace, name, signal)
+      .then((d) => { if (!signal.aborted) setDetails(d) })
       .catch((e) => {
-        if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load file details')
+        // Navigated away before it loaded — expected, don't show an error.
+        if (isAbortError(e) || signal.aborted) return
+        setError(e instanceof Error ? e.message : 'Failed to load file details')
       })
-      .finally(() => { if (!cancelled) setLoading(false) })
-    return () => { cancelled = true }
+      .finally(() => { if (!signal.aborted) setLoading(false) })
+    // Leaving the page (or following a provenance link to another file)
+    // aborts the in-flight lookup so it stops running against MetaCat.
+    return () => { controller.abort() }
   }, [namespace, name, isAuthenticated, authLoading])
 
   const did = `${namespace}:${name}`

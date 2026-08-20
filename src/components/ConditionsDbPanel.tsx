@@ -9,10 +9,10 @@
  *  - Start / stop time: find runs starting/stopping within a UTC date range.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   getCondbFolders, getRunConditions, searchRuns,
-  CondbFolder, RunConditions, RunSearchResult,
+  CondbFolder, RunConditions, RunSearchResult, isAbortError,
 } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -81,14 +81,32 @@ export function ConditionsDbPanel() {
   const [searchResults, setSearchResults] = useState<RunSearchResult[] | null>(null)
   const [searchTruncated, setSearchTruncated] = useState(false)
 
+  // Tracks the current in-flight conditions-DB request. Starting a new lookup
+  // aborts the previous one, so rapid successive lookups don't pile up
+  // concurrent queries against ConDB/MetaCat; unmounting aborts as well.
+  const inFlightRef = useRef<AbortController | null>(null)
+
+  /** Abort any in-flight request and return a fresh signal for a new one. */
+  function beginRequest(): AbortSignal {
+    inFlightRef.current?.abort()
+    const controller = new AbortController()
+    inFlightRef.current = controller
+    return controller.signal
+  }
+
   useEffect(() => {
-    getCondbFolders()
+    const controller = new AbortController()
+    getCondbFolders(controller.signal)
       .then(({ folders, default: def }) => {
         setFolders(folders)
         setFolder(def)
       })
       .catch(() => { /* folder picker is a convenience; default still works */ })
+    return () => { controller.abort() }
   }, [])
+
+  // Abort whatever is in flight if the panel unmounts.
+  useEffect(() => () => { inFlightRef.current?.abort() }, [])
 
   function resetResults() {
     setConditions(null)
@@ -107,15 +125,18 @@ export function ConditionsDbPanel() {
       setError('Enter a valid run number.')
       return
     }
+    const signal = beginRequest()
     setLoading(true)
     setError(null)
     setConditions(null)
     try {
-      setConditions(await getRunConditions(run, folder || undefined))
+      const result = await getRunConditions(run, folder || undefined, signal)
+      if (!signal.aborted) setConditions(result)
     } catch (e) {
+      if (isAbortError(e) || signal.aborted) return
       setError(e instanceof Error ? e.message : 'Failed to load run conditions')
     } finally {
-      setLoading(false)
+      if (!signal.aborted) setLoading(false)
     }
   }
 
@@ -126,6 +147,7 @@ export function ConditionsDbPanel() {
       setError('Enter both a minimum and maximum momentum.')
       return
     }
+    const signal = beginRequest()
     setLoading(true)
     setError(null)
     setSearchResults(null)
@@ -135,14 +157,17 @@ export function ConditionsDbPanel() {
           { field: 'beam_momentum_set', op: '>=', value: min },
           { field: 'beam_momentum_set', op: '<=', value: max },
         ],
-        folder || undefined
+        folder || undefined,
+        signal
       )
+      if (signal.aborted) return
       setSearchResults(runs)
       setSearchTruncated(truncated)
     } catch (e) {
+      if (isAbortError(e) || signal.aborted) return
       setError(e instanceof Error ? e.message : 'Search failed')
     } finally {
-      setLoading(false)
+      if (!signal.aborted) setLoading(false)
     }
   }
 
@@ -153,6 +178,7 @@ export function ConditionsDbPanel() {
       setError('Enter both dates as mm/dd/yyyy (UTC).')
       return
     }
+    const signal = beginRequest()
     setLoading(true)
     setError(null)
     setSearchResults(null)
@@ -162,14 +188,17 @@ export function ConditionsDbPanel() {
           { field: 'start_time', op: '>=', value: start },
           { field: 'start_time', op: '<=', value: stop },
         ],
-        folder || undefined
+        folder || undefined,
+        signal
       )
+      if (signal.aborted) return
       setSearchResults(runs)
       setSearchTruncated(truncated)
     } catch (e) {
+      if (isAbortError(e) || signal.aborted) return
       setError(e instanceof Error ? e.message : 'Search failed')
     } finally {
-      setLoading(false)
+      if (!signal.aborted) setLoading(false)
     }
   }
 
@@ -177,15 +206,19 @@ export function ConditionsDbPanel() {
   const handleResultClick = (row: RunSearchResult) => {
     const tv = row.preview['run_number']?.value ?? row.results['tv']
     if (tv === undefined || tv === null) return
+    const signal = beginRequest()
     setRunInput(String(tv))
     setMode('run')
     setSearchResults(null)
     setLoading(true)
     setError(null)
-    getRunConditions(Number(tv), folder || undefined)
-      .then(setConditions)
-      .catch((e) => setError(e instanceof Error ? e.message : 'Failed to load run conditions'))
-      .finally(() => setLoading(false))
+    getRunConditions(Number(tv), folder || undefined, signal)
+      .then((c) => { if (!signal.aborted) setConditions(c) })
+      .catch((e) => {
+        if (isAbortError(e) || signal.aborted) return
+        setError(e instanceof Error ? e.message : 'Failed to load run conditions')
+      })
+      .finally(() => { if (!signal.aborted) setLoading(false) })
   }
 
   const run = parseInt(runInput, 10)

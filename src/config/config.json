@@ -4,13 +4,13 @@
       "cooldownTime": 5
     },
     "files": {
-      "maxToShow": 50
+      "maxToShow": 20
     },
     "api": {
-      "timeout": 10000
+      "timeout": 120000
     },
     "info": {
-      "lastUpdated": "08/01/2026"
+      "lastUpdated": "08/18/2026"
     }
   },
   "savedSearches": [

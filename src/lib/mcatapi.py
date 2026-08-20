@@ -4,6 +4,7 @@ import os
 import json
 import re
 import logging
+from typing import Callable
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -11,6 +12,37 @@ logger = logging.getLogger(__name__)
 # so cache them briefly. Keyed by "namespace:name" -> (timestamp, bytes).
 _dataset_size_cache: dict[str, tuple[float, int]] = {}
 _DATASET_SIZE_CACHE_TTL_S = 900  # 15 minutes
+
+# Per-request socket timeout for the MetaCat client, in seconds. The client's
+# own default is 1800s (30 min), which lets a single stuck request pin a
+# worker thread for half an hour. Dataset/file/detail searches are meant to be
+# quick, and the frontend reports a timeout to the user at 2 minutes
+# (config.app.api.timeout); this socket timeout sits just above that as a
+# backstop, so the *client* is normally the one that reports the 2-minute
+# "server busy" timeout (and the backend simply cancels on the resulting
+# disconnect) rather than this firing first. Overridable via the environment.
+METACAT_TIMEOUT_S = float(os.getenv("METACAT_TIMEOUT", "150"))
+
+# Dataset-size aggregates get a longer, separate timeout: they can legitimately
+# take minutes on large datasets. If the summary can't finish within this
+# window we give up and report the size as unavailable ("n/a") rather than
+# waiting indefinitely. Default 5 minutes; overridable via the environment.
+METACAT_SIZE_TIMEOUT_S = float(os.getenv("METACAT_SIZE_TIMEOUT", "300"))
+
+# Sentinel size meaning "we tried but couldn't compute it" (e.g. the aggregate
+# timed out because the dataset is too large), as opposed to a real 0 bytes.
+# The frontend renders this as "n/a" rather than "—".
+SIZE_UNAVAILABLE = -1
+
+# When a caller supplies an is_cancelled predicate, check it every N streamed
+# records rather than on every record (the check is cheap, but there is no
+# reason to call it for each of thousands of rows).
+_CANCEL_CHECK_EVERY = 200
+
+
+def _never_cancelled() -> bool:
+    """Default cancel predicate for callers that don't pass one."""
+    return False
 def format_timestamp(timestamp):
     """
     Format a given timestamp (in seconds) into a human-readable string
@@ -42,8 +74,68 @@ class MetaCatAPI:
         """
         self.client = MetaCatClient(
             os.getenv('METACAT_SERVER_URL'),
-            os.getenv('METACAT_AUTH_SERVER_URL')
+            os.getenv('METACAT_AUTH_SERVER_URL'),
+            timeout=METACAT_TIMEOUT_S,
         )
+        # Separate client for size aggregates, with a much shorter timeout so
+        # an uncomputable size surfaces as "n/a" in seconds instead of pinning
+        # MetaCat (and the user's Size column) for the full request budget.
+        self.size_client = MetaCatClient(
+            os.getenv('METACAT_SERVER_URL'),
+            os.getenv('METACAT_AUTH_SERVER_URL'),
+            timeout=METACAT_SIZE_TIMEOUT_S,
+        )
+
+    def _consume_query(self, mql_query, is_cancelled, **query_kwargs):
+        """
+        Run an MQL query and materialise its results, honouring cancellation.
+
+        MetaCat streams large result sets (json-seq), so `client.query()`
+        returns a generator that pulls rows from the server as it is iterated.
+        We iterate it here and check `is_cancelled()` periodically; if the
+        caller has been cancelled (client disconnected, or the hard time
+        budget elapsed) we close the underlying HTTP response, which tears
+        down the connection to MetaCat so the server stops sending, and raise
+        QueryCancelled so the partially-consumed query unwinds cleanly. No
+        retry is attempted — a cancelled query must not generate more load.
+
+        Args:
+            mql_query: the MQL string to run.
+            is_cancelled: zero-arg predicate returning True when work should stop.
+            **query_kwargs: forwarded to `client.query` (e.g. summary="count").
+
+        Returns:
+            The query result: a list of records for a normal query, or
+            whatever `client.query` returns for a summary query.
+        """
+        from src.backend.cancellable import QueryCancelled
+
+        result = self.client.query(mql_query, **query_kwargs)
+
+        # Summary queries return a materialised value (dict/int), not a
+        # stream, so there is nothing to iterate incrementally.
+        if query_kwargs.get("summary"):
+            return result
+
+        # The streaming response object lives on the client after the call;
+        # closing it is how we stop MetaCat mid-stream on cancellation.
+        response = getattr(self.client, "LastResponse", None)
+
+        rows = []
+        for i, row in enumerate(result):
+            if i % _CANCEL_CHECK_EVERY == 0 and is_cancelled():
+                logger.info(
+                    "Query cancelled after %d rows; closing MetaCat stream: %s",
+                    i, mql_query,
+                )
+                try:
+                    if response is not None:
+                        response.close()
+                except Exception:
+                    pass
+                raise QueryCancelled()
+            rows.append(row)
+        return rows
 
     def login(self, username, password):
         try:
@@ -61,7 +153,8 @@ class MetaCatAPI:
             logger.error(f"Login failed: {type(e).__name__}: {str(e)}", exc_info=True)
             return {"success": False, "message": str(e)}
 
-    def get_datasets(self, query_text, category, tab, official_only, custom_mql=None):
+    def get_datasets(self, query_text, category, tab, official_only, custom_mql=None,
+                     is_cancelled: Callable[[], bool] = _never_cancelled):
         """
         Get datasets matching the given query parameters
 
@@ -71,6 +164,9 @@ class MetaCatAPI:
             tab (str): The tab to search in
             official_only (bool): Whether to only search for official datasets
             custom_mql (str, optional): Custom MQL query string to use directly
+            is_cancelled (callable, optional): predicate polled while streaming
+                results; when it returns True the query is aborted and the
+                MetaCat connection is closed.
 
         Returns:
             A dictionary with a boolean "success" key and a list "results" key,
@@ -117,10 +213,8 @@ class MetaCatAPI:
                     mql_query += " having " + " and ".join(having_conditions)
             
             print(f"Executing MQL query: {mql_query}")
-            # Execute the MQL query
-            results = self.client.query(mql_query)
-            # Convert the generator to a list
-            raw_results = list(results)
+            # Execute the MQL query, streaming results and honouring cancellation
+            raw_results = self._consume_query(mql_query, is_cancelled)
 
             # Format the results
             formatted_results = [
@@ -140,6 +234,9 @@ class MetaCatAPI:
                 "mqlQuery": mql_query  # Include the MQL query in the response
             }
         except Exception as e:
+            # A cancelled query must unwind, not be reported as a failure.
+            if type(e).__name__ == "QueryCancelled":
+                raise
             return {"success": False, "message": str(e)}
 
     def list_datasets(self):
@@ -161,13 +258,17 @@ class MetaCatAPI:
             # If the query fails, return an error message
             return {"success": False, "message": str(e)}
 
-    def get_files(self, namespace: str, name: str):
+    def get_files(self, namespace: str, name: str,
+                  is_cancelled: Callable[[], bool] = _never_cancelled):
         """
         Get a list of files in MetaCat matching the given namespace and name
 
         Args:
             namespace (str): The namespace to search in
             name (str): The name to search for
+            is_cancelled (callable, optional): predicate polled while streaming
+                results; when True the query is aborted and the MetaCat
+                connection closed.
 
         Returns:
             A dictionary with a boolean "success" key and a list "files" key,
@@ -181,9 +282,8 @@ class MetaCatAPI:
             mql_query = f"files from {namespace}:{name} ordered limit {max_files}"
             print(f"  MQL query: {mql_query}")
 
-            # Execute the MQL query
-            results = self.client.query(mql_query)
-            raw_results = list(results)
+            # Execute the MQL query, streaming results and honouring cancellation
+            raw_results = self._consume_query(mql_query, is_cancelled)
 
             # Format the results
             files = [
@@ -205,12 +305,15 @@ class MetaCatAPI:
                 "mqlQuery": mql_query
             }
         except Exception as e:
+            if type(e).__name__ == "QueryCancelled":
+                raise
             return {
                 "success": False,
                 "message": str(e)
             }
             
-    def get_file_details(self, namespace: str, name: str):
+    def get_file_details(self, namespace: str, name: str,
+                         is_cancelled: Callable[[], bool] = _never_cancelled):
         """
         Get full details for a single file: metadata, checksums, provenance
         (parents/children), and containing datasets.
@@ -218,6 +321,9 @@ class MetaCatAPI:
         Args:
             namespace (str): The file's namespace
             name (str): The file's name
+            is_cancelled (callable, optional): predicate checked before the
+                secondary provenance-name lookup, so an abandoned request
+                doesn't issue that extra MetaCat call.
 
         Returns:
             A dictionary with a boolean "success" key and a dict "results" key,
@@ -254,7 +360,7 @@ class MetaCatAPI:
             # Some MetaCat versions return provenance as bare fids; resolve
             # them to human-readable namespace:name with one batch lookup.
             unresolved = [r["fid"] for r in parents + children if not r["name"] and r["fid"]]
-            if unresolved:
+            if unresolved and not is_cancelled():
                 try:
                     resolved = self.client.get_files([{"fid": fid} for fid in unresolved])
                     by_fid = {str(r.get("fid")): r for r in (resolved or [])}
@@ -290,7 +396,8 @@ class MetaCatAPI:
             logger.error(f"get_file_details failed for {namespace}:{name}: {str(e)}")
             return {"success": False, "message": str(e)}
 
-    def get_dataset_sizes(self, datasets):
+    def get_dataset_sizes(self, datasets,
+                          is_cancelled: Callable[[], bool] = _never_cancelled):
         """
         Compute total sizes for a list of datasets using MetaCat summary
         file queries: `files from ns:name` with summary="count" returns
@@ -298,6 +405,9 @@ class MetaCatAPI:
 
         Args:
             datasets: list of {"namespace": ..., "name": ...} dicts
+            is_cancelled (callable, optional): predicate checked before each
+                per-dataset query; once cancelled, no further MetaCat queries
+                are issued (so an abandoned page of results stops adding load).
 
         Returns:
             A dictionary with a boolean "success" key and a "results" dict
@@ -311,8 +421,11 @@ class MetaCatAPI:
             cached = _dataset_size_cache.get(did)
             if cached and time.time() - cached[0] < _DATASET_SIZE_CACHE_TTL_S:
                 return did, cached[1]
+            # Don't start a fresh MetaCat query if the request was abandoned.
+            if is_cancelled():
+                return did, None
             try:
-                res = self.client.query(f"files from {did}", summary="count")
+                res = self.size_client.query(f"files from {did}", summary="count")
                 # Depending on client version this is a dict or a 1-element list
                 if not isinstance(res, dict):
                     res = list(res)
@@ -321,12 +434,21 @@ class MetaCatAPI:
                 _dataset_size_cache[did] = (time.time(), size)
                 return did, size
             except Exception as e:
+                # Usually a read timeout: the aggregate is too large to
+                # summarize within METACAT_SIZE_TIMEOUT. Mark it unavailable
+                # (distinct from a real 0) so the UI can say "n/a", and cache
+                # that verdict so the same doomed query isn't re-issued on
+                # every page view.
                 logger.warning(f"Size summary query failed for {did}: {e}")
-                return did, 0  # failures are not cached, so a retry recomputes
+                _dataset_size_cache[did] = (time.time(), SIZE_UNAVAILABLE)
+                return did, SIZE_UNAVAILABLE
 
         try:
             with ThreadPoolExecutor(max_workers=8) as pool:
-                sizes = dict(pool.map(one, datasets))
+                pairs = pool.map(one, datasets)
+            # Drop only the entries skipped due to cancellation (value None);
+            # keep computed sizes and the SIZE_UNAVAILABLE sentinel.
+            sizes = {did: size for did, size in pairs if size is not None}
             return {"success": True, "results": sizes}
         except Exception as e:
             logger.error(f"get_dataset_sizes failed: {str(e)}")

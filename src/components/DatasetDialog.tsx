@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dataset, searchFiles, File, recordDatasetAccess } from '@/lib/api';
+import { Dataset, searchFiles, File, recordDatasetAccess, isAbortError } from '@/lib/api';
 import {
     Dialog,
     DialogContent,
@@ -28,36 +28,40 @@ export function DatasetDialog({ result, className }: ResultDialogProps) {
     const metacatUrl = `https://metacat.fnal.gov:9443/dune_meta_prod/app/gui/dataset?namespace=${encodeURIComponent(result.namespace)}&name=${encodeURIComponent(result.name)}`;
 
     useEffect(() => {
+        if (!open) return;
+        const controller = new AbortController();
+        const { signal } = controller;
         async function fetchFiles() {
-            if (!open) return;
             setIsLoadingFiles(true);
             try {
-                // Fetch files for the selected dataset
+                // Record dataset access (fire-and-forget, but abortable so it
+                // doesn't outlive a quickly-closed dialog)
+                recordDatasetAccess(result.namespace, result.name, signal);
 
-                // Record dataset access
-                recordDatasetAccess(result.namespace, result.name);
-                
-                const response = await searchFiles(result.namespace, result.name);
-                // Process file search response
-                
+                const response = await searchFiles(result.namespace, result.name, signal);
+                if (signal.aborted) return;
+
                 // Additional check to ensure files are being set
                 if (response.files && response.files.length > 0) {
-                    // Files loaded successfully
                     setFiles(response.files);
                 } else {
-                    // No files found in response
                     setFiles([]);
                 }
-                
+
                 setMqlQuery(response.mqlQuery);
             } catch (error) {
+                // Dialog closed before the fetch finished — expected, ignore.
+                if (isAbortError(error) || signal.aborted) return;
                 console.error('Error fetching files:', error);
                 setFiles([]);
             } finally {
-                setIsLoadingFiles(false);
+                if (!signal.aborted) setIsLoadingFiles(false);
             }
         }
         fetchFiles();
+        // Closing the dialog (or unmounting) aborts the in-flight file query
+        // so it stops running against MetaCat instead of completing unseen.
+        return () => { controller.abort(); };
     }, [open, result.namespace, result.name]);
 
     const handleCopyQuery = () => {
