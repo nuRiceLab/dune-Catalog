@@ -32,7 +32,7 @@ import os
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 
 import httpx
 import jwt
@@ -49,7 +49,7 @@ logger = logging.getLogger(__name__)
 
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("TOKEN_EXPIRY_MINUTES", "1440"))
-IS_PRODUCTION = os.getenv("ENVIRONMENT", "development").lower() == "production"
+IS_PRODUCTION = os.getenv("ENVIRONMENT", "production").lower() != "development"
 
 CILOGON_CLIENT_ID = os.getenv("CILOGON_CLIENT_ID", "")
 CILOGON_CLIENT_SECRET = os.getenv("CILOGON_CLIENT_SECRET", "")
@@ -62,6 +62,32 @@ CILOGON_SCOPES = os.getenv(
     "CILOGON_SCOPES", "openid email profile org.cilogon.userinfo"
 )
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3001/dunecatalog")
+
+
+def _valid_signing_key() -> bool:
+    return len(JWT_SECRET_KEY.strip().encode("utf-8")) >= 32
+
+
+def validate_security_configuration() -> None:
+    """Fail before serving requests; never include secret values in errors."""
+    if not _valid_signing_key():
+        raise RuntimeError("JWT_SECRET_KEY must be an application-specific generated secret of at least 32 bytes")
+    if not CILOGON_CLIENT_ID or not CILOGON_CLIENT_SECRET:
+        raise RuntimeError("CILOGON_CLIENT_ID and CILOGON_CLIENT_SECRET are required")
+    if ACCESS_TOKEN_EXPIRE_MINUTES <= 0:
+        raise RuntimeError("TOKEN_EXPIRY_MINUTES must be positive")
+    for name, value in (("FRONTEND_URL", FRONTEND_URL),
+                        ("CILOGON_REDIRECT_URI", CILOGON_REDIRECT_URI),
+                        ("CILOGON_DISCOVERY_URL", CILOGON_DISCOVERY_URL)):
+        parsed = urlsplit(value)
+        local_http = (
+            not IS_PRODUCTION and parsed.scheme == "http"
+            and parsed.hostname in {"localhost", "127.0.0.1", "::1"}
+        )
+        if not parsed.hostname or parsed.username or parsed.password or not (
+            parsed.scheme == "https" or local_http
+        ):
+            raise RuntimeError(f"{name} must use HTTPS (HTTP is allowed only for localhost development)")
 
 # Cookie names
 TOKEN_COOKIE = "dunecat_token"
@@ -162,8 +188,8 @@ def create_access_token(
     expires_delta: Optional[timedelta] = None,
 ) -> str:
     """Mint an HS256 JWT with the given claims plus an ``exp``."""
-    if not JWT_SECRET_KEY:
-        raise RuntimeError("JWT_SECRET_KEY is not configured")
+    if not _valid_signing_key():
+        raise RuntimeError("JWT_SECRET_KEY must be an application-specific generated secret of at least 32 bytes")
     expire = datetime.now(timezone.utc) + (
         expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
@@ -173,8 +199,11 @@ def create_access_token(
 
 def decode_token(token: str) -> Optional[dict[str, Any]]:
     """Return the decoded claims if the token is valid, else ``None``."""
+    if not _valid_signing_key():
+        return None
     try:
-        return jwt.decode(token, JWT_SECRET_KEY, algorithms=["HS256"])
+        return jwt.decode(token, JWT_SECRET_KEY, algorithms=["HS256"],
+                          options={"require": ["sub", "exp"]})
     except jwt.ExpiredSignatureError:
         logger.debug("Rejected expired JWT")
         return None

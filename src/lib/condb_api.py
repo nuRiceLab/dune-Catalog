@@ -29,8 +29,8 @@ DEFAULT_FOLDER = "pdunesp.run_conditionstest"
 
 
 class ConditionsDBAPI:
-    def __init__(self, base_url: str = CONDB_BASE_URL, timeout: float = 20.0):
-        self.base_url = base_url.rstrip("/")
+    def __init__(self, base_url: str | None = CONDB_BASE_URL, timeout: float = 20.0):
+        self.base_url = (base_url or "").rstrip("/")
         self.timeout = timeout
 
     def get_run_conditions(self, folder: str, run: int) -> dict:

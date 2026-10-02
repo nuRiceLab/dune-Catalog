@@ -113,6 +113,21 @@ The application's configuration is centralized in `src/config/config.json`:
 
 ## Authentication (CILogon)
 
+Before starting either the runner or Uvicorn directly, configure a generated
+application-specific `JWT_SECRET_KEY` (at least 32 bytes), the CILogon client
+ID/secret, callback URL, and frontend URL. Generate the key with
+`python -c "import secrets; print(secrets.token_urlsafe(48))"`.
+Startup rejects missing or short keys. Never reuse a key from another application.
+
+Production is the default when `ENVIRONMENT` is omitted. Explicit
+`ENVIRONMENT=development` permits HTTP only for localhost URLs.
+`python run.py --production` enforces production settings after loading
+`.env`, requires HTTPS URLs, and disables backend auto-reload.
+Session and OAuth cookies are HttpOnly, Secure in production, and SameSite=Lax.
+
+`CONDB_BASE_URL` is optional. When absent, Conditions DB queries return 503;
+catalog startup and other features remain available.
+
 DUNE Catalog uses **CILogon** (OpenID Connect) for single sign-on. The FastAPI
 backend runs the OIDC authorization-code + PKCE flow, mints a short-lived
 session JWT, and stores it in an httpOnly cookie. The frontend never handles a
