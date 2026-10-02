@@ -162,15 +162,22 @@ usage accountability within the app rather than protection of the data.
 
 ### Admin access
 
-Admins are listed by **email** in `src/config/admins.json`:
+Admins are enrolled by the exact CILogon issuer and subject in
+`src/config/admins.json`. Email is optional display information and never grants
+access. The initial list is empty to prevent automatic enrollment by email.
 
-```json
-{ "admins": ["you@fnal.gov", "colleague@rice.edu"] }
-```
+Before deploying this migration, have each intended administrator sign in and
+obtain their own `identity_issuer` and `sub` from `/auth/me`. Independently verify
+ownership, then provision records of the form
+`{"issuer":"https://cilogon.org","sub":"the verified subject"}` on the server.
+Do not guess subjects from email addresses. The Admin Users form accepts exact
+subjects; JSON mode also accepts an optional `email` label. Backend validation
+rejects malformed entries and removal of the last administrator through the API.
 
-The backend checks the email claim from CILogon against this list and exposes
-`is_admin` via `/auth/me`. The list can also be edited from the in-app Admin →
-Admins page, and changes take effect immediately.
+State-changing API requests require an exact trusted `Origin`, or a trusted
+`Referer` when Origin is absent. The trusted origin comes from `FRONTEND_URL`;
+its path is excluded. Scripts using session cookies must also supply this origin.
+FNAL login polling uses POST JSON with `login_id`; GET is not supported.
 
 ### Auth endpoints (backend)
 

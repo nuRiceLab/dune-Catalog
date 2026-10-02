@@ -11,12 +11,19 @@ import { apiClient } from './apiClient';
 
 export interface UserInfo {
   sub: string;
+  identity_issuer: string;
   email?: string | null;
   name?: string | null;
   given_name?: string | null;
   family_name?: string | null;
   idp_name?: string | null;
   is_admin?: boolean;
+}
+
+export interface AdminIdentity {
+  issuer: 'https://cilogon.org';
+  sub: string;
+  email?: string | null;
 }
 
 export interface AuthMeResponse {

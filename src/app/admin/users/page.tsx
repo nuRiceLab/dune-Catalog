@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { isUserAdmin } from '@/lib/auth';
+import { isUserAdmin, type AdminIdentity } from '@/lib/auth';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,15 @@ import { Save, PlusCircle, X, Loader2 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import AdminSidebar from '@/components/AdminSidebar';
 import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminApi';
+import { z } from 'zod';
+
+const adminConfigSchema = z.object({
+  admins: z.array(z.object({
+    issuer: z.literal('https://cilogon.org'),
+    sub: z.string().min(1).refine(value => value === value.trim()),
+    email: z.string().nullish(),
+  }).strict()).min(1),
+});
 
 // Dynamically import the JSON editor to avoid SSR issues
 const JsonEditor = dynamic(() => import('@/components/JsonEditor'), { ssr: false });
@@ -26,11 +35,12 @@ export default function AdminsPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
-  const [admins, setAdmins] = useState<string[]>([]);
+  const [admins, setAdmins] = useState<AdminIdentity[]>([]);
   const [newAdmin, setNewAdmin] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isJsonMode, setIsJsonMode] = useState(false);
   const [jsonContent, setJsonContent] = useState('');
+  const [jsonError, setJsonError] = useState<string | null>(null);
 
   // Check admin status on component mount
   useEffect(() => {
@@ -53,14 +63,9 @@ export default function AdminsPage() {
     // Fetch admins data using the unified API
     getConfigData(CONFIG_FILES.ADMINS)
       .then(data => {
-        if (data.admins && Array.isArray(data.admins)) {
-          setAdmins(data.admins);
-          setJsonContent(JSON.stringify({ admins: data.admins }, null, 2));
-        } else if (Array.isArray(data)) {
-          // Handle case where API returns array directly
-          setAdmins(data);
-          setJsonContent(JSON.stringify({ admins: data }, null, 2));
-        }
+        const parsed = adminConfigSchema.parse(data);
+        setAdmins(parsed.admins);
+        setJsonContent(JSON.stringify(parsed, null, 2));
         setIsLoading(false);
       })
       .catch(error => {
@@ -77,7 +82,7 @@ export default function AdminsPage() {
   const handleAddAdmin = () => {
     if (!newAdmin.trim()) return;
     
-    if (admins.includes(newAdmin.trim())) {
+    if (admins.some(admin => admin.sub === newAdmin.trim())) {
       toast({
         variant: "destructive",
         title: "Error",
@@ -86,42 +91,34 @@ export default function AdminsPage() {
       return;
     }
 
-    setAdmins([...admins, newAdmin.trim()]);
+    setAdmins([...admins, { issuer: 'https://cilogon.org', sub: newAdmin.trim() }]);
     setNewAdmin('');
   };
 
-  const handleRemoveAdmin = (admin: string) => {
+  const handleRemoveAdmin = (admin: AdminIdentity) => {
     setAdmins(admins.filter(a => a !== admin));
   };
 
+  const readJsonAdmins = (): AdminIdentity[] | null => {
+    try {
+      const parsed = adminConfigSchema.parse(JSON.parse(jsonContent));
+      setJsonError(null);
+      return parsed.admins;
+    } catch (error) {
+      setJsonError(error instanceof SyntaxError
+        ? 'Enter valid JSON for the administrator list.'
+        : 'Each administrator needs issuer "https://cilogon.org", an exact nonempty sub, and an optional text email. Keep at least one administrator.');
+      return null;
+    }
+  };
+
   const handleSave = async () => {
+    const records = isJsonMode ? readJsonAdmins() : admins;
+    if (!records) return;
     setIsSaving(true);
     try {
-      let dataToSave;
-      
-      if (isJsonMode) {
-        // Use the JSON content
-        try {
-          dataToSave = JSON.parse(jsonContent);
-          if (!dataToSave.admins || !Array.isArray(dataToSave.admins)) {
-            throw new Error('Invalid admins format');
-          }
-        } catch {
-          toast({
-            variant: "destructive",
-            title: "Invalid JSON",
-            description: "The JSON content is not valid. Please check your format."
-          });
-          setIsSaving(false);
-          return;
-        }
-      } else {
-        // Use the form data
-        dataToSave = { admins };
-      }
-      
       // Save using the unified API
-      await saveConfigData(CONFIG_FILES.ADMINS, dataToSave);
+      await saveConfigData(CONFIG_FILES.ADMINS, { admins: records });
       
       toast({
         title: "success",
@@ -142,24 +139,10 @@ export default function AdminsPage() {
   const toggleJsonMode = () => {
     if (isJsonMode) {
       // Switching from JSON to form
-      try {
-        const parsedData = JSON.parse(jsonContent);
-        if (parsedData.admins && Array.isArray(parsedData.admins)) {
-          setAdmins(parsedData.admins);
-          setIsJsonMode(false);
-        } else {
-          toast({
-            title: 'Invalid JSON',
-            description: 'JSON must contain an "admins" array',
-            variant: 'destructive',
-          });
-        }
-      } catch {
-        toast({
-          title: 'Invalid JSON',
-          description: 'Please correct the JSON format before switching to form mode.',
-          variant: 'destructive',
-        });
+      const records = readJsonAdmins();
+      if (records) {
+        setAdmins(records);
+        setIsJsonMode(false);
       }
     } else {
       // Switching from form to JSON
@@ -216,19 +199,13 @@ export default function AdminsPage() {
           ) : isJsonMode ? (
             <Card>
               <CardContent className="pt-6">
+                {jsonError && <p role="alert" className="mb-3 text-sm text-destructive">{jsonError}</p>}
                 <JsonEditor
                   value={jsonContent}
                   onChange={(value) => {
                     if (typeof value === 'string') {
                       setJsonContent(value);
-                      try {
-                        const parsed = JSON.parse(value);
-                        if (parsed.admins && Array.isArray(parsed.admins)) {
-                          setAdmins(parsed.admins);
-                        }
-                      } catch (error) {
-                        console.error('Failed to parse JSON:', error);
-                      }
+                      setJsonError(null);
                     }
                   }}
                 />
@@ -240,7 +217,7 @@ export default function AdminsPage() {
                 <CardHeader>
                   <CardTitle>Admin Users</CardTitle>
                   <CardDescription>
-                    Edit the list of users who have admin access
+                    Enroll exact CILogon subjects. Email addresses are display information only.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -249,8 +226,8 @@ export default function AdminsPage() {
                     {admins.length > 0 ? (
                       <div className="space-y-2">
                         {admins.map(admin => (
-                          <div key={admin} className="flex items-center justify-between p-2 bg-secondary rounded-md">
-                            <span>{admin}</span>
+                          <div key={`${admin.issuer}:${admin.sub}`} className="flex items-center justify-between p-2 bg-secondary rounded-md">
+                            <span>{admin.sub}{admin.email ? ` (${admin.email})` : ''}</span>
                             <Button 
                               variant="ghost" 
                               size="sm" 
@@ -277,7 +254,7 @@ export default function AdminsPage() {
                           value={newAdmin}
                           onChange={(e) => setNewAdmin(e.target.value)}
                           className="flex-1 mr-2"
-                          placeholder="Enter username"
+                          placeholder="Exact CILogon sub from /auth/me"
                         />
                         <Button onClick={handleAddAdmin}>
                           <PlusCircle className="mr-2 h-4 w-4" />

@@ -14,6 +14,7 @@ Endpoints (under the same base as the other backend routes):
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 
 from src.backend import auth
 from src.backend.htvault import HTVaultClient, HTVaultError
@@ -38,9 +39,14 @@ def login_start(user: auth.UserInfo = Depends(auth.get_current_user)):
     return {"login_id": login_id, "auth_url": started["auth_url"]}
 
 
-@router.get("/login/poll")
-def login_poll(login_id: str,
+class LoginPollRequest(BaseModel):
+    login_id: str
+
+
+@router.post("/login/poll")
+def login_poll(request: LoginPollRequest,
                user: auth.UserInfo = Depends(auth.get_current_user)):
+    login_id = request.login_id
     entry = _PENDING.get(login_id)
     if not entry or entry["user"] != user.sub:
         raise HTTPException(404, "unknown login_id")

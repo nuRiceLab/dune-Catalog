@@ -67,9 +67,8 @@ export async function connectToFnal(): Promise<void> {
             try { popup.close(); } catch { /* ignore */ }
             throw new Error('Timed out waiting for FNAL login.');
         }
-        const poll = await apiClient.get<{ status: 'pending' | 'complete' }>('/rucio/login/poll', {
-            params: { login_id },
-        });
+        const poll = await apiClient.post<{ status: 'pending' | 'complete' }>(
+            '/rucio/login/poll', { login_id });
         if (poll.data.status === 'complete') {
             try { popup.close(); } catch { /* ignore */ }
             return;
