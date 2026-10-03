@@ -176,7 +176,7 @@ class MetaCatAPI:
                     "creator": result.get("creator", ""),
                     "created": format_timestamp(result.get("created_timestamp", "")),
                     "files": result.get("file_count", 0),
-                    "size": int(result.get("total_size", 0) or 0),  # total bytes
+                    "size": int(result["total_size"]) if result.get("total_size") is not None else None,
                     "namespace": result.get("namespace", "")
                 }
                 for result in raw_results

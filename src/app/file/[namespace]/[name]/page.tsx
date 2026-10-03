@@ -13,7 +13,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { getFileDetails, FileDetails, FileRef, isAbortError } from '@/lib/api'
+import { getFileDetails, FileDetails, FileRef, isAbortError, isAuthError, queryErrorMessage } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
 import { formatSize } from '@/lib/format'
 import { Button } from '@/components/ui/button'
@@ -25,6 +25,16 @@ import { ArrowLeft, Copy, CheckCircle, ExternalLink } from 'lucide-react'
 import { ReplicasCard } from '@/components/ReplicasCard'
 
 const METACAT_GUI_BASE = 'https://metacat.fnal.gov:9443/dune_meta_prod/app/gui'
+
+function decodeFileSegment(segment: string): string {
+  // Next 16 supplies encoded route segments. Decode once, preserving literal
+  // percent signs if a manually entered URL contains an invalid escape.
+  try {
+    return decodeURIComponent(segment)
+  } catch {
+    return segment
+  }
+}
 
 /** Renders a list of parent/child file references as clickable chips. */
 function FileRefList({ refs, emptyText }: {
@@ -57,10 +67,10 @@ function FileRefList({ refs, emptyText }: {
 
 export default function FileDetailPage() {
   const params = useParams<{ namespace: string; name: string }>()
-  const { isAuthenticated, isLoading: authLoading } = useAuth()
+  const { isAuthenticated, isLoading: authLoading, refresh, login } = useAuth()
 
-  const namespace = decodeURIComponent(params.namespace ?? '')
-  const name = decodeURIComponent(params.name ?? '')
+  const namespace = decodeFileSegment(params.namespace ?? '')
+  const name = decodeFileSegment(params.name ?? '')
 
   const [details, setDetails] = useState<FileDetails | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -90,13 +100,14 @@ export default function FileDetailPage() {
         // Navigated away (or followed a provenance link) before it loaded —
         // expected, don't surface it as an error.
         if (isAbortError(e) || signal.aborted) return
-        setError(e instanceof Error ? e.message : 'Failed to load file details')
+        setError(queryErrorMessage(e))
+        if (isAuthError(e)) void refresh()
       })
       .finally(() => { if (!signal.aborted) setLoading(false) })
     // Leaving the page aborts the in-flight lookup so it stops running
     // against MetaCat instead of finishing in the background.
     return () => { controller.abort() }
-  }, [namespace, name, isAuthenticated, authLoading])
+  }, [namespace, name, isAuthenticated, authLoading, refresh])
 
   const did = `${namespace}:${name}`
   const handleCopyDid = () => {
@@ -115,9 +126,9 @@ export default function FileDetailPage() {
       <main className="container mx-auto p-4">
         <div className="mt-6 flex flex-col items-center gap-3 rounded-lg border p-8 text-center">
           <p className="text-sm text-muted-foreground">
-            Viewing file details requires signing in. Use the Login button in
-            the upper-right corner.
+            Viewing file details requires signing in.
           </p>
+          <Button onClick={login}>Login</Button>
         </div>
       </main>
     )

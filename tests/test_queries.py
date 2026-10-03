@@ -60,6 +60,17 @@ class CancellationTests(unittest.IsolatedAsyncioTestCase):
 
 
 class MetaCatTests(unittest.TestCase):
+    def test_dataset_sizes_distinguish_unknown_and_zero(self):
+        api = mcatapi.MetaCatAPI()
+        with patch.object(api, "_consume_query", return_value=[
+            {"name": "unknown", "created_timestamp": 0},
+            {"name": "empty", "total_size": 0, "created_timestamp": 0},
+        ]):
+            result = api.get_datasets("", "", "", False, custom_mql="datasets matching audit:*")
+        self.assertTrue(result["success"])
+        self.assertIsNone(result["results"][0]["size"])
+        self.assertEqual(result["results"][1]["size"], 0)
+
     def test_cancelled_stream_closes_only_its_own_response(self):
         api = mcatapi.MetaCatAPI()
         cancelled = threading.Event()

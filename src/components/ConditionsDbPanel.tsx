@@ -98,6 +98,7 @@ export function ConditionsDbPanel() {
     const controller = new AbortController()
     getCondbFolders(controller.signal)
       .then(({ folders, default: def }) => {
+        if (controller.signal.aborted) return
         setFolders(folders)
         setFolder(def)
       })
@@ -109,6 +110,9 @@ export function ConditionsDbPanel() {
   useEffect(() => () => { inFlightRef.current?.abort() }, [])
 
   function resetResults() {
+    inFlightRef.current?.abort()
+    inFlightRef.current = null
+    setLoading(false)
     setConditions(null)
     setSearchResults(null)
     setError(null)

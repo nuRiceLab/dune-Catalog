@@ -41,6 +41,20 @@ export function isTimeoutError(error: unknown): boolean {
   );
 }
 
+export function isAuthError(error: unknown): boolean {
+  return axios.isAxiosError(error) && error.response?.status === 401;
+}
+
+export function queryErrorMessage(error: unknown): string {
+  if (isAuthError(error)) return 'Your session has expired. Please sign in again.';
+  if (isTimeoutError(error)) return 'The query timed out. Please try again later.';
+  if (axios.isAxiosError(error)) {
+    const detail = error.response?.data?.detail;
+    return typeof detail === 'string' ? detail : 'The request failed. Please try again.';
+  }
+  return error instanceof Error ? error.message : 'The request failed. Please try again.';
+}
+
 interface ApiResponse<T> {
   success: boolean;
   message?: string;
@@ -59,7 +73,7 @@ export interface Dataset {
   creator: string;
   created: number;
   files: number;
-  size: number;
+  size: number | null;
   namespace: string;
 }
 export interface File {
@@ -135,38 +149,28 @@ function sanitizeMQLQuery(query: string): string {
  * @returns {Promise<{ results: Dataset[], mqlQuery: string }>} A promise that resolves with an array of datasets and the MQL query.
  */
 export async function searchDataSets(query: string, category: string, tab: string, officialOnly: boolean, customMql?: string, signal?: AbortSignal): Promise<{ results: Dataset[], mqlQuery: string }> {
-  try {
-    const sanitizedQuery = sanitizeMQLQuery(query);
-    // Don't sanitize custom MQL queries to preserve quotes and syntax
-    const sanitizedMql = customMql ? customMql.trim().slice(0, 2000) : undefined;
+  const sanitizedQuery = sanitizeMQLQuery(query);
+  // Don't sanitize custom MQL queries to preserve quotes and syntax
+  const sanitizedMql = customMql ? customMql.trim().slice(0, 2000) : undefined;
 
-    const response = await axios.post<ApiResponse<Dataset>>(`${API_URL}/queryDatasets`,
-      { query: sanitizedQuery, category, tab, officialOnly, customMql: sanitizedMql },
-      {
-        timeout: API_TIMEOUT,
-        withCredentials: true,  // send the CILogon session cookie
-        signal  // abort the in-flight request when the caller cancels
-      }
-    );
-
-    if (!response.data.success) {
-      throw new Error(response.data.message || 'Search failed');
+  const response = await axios.post<ApiResponse<Dataset>>(`${API_URL}/queryDatasets`,
+    { query: sanitizedQuery, category, tab, officialOnly, customMql: sanitizedMql },
+    {
+      timeout: API_TIMEOUT,
+      withCredentials: true,  // send the CILogon session cookie
+      signal  // abort the in-flight request when the caller cancels
     }
+  );
 
-    return {
-      results: normalizeResults(response.data.results),
-      mqlQuery: response.data.mqlQuery || ''
-    };
-  } catch (error) {
-    // Aborted (superseded search / navigation) and timeouts must reach the
-    // caller so it can react — ignore the abort, but show a timeout message.
-    // Returning empty results here would masquerade as "no datasets found".
-    if (isAbortError(error) || isTimeoutError(error)) throw error;
-    return {
-      results: [],
-      mqlQuery: ''
-    };
+  if (!response.data.success) {
+    throw new Error(response.data.message || 'Search failed');
   }
+
+  return {
+    results: normalizeResults(response.data.results),
+    mqlQuery: response.data.mqlQuery || ''
+  };
+
 }
 
 /**
@@ -180,57 +184,34 @@ export async function searchDataSets(query: string, category: string, tab: strin
  * @returns {Promise<{ files: File[], mqlQuery: string }>}A promise that resolves with an array of files and the MQL query.
  */
 export async function searchFiles(namespace: string, name: string, signal?: AbortSignal): Promise<{ files: File[], mqlQuery: string }> {
-  try {
-    const response = await axios.post<ApiResponse<File>>(`${API_URL}/queryFiles`,
-      { name, namespace },
-      {
-        timeout: API_TIMEOUT,
-        withCredentials: true,  // send the CILogon session cookie
-        signal  // abort the in-flight request when the caller cancels
-      }
-    );
-
-    // Ensure the response is valid and has a success status
-    if (!response.data.success) {
-      throw new Error(response.data.message || 'Search failed');
+  const response = await axios.post<ApiResponse<File>>(`${API_URL}/queryFiles`,
+    { name, namespace },
+    {
+      timeout: API_TIMEOUT,
+      withCredentials: true,  // send the CILogon session cookie
+      signal  // abort the in-flight request when the caller cancels
     }
+  );
 
-    // Normalize results, ensuring we always have an array
-    const normalizedFiles = normalizeResults(response.data.results)
-      .filter(file => file.fid && file.name) // Additional filtering to ensure valid files
-      .map(file => ({
-        ...file,
-        updated: file.updated || 0,
-        created: file.created || 0,
-        size: file.size || 0
-      }));
-    return {
-      files: normalizedFiles,
-      mqlQuery: response.data.mqlQuery || ''
-    };
-  } catch (error) {
-    // An aborted request (dialog closed / navigation) is expected — surface
-    // it so the caller can ignore it instead of showing an empty file list.
-    if (isAbortError(error)) throw error;
-    // Log the error for debugging
-    console.error('Error searching files:', error);
-    if (axios.isAxiosError(error)) {
-      console.error('API Error Details:', {
-        status: error.response?.status,
-        data: error.response?.data,
-        config: {
-          url: error.config?.url,
-          method: error.config?.method,
-          data: error.config?.data
-        }
-      });
-    }
-    // Return an empty array in case of error to prevent breaking the UI
-    return {
-      files: [],
-      mqlQuery: ''
-    };
+  // Ensure the response is valid and has a success status
+  if (!response.data.success) {
+    throw new Error(response.data.message || 'Search failed');
   }
+
+  // Normalize results, ensuring we always have an array
+  const normalizedFiles = normalizeResults(response.data.results)
+    .filter(file => file.fid && file.name) // Additional filtering to ensure valid files
+    .map(file => ({
+      ...file,
+      updated: file.updated || 0,
+      created: file.created || 0,
+      size: file.size || 0
+    }));
+  return {
+    files: normalizedFiles,
+    mqlQuery: response.data.mqlQuery || ''
+  };
+
 }
 
 // Store user's location in memory

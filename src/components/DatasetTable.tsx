@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown } from 'lucide-react';
-import { Dataset, getDatasetSizes, isAbortError } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
+import { Dataset, getDatasetSizes, isAbortError, isAuthError } from '@/lib/api';
 import { formatSize } from '@/lib/format';
 import { Pagination } from './Pagination';
 import { DatasetDialog } from './DatasetDialog';
@@ -23,9 +24,9 @@ interface ResultsTableProps {
     hasSearched?: boolean;
 }
 
-const SIZE_BATCH = 5;           // small parallel batches: one huge dataset delays at most 4 others
+const SIZE_BATCH = 5; // Keep a visible page below the shared size-job admission limit.
 
-const dsKey = (d: Dataset) => `${d.namespace}:${d.name}`;
+const dsKey = (d: Pick<Dataset, 'namespace' | 'name'>) => `${d.namespace}:${d.name}`;
 
 export function DatasetTable({ results, mode = 'dataset', hasSearched = true }: ResultsTableProps) {
     const [sortColumn, setSortColumn] = useState<keyof Dataset>('name');
@@ -33,16 +34,25 @@ export function DatasetTable({ results, mode = 'dataset', hasSearched = true }: 
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [sizeMap, setSizeMap] = useState<Record<string, number>>({});
-    const requestedRef = useRef<Set<string>>(new Set());
+    const { refresh } = useAuth();
+    useEffect(() => {
+        setCurrentPage(1);
+        setSortColumn('name');
+    }, [results]);
 
 
     /** Effective size: from the dataset record if present, else the fetched map. */
     const effectiveSize = (r: Dataset): number | undefined =>
-        r.size ? r.size : sizeMap[dsKey(r)];
+        r.size ?? sizeMap[dsKey(r)];
+    const canSortSize = results.every(result => {
+        const size = effectiveSize(result);
+        return size !== undefined && size >= 0;
+    });
+    const activeSortColumn = sortColumn === 'size' && !canSortSize ? 'name' : sortColumn;
 
     const sortedResults = [...results].sort((a, b) => {
-        const av = sortColumn === 'size' ? (effectiveSize(a) ?? 0) : a[sortColumn];
-        const bv = sortColumn === 'size' ? (effectiveSize(b) ?? 0) : b[sortColumn];
+        const av = activeSortColumn === 'size' ? effectiveSize(a)! : (a[activeSortColumn] ?? '');
+        const bv = activeSortColumn === 'size' ? effectiveSize(b)! : (b[activeSortColumn] ?? '');
         if (av < bv) return sortDirection === 'asc' ? -1 : 1;
         if (av > bv) return sortDirection === 'asc' ? 1 : -1;
         return 0;
@@ -51,84 +61,45 @@ export function DatasetTable({ results, mode = 'dataset', hasSearched = true }: 
     const totalPages = Math.ceil(sortedResults.length / pageSize);
     const paginatedResults = sortedResults.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-    // Fetch sizes only for the datasets on the current page (each size is a
-    // real aggregate query on MetaCat, so fetching all results is too costly).
-    // Batches run in parallel and are retried once, and results are merged
-    // whenever they arrive — a size that takes minutes to compute still shows
-    // up when ready (sizeMap is keyed by dataset, so late answers are always
-    // safe to apply). Skipped entirely in 'file' mode -- individual files
-    // already carry their own size, there's no dataset size to compute.
-    //
-    // When the page/results change or the table unmounts, the effect aborts
-    // its in-flight requests: this stops the backend size queries mid-flight
-    // (no wasted MetaCat load) and, critically, suppresses the one-shot retry
-    // below so an abandoned page never issues a *second* round of queries.
+    // Only the visible page needs expensive aggregates. Aborting discards its
+    // pending batches; revisiting the page can retry any still-missing sizes.
     useEffect(() => {
         if (mode === 'file') return;
-        const missing = paginatedResults
-            .filter((r) => !r.size && !requestedRef.current.has(dsKey(r)));
+        const missing = paginatedResults.filter(r => {
+            const size = effectiveSize(r);
+            return size === undefined || size < 0;
+        });
         if (!missing.length) return;
-        missing.forEach((r) => requestedRef.current.add(dsKey(r)));
-
         const controller = new AbortController();
         const { signal } = controller;
-
-        const chunks: { namespace: string; name: string }[][] = [];
-        for (let i = 0; i < missing.length; i += SIZE_BATCH) {
-            chunks.push(
-                missing.slice(i, i + SIZE_BATCH)
-                    .map(({ namespace, name }) => ({ namespace, name }))
-            );
-        }
-        chunks.forEach(async (chunk) => {
-            const chunkKeys = chunk.map((d) => `${d.namespace}:${d.name}`);
-            // Aborted requests must not stay marked as "requested", or the
-            // sizes would never be fetched again if the page is revisited.
-            const releaseKeys = () =>
-                chunkKeys.forEach((k) => requestedRef.current.delete(k));
-
-            for (let attempt = 0; attempt < 2; attempt++) {
+        async function fetchSizes() {
+            for (let i = 0; i < missing.length; i += SIZE_BATCH) {
+                if (signal.aborted) return;
+                const chunk = missing.slice(i, i + SIZE_BATCH)
+                    .map(({ namespace, name }) => ({ namespace, name }));
                 try {
                     const sizes = await getDatasetSizes(chunk, signal);
-                    if (!signal.aborted) {
-                        setSizeMap((prev) => ({ ...prev, ...sizes }));
-                    }
-                    return;
+                    if (!signal.aborted) setSizeMap(prev => ({ ...prev, ...sizes }));
                 } catch (error) {
-                    // User navigated away / changed page: stop cleanly. No
-                    // retry — issuing another request here is exactly the
-                    // extra MetaCat call we're trying to avoid.
-                    if (isAbortError(error) || signal.aborted) {
-                        releaseKeys();
+                    if (isAbortError(error) || signal.aborted) return;
+                    if (isAuthError(error)) {
+                        void refresh();
                         return;
                     }
-                    if (attempt === 0) {
-                        // Brief pause, then one retry (transient failure or a
-                        // proxy cutoff); the backend caches finished
-                        // computations, so the retry is usually instant.
-                        await new Promise((res) => setTimeout(res, 3000));
-                        if (signal.aborted) {   // aborted during the pause
-                            releaseKeys();
-                            return;
-                        }
-                    }
+                    setSizeMap(prev => ({ ...prev,
+                        ...Object.fromEntries(chunk.map(dataset => [dsKey(dataset), -1])) }));
                 }
             }
-            // Both attempts failed: show '—' rather than a permanent spinner.
-            if (!signal.aborted) {
-                setSizeMap((prev) => {
-                    const next = { ...prev };
-                    chunk.forEach((d) => { next[`${d.namespace}:${d.name}`] ??= 0; });
-                    return next;
-                });
-            }
-        });
-
-        return () => { controller.abort(); };
+        }
+        void fetchSizes();
+        return () => controller.abort();
+    // Retry failures on user actions, not on size arrivals (which would loop).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [results, currentPage, pageSize, sortColumn, sortDirection, mode]);
+    }, [results, currentPage, pageSize, sortColumn, sortDirection, mode, refresh]);
 
     const toggleSort = (column: keyof Dataset) => {
+        if (column === 'size' && !canSortSize) return;
+        setCurrentPage(1);
         if (column === sortColumn) {
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
         } else {
@@ -152,6 +123,11 @@ export function DatasetTable({ results, mode = 'dataset', hasSearched = true }: 
 
     return (
         <div>
+            {mode === 'dataset' && !canSortSize && (
+                <p className="mb-2 text-xs text-muted-foreground">
+                    Size sorting is available when every result has a known size.
+                </p>
+            )}
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -159,10 +135,11 @@ export function DatasetTable({ results, mode = 'dataset', hasSearched = true }: 
                             <TableHead key={header}>
                                 <Button
                                     variant="ghost"
+                                    disabled={header === 'Size' && !canSortSize}
                                     onClick={() => toggleSort(header.toLowerCase() as keyof Dataset)}
                                 >
                                     {header}
-                                    {sortColumn === header.toLowerCase() && (
+                                    {activeSortColumn === header.toLowerCase() && (
                                         sortDirection === 'asc' ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />
                                     )}
                                 </Button>
@@ -198,7 +175,7 @@ export function DatasetTable({ results, mode = 'dataset', hasSearched = true }: 
                                             const title = pending
                                                 ? 'Computing size… (large datasets can take a few minutes)'
                                                 : unavailable
-                                                ? 'This dataset is too large to summarize in less than 5 minutes — try again later.'
+                                                ? 'Size is unavailable. Try the search again later.'
                                                 : undefined;
                                             return <span title={title}>{formatSize(s)}</span>;
                                         })()}
@@ -215,7 +192,7 @@ export function DatasetTable({ results, mode = 'dataset', hasSearched = true }: 
                 pageSize={pageSize}
                 totalResults={results.length}
                 onPageChange={setCurrentPage}
-                onPageSizeChange={setPageSize}
+                onPageSizeChange={size => { setPageSize(size); setCurrentPage(1); }}
             />
         </div>
     );
