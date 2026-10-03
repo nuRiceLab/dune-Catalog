@@ -12,13 +12,10 @@ result BY SITE (RSE) for display:
       ...
     ]
 
-Cached in-process for one hour, so most requests never touch Rucio or mint a
-token. If the vault token has expired, get_replicas raises NeedReLogin.
+Every lookup validates this session and contacts Rucio. If the vault token has expired, get_replicas raises NeedReLogin.
 """
 
 import json
-import threading
-import time
 
 import httpx
 
@@ -26,7 +23,6 @@ from src.backend.htvault import HTVaultError
 
 DEFAULT_RUCIO_HOST = "https://dune-rucio.fnal.gov"
 DEFAULT_SCHEMES = ("root",)   # protocols shown to users
-CACHE_TTL_SECONDS = 3600             # 1 hour
 MINT_MIN_SECONDS = 600               # ask vault for >=10 min of validity
 
 
@@ -71,42 +67,15 @@ def parse_replica_sites(lines):
     return out
 
 
-class _TTLCache:
-    def __init__(self, ttl):
-        self.ttl = ttl
-        self._d = {}
-        self._lock = threading.Lock()
-
-    def get(self, key):
-        with self._lock:
-            item = self._d.get(key)
-            if not item:
-                return None
-            expires, value = item
-            if time.time() >= expires:
-                self._d.pop(key, None)
-                return None
-            return value
-
-    def set(self, key, value):
-        with self._lock:
-            self._d[key] = (time.time() + self.ttl, value)
-
-    def clear(self):
-        with self._lock:
-            self._d.clear()
-
-
 class RucioReader:
     def __init__(self, vault, token_store,
                  rucio_host=DEFAULT_RUCIO_HOST, domain="wan",
-                 verify=True, timeout=30, cache_ttl=CACHE_TTL_SECONDS):
+                 verify=True, timeout=30):
         self.vault = vault
         self.token_store = token_store          # callable(user)->{vault_token,credkey}|None
         self.rucio_host = rucio_host.rstrip("/")
         self.domain = domain
         self._http = httpx.Client(verify=verify, timeout=timeout)
-        self.cache = _TTLCache(cache_ttl)
 
     def _access_token(self, user):
         creds = self.token_store(user)
@@ -124,14 +93,9 @@ class RucioReader:
             raise NeedReLogin(str(e)) from e
 
     def get_replicas(self, user, scope, name, schemes=DEFAULT_SCHEMES):
-        """Cached-or-fresh per-site replica records for a file DID."""
-        key = "%s:%s|%s|%s" % (scope, name, ",".join(schemes), self.domain)
-        cached = self.cache.get(key)
-        if cached is not None:
-            return cached
+        """Authorize this session and fetch current replica records."""
         token = self._access_token(user)
         sites = self._list_replicas(token, scope, name, list(schemes))
-        self.cache.set(key, sites)
         return sites
 
     def _list_replicas(self, token, scope, name, schemes):

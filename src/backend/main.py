@@ -39,6 +39,7 @@ metacat_api = MetaCatAPI()
 @app.on_event("startup")
 async def startup_event():
     auth.validate_security_configuration()
+    auth.sessions.initialize()
     global admin_identities
     admin_identities = get_admin_identities()
     auth.set_admin_identities(admin_identities)
@@ -84,9 +85,11 @@ async def auth_callback(request: Request):
 
 
 @app.post("/auth/logout")
-async def auth_logout(response: Response):
-    """Clear the authentication cookie."""
-    return await auth.logout(response)
+def auth_logout(request: Request, response: Response):
+    """Revoke the catalog session before discarding its FNAL credentials."""
+    session_id = auth.logout(request, response)
+    revoked = rucio_router.clear_session(session_id) if session_id else None
+    return auth.AuthResponse(authenticated=False, message="Logout successful", fnal_revoked=revoked)
 
 
 @app.get("/auth/me", response_model=auth.AuthResponse)

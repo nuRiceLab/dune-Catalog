@@ -1,76 +1,135 @@
-"""
-rucio_router.py — FastAPI router for the read-only replica feature.
-Place in src/backend/ and include it from src/backend/main.py:
-
-    from src.backend import rucio_router
-    app.include_router(rucio_router.router)
-
-Endpoints (under the same base as the other backend routes):
-  POST /rucio/login/start  -> {login_id, auth_url}
-  GET  /rucio/login/poll   -> {status: pending|complete}
-  GET  /rucio/replicas     -> {replicas:[{rse, pfn}, ...]}  (401 reauth_required)
-"""
-
+"""Read-only replica queries and session-scoped FNAL connections."""
+import logging
+import threading
+import time
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
 from src.backend import auth
-from src.backend.htvault import HTVaultClient, HTVaultError
+from src.backend.htvault import HTVaultClient
 from src.backend.rucio_reader import RucioReader, NeedReLogin, DEFAULT_SCHEMES
 from src.backend.token_store import InMemoryVaultTokenStore
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/rucio", tags=["rucio"])
-
 vault = HTVaultClient(issuer="dune", role="default")
 tokens = InMemoryVaultTokenStore()
-reader = RucioReader(vault, token_store=tokens.get,
-                     rucio_host="https://dune-rucio.fnal.gov", domain="wan")
+reader = RucioReader(vault, token_store=tokens.get)
 
-_PENDING = {}  # login_id -> {"user", "session"}
-
-
-@router.post("/login/start")
-def login_start(user: auth.UserInfo = Depends(auth.get_current_user)):
-    started = vault.begin_auth()
-    login_id = uuid.uuid4().hex
-    _PENDING[login_id] = {"user": user.sub, "session": started["session"]}
-    return {"login_id": login_id, "auth_url": started["auth_url"]}
+# ponytail: process-local credentials require one worker; use shared secure storage
+# if deployment needs multiple workers. Restart intentionally requires reconnection.
+_PENDING = {}
+_PENDING_LOCK = threading.Lock()
+_LOGIN_TTL = 300
 
 
 class LoginPollRequest(BaseModel):
     login_id: str
 
 
+def _revoke_vault_token(token: str) -> bool:
+    try:
+        vault.revoke_token(token)
+        return True
+    except Exception as error:
+        logger.warning("FNAL revocation could not be confirmed (%s)", type(error).__name__)
+        return False
+
+
+def clear_session(session_id: str):
+    with _PENDING_LOCK:
+        _PENDING.pop(session_id, None)
+        credentials = tokens.delete(session_id)
+    return _revoke_vault_token(credentials["vault_token"]) if credentials else None
+
+
+@router.post("/login/start")
+def login_start(user: auth.UserInfo = Depends(auth.get_current_user)):
+    started = vault.begin_auth()
+    entry = {
+        "login_id": uuid.uuid4().hex, "session": started["session"],
+        "expires_at": min(time.time() + _LOGIN_TTL, user.session_expires_at),
+        "next_poll": 0.0, "polling": False,
+    }
+    with _PENDING_LOCK:
+        now = time.time()
+        for key in [key for key, value in _PENDING.items() if value["expires_at"] <= now]:
+            _PENDING.pop(key, None)
+        if not auth.sessions.is_active(user.session_id):
+            raise HTTPException(401, "Session expired")
+        _PENDING[user.session_id] = entry
+    return {
+        "login_id": entry["login_id"], "auth_url": started["auth_url"],
+        "poll_interval": started["session"]["poll_interval"],
+    }
+
+
 @router.post("/login/poll")
 def login_poll(request: LoginPollRequest,
                user: auth.UserInfo = Depends(auth.get_current_user)):
-    login_id = request.login_id
-    entry = _PENDING.get(login_id)
-    if not entry or entry["user"] != user.sub:
-        raise HTTPException(404, "unknown login_id")
+    with _PENDING_LOCK:
+        entry = _PENDING.get(user.session_id)
+        if not entry or entry["login_id"] != request.login_id:
+            raise HTTPException(404, "Unknown login")
+        if entry["expires_at"] <= time.time():
+            _PENDING.pop(user.session_id, None)
+            raise HTTPException(410, "FNAL login expired")
+        interval = entry["session"]["poll_interval"]
+        if entry["polling"] or entry["next_poll"] > time.time():
+            return {"status": "pending", "poll_interval": interval}
+        entry["polling"] = True
     try:
         result = vault.poll_once(entry["session"])
-    except HTVaultError as e:
-        _PENDING.pop(login_id, None)
-        raise HTTPException(400, str(e))
+    except Exception as error:
+        with _PENDING_LOCK:
+            if _PENDING.get(user.session_id) is entry:
+                _PENDING.pop(user.session_id, None)
+        logger.warning("FNAL login polling failed (%s)", type(error).__name__)
+        raise HTTPException(502, "FNAL login failed; reconnect and try again")
     if result is None:
-        return {"status": "pending"}
-    tokens.put(user.sub, result["vault_token"], result["credkey"])
-    _PENDING.pop(login_id, None)
+        interval = entry["session"]["poll_interval"]
+        with _PENDING_LOCK:
+            entry["polling"] = False
+            entry["next_poll"] = time.time() + interval
+        return {"status": "pending", "poll_interval": interval}
+    accepted = False
+    previous_credentials = None
+    try:
+        expires_at = min(user.session_expires_at,
+                         time.time() + max(0, int(result.get("lease_duration") or 0)))
+        with _PENDING_LOCK:
+            if (_PENDING.get(user.session_id) is entry
+                    and entry["expires_at"] > time.time()
+                    and auth.sessions.is_active(user.session_id)
+                    and expires_at > time.time()):
+                previous_credentials = tokens.delete(user.session_id)
+                tokens.put(user.session_id, result["vault_token"], result["credkey"], expires_at)
+                _PENDING.pop(user.session_id, None)
+                accepted = True
+        if accepted and not auth.sessions.is_active(user.session_id):
+            tokens.delete(user.session_id)
+            accepted = False
+    finally:
+        if previous_credentials and previous_credentials["vault_token"] != result["vault_token"]:
+            _revoke_vault_token(previous_credentials["vault_token"])
+        if not accepted:
+            _revoke_vault_token(result["vault_token"])
+    if not accepted:
+        raise HTTPException(401, "Session or FNAL login expired; reconnect")
     return {"status": "complete"}
 
+
 @router.get("/replicas")
-def replicas(scope: str = Query(...),
-             name: str = Query(...),
+def replicas(scope: str = Query(...), name: str = Query(...),
              user: auth.UserInfo = Depends(auth.get_current_user)):
     try:
-        sites = reader.get_replicas(user.sub, scope, name, schemes=DEFAULT_SCHEMES)
+        sites = reader.get_replicas(user.session_id, scope, name, schemes=DEFAULT_SCHEMES)
     except NeedReLogin:
-        raise HTTPException(
-            status_code=401,
-            detail={"error": "reauth_required",
-                    "message": "Your FNAL session has expired — please reconnect "
-                               "to FNAL to refresh access."})
+        # A reconnect may have installed a newer token while this lookup ran.
+        # Expired entries are already pruned by the store.
+        raise HTTPException(401, detail={
+            "error": "reauth_required", "message": "Reconnect to FNAL to refresh access."
+        })
     return {"scope": scope, "name": name, "sites": sites}

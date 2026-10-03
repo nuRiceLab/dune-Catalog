@@ -2,9 +2,12 @@
 import asyncio
 import os
 import tempfile
+import time
+import sqlite3
 from pathlib import Path
 import unittest
 from unittest.mock import patch
+from unittest.mock import Mock
 
 os.environ.update({
     "JWT_SECRET_KEY": "test-only-signing-key-" + "x" * 48,
@@ -13,6 +16,7 @@ os.environ.update({
     "CILOGON_REDIRECT_URI": "https://catalog.example.invalid/auth/callback",
     "FRONTEND_URL": "https://catalog.example.invalid/dunecatalog",
     "ENVIRONMENT": "production",
+    "SESSION_DB_PATH": str(Path(tempfile.gettempdir()) / "dune-audit-sessions.sqlite3"),
 })
 
 import jwt
@@ -149,6 +153,160 @@ class AdminBoundaryTests(unittest.TestCase):
 
     def test_poll_cannot_change_credentials_via_get(self):
         self.assertEqual(TestClient(main.app).get("/rucio/login/poll?login_id=audit").status_code, 405)
+
+
+class SessionTests(unittest.TestCase):
+    def setUp(self):
+        from src.backend.session_store import SessionStore
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        store = SessionStore(Path(directory.name) / "sessions.sqlite3")
+        store.initialize()
+        patcher = patch.object(auth, "sessions", store)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_logout_invalidates_a_copied_cookie(self):
+        token = auth.create_access_token({"sub": "audit", "identity_issuer": "https://cilogon.org"})
+        response = TestClient(main.app).post("/auth/logout", headers={
+            "Origin": "https://catalog.example.invalid", "Cookie": f"dunecat_token={token}"
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(auth.decode_token(token))
+
+    def test_session_registry_persists_revocation(self):
+        from src.backend.session_store import SessionStore
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "sessions.sqlite3"
+            first = SessionStore(path)
+            first.initialize()
+            first.register("audit", int(time.time()) + 60)
+            self.assertTrue(SessionStore(path).is_active("audit"))
+            first.revoke("audit")
+            self.assertFalse(SessionStore(path).is_active("audit"))
+            first.register("expired", int(time.time()) - 1)
+            self.assertFalse(first.is_active("expired"))
+
+    def test_registry_failure_never_allows_signature_only_authentication(self):
+        from fastapi import HTTPException
+        token = auth.create_access_token({"sub": "audit", "identity_issuer": "https://cilogon.org"})
+        with patch.object(auth.sessions, "is_active", side_effect=sqlite3.OperationalError):
+            with self.assertRaises(HTTPException) as error:
+                auth.decode_token(token)
+            self.assertEqual(error.exception.status_code, 503)
+
+    def test_internal_session_fields_are_not_returned_to_browser(self):
+        token = auth.create_access_token({"sub": "audit", "identity_issuer": "https://cilogon.org"})
+        response = TestClient(main.app).get("/auth/me", headers={"Cookie": f"dunecat_token={token}"})
+        self.assertTrue(response.json()["authenticated"])
+        self.assertNotIn("session_id", response.json()["user"])
+
+    def test_late_poll_cannot_restore_logged_out_credentials(self):
+        from fastapi import HTTPException
+        router = main.rucio_router
+        user = auth.UserInfo(sub="audit", session_id="race", session_expires_at=int(time.time()) + 60)
+        auth.sessions.register("race", user.session_expires_at)
+        with patch.object(router.vault, "begin_auth", return_value={
+            "auth_url": "https://fnal.example.invalid", "session": {"poll_interval": 5}
+        }):
+            started = router.login_start(user)
+        def complete_after_logout(session):
+            auth.sessions.revoke("race")
+            router.clear_session("race")
+            return {"vault_token": "late-token", "credkey": "audit", "lease_duration": 60}
+        with (
+            patch.object(router.vault, "poll_once", side_effect=complete_after_logout),
+            patch.object(router.vault, "revoke_token") as revoke,
+        ):
+            with self.assertRaises(HTTPException) as error:
+                router.login_poll(router.LoginPollRequest(login_id=started["login_id"]), user)
+            self.assertEqual(error.exception.status_code, 401)
+            self.assertIsNone(router.tokens.get("race"))
+            revoke.assert_called_once_with("late-token")
+
+    def test_fnal_poll_is_serialized_and_honors_provider_interval(self):
+        router = main.rucio_router
+        user = auth.UserInfo(sub="audit", session_id="polling", session_expires_at=int(time.time()) + 60)
+        auth.sessions.register("polling", user.session_expires_at)
+        with patch.object(router.vault, "begin_auth", return_value={
+            "auth_url": "https://fnal.example.invalid", "session": {"poll_interval": 5}
+        }):
+            started = router.login_start(user)
+        request = router.LoginPollRequest(login_id=started["login_id"])
+        def pending(session):
+            self.assertEqual(router.login_poll(request, user)["status"], "pending")
+            session["poll_interval"] = 10
+            return None
+        with patch.object(router.vault, "poll_once", side_effect=pending) as poll:
+            self.assertEqual(router.login_poll(request, user)["poll_interval"], 10)
+            router.login_poll(request, user)
+            poll.assert_called_once()
+        router.clear_session("polling")
+
+    def test_expired_fnal_credentials_and_pending_logins_are_removed(self):
+        from fastapi import HTTPException
+        router = main.rucio_router
+        user = auth.UserInfo(sub="audit", session_id="expiry", session_expires_at=int(time.time()) + 60)
+        auth.sessions.register("expiry", user.session_expires_at)
+        router.tokens.put("expiry", "token", "key", time.time() - 1)
+        self.assertIsNone(router.tokens.get("expiry"))
+        with patch.object(router.vault, "begin_auth", return_value={
+            "auth_url": "https://fnal.example.invalid", "session": {"poll_interval": 5}
+        }):
+            first = router.login_start(user)
+            second = router.login_start(user)
+        self.assertNotEqual(first["login_id"], second["login_id"])
+        router._PENDING["expiry"]["expires_at"] = 0
+        with self.assertRaises(HTTPException) as error:
+            router.login_poll(router.LoginPollRequest(login_id=second["login_id"]), user)
+        self.assertEqual(error.exception.status_code, 410)
+        self.assertNotIn("expiry", router._PENDING)
+
+    def test_provider_revocation_failure_does_not_restore_local_access(self):
+        router = main.rucio_router
+        token = auth.create_access_token({"sub": "audit", "identity_issuer": "https://cilogon.org"})
+        claims = auth.decode_token(token)
+        router.tokens.put(claims["jti"], "test-token", "key", claims["exp"])
+        with patch.object(router.vault, "revoke_token", side_effect=RuntimeError("sensitive")):
+            response = TestClient(main.app).post("/auth/logout", headers={
+                "Origin": "https://catalog.example.invalid", "Cookie": f"dunecat_token={token}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()["fnal_revoked"])
+        self.assertIsNone(auth.decode_token(token))
+        self.assertIsNone(router.tokens.get(claims["jti"]))
+        self.assertNotIn("sensitive", response.text)
+
+    def test_stale_replica_failure_preserves_reconnected_credentials(self):
+        from fastapi import HTTPException
+        from src.backend.rucio_reader import NeedReLogin
+        router = main.rucio_router
+        user = auth.UserInfo(sub="audit", session_id="reconnect")
+        def stale_lookup(*args, **kwargs):
+            router.tokens.put("reconnect", "new-token", "key", time.time() + 60)
+            raise NeedReLogin()
+        try:
+            with patch.object(router.reader, "get_replicas", side_effect=stale_lookup):
+                with self.assertRaises(HTTPException) as error:
+                    router.replicas("audit", "file", user)
+                self.assertEqual(error.exception.status_code, 401)
+                self.assertEqual(router.tokens.get("reconnect")["vault_token"], "new-token")
+        finally:
+            router.tokens.delete("reconnect")
+
+    def test_replica_lookups_always_check_callers_credentials(self):
+        from src.backend.rucio_reader import RucioReader, NeedReLogin
+        vault = Mock()
+        vault.mint_access_token.return_value = "synthetic-access-token"
+        reader = RucioReader(vault, lambda session: (
+            {"vault_token": "synthetic-vault-token", "credkey": "audit"}
+            if session == "authorized" else None))
+        try:
+            with patch.object(reader, "_list_replicas", return_value=[]):
+                self.assertEqual(reader.get_replicas("authorized", "audit", "file"), [])
+                with self.assertRaises(NeedReLogin):
+                    reader.get_replicas("other-session", "audit", "file")
+        finally:
+            reader._http.close()
 
 
 if __name__ == "__main__":
