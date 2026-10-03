@@ -4,7 +4,8 @@ Endpoint:
   POST /runConditions  {folder?, run}  -> {success, results: {...}}
 """
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
+from src.backend.cancellable import run_cancellable
 from pydantic import BaseModel
 
 from src.backend import auth
@@ -55,8 +56,9 @@ ALLOWED_OPS = {"<", "<=", "=", "!=", ">=", ">"}
 
 
 @router.post("/searchRuns")
-def search_runs(
+async def search_runs(
     request: RunSearchRequest,
+    http_request: Request,
     user: auth.UserInfo = Depends(auth.get_current_user),
 ):
     """
@@ -80,7 +82,11 @@ def search_runs(
             )
         resolved.append((raw_col, cond.op, cond.value))
 
-    result = condb_api.search_runs(folder, resolved)
+    result = await run_cancellable(
+        http_request,
+        lambda cancelled: condb_api.search_runs(folder, resolved, is_cancelled=cancelled),
+        timeout_s=condb_api.timeout,
+    )
     if not result["success"]:
         raise HTTPException(502, result.get("message", "Conditions DB search failed"))
 
@@ -114,8 +120,9 @@ def list_condb_folders(user: auth.UserInfo = Depends(auth.get_current_user)):
 
 
 @router.post("/runConditions")
-def get_run_conditions(
+async def get_run_conditions(
     request: RunConditionsRequest,
+    http_request: Request,
     user: auth.UserInfo = Depends(auth.get_current_user),
 ):
     """
@@ -129,7 +136,11 @@ def get_run_conditions(
     if not condb_api.base_url:
         raise HTTPException(503, "Conditions DB is not configured")
     folder = request.folder or DEFAULT_FOLDER
-    result = condb_api.get_run_conditions(folder, request.run)
+    result = await run_cancellable(
+        http_request,
+        lambda cancelled: condb_api.get_run_conditions(folder, request.run, is_cancelled=cancelled),
+        timeout_s=condb_api.timeout,
+    )
     if not result["success"]:
         raise HTTPException(status_code=404, detail=result.get("message", "Run not found"))
 

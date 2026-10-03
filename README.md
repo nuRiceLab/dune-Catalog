@@ -228,6 +228,21 @@ dune_catalog/
 
 ## Error Handling
 
+Dataset, file, detail, size, and Conditions DB requests propagate browser
+disconnects and server deadlines to cooperative cancellation checks. Each MetaCat
+operation owns and closes its response; cancelled requests skip subsequent
+aggregates and provenance calls. MetaCat 503 retries are disabled.
+
+Size queries share eight workers, with at most 32 jobs running or queued per
+backend process. A batch that cannot fit returns 503 so the caller can retry.
+Cancelled queued jobs are discarded; running jobs retain their capacity slot
+until they finish. Socket timeouts remain finite (150 seconds for MetaCat
+searches, 300 for aggregates, 20 for ConDB by default).
+
+Cancellation cannot kill a blocking socket or guarantee that the remote server
+stops computing. The worker stops at its next cancellation check or socket
+timeout; the HTTP request stops waiting at its deadline.
+
 The backend implements error handling to manage issues such as:
 - Invalid requests
 - Authentication failures

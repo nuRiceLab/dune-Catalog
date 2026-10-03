@@ -1,37 +1,7 @@
-"""
-cancellable.py — run blocking upstream work (MetaCat / ConDB) so that it is
-torn down promptly when the browser aborts the request or a hard time budget
-is exceeded, instead of running to completion in the background.
+"""Cancel cooperative upstream work on disconnect or timeout.
 
-Why this exists
----------------
-FastAPI runs a plain ``def`` endpoint in a worker thread, which keeps the
-event loop free (that is why the query endpoints are sync — see the project
-changelog). But it has two consequences we need to correct:
-
-  * A worker thread cannot be force-killed from outside, and a synchronous
-    endpoint is never told that the client hung up. So when a user changes
-    their search, closes a dialog, or navigates away, the abandoned query
-    keeps streaming from MetaCat to completion — wasted load on the upstream
-    API, and a thread tied up for as long as the query takes.
-  * The MetaCat client's default per-request timeout is 30 minutes, so a
-    single stuck request can hold a worker thread for that long.
-
-``run_cancellable`` bridges the gap:
-
-  * the endpoint becomes ``async def`` and awaits ``run_cancellable``;
-  * the blocking work still runs in a worker thread (event loop stays free);
-  * a monitor coroutine polls ``request.is_disconnected()``;
-  * on disconnect *or* timeout a ``threading.Event`` is set and the event loop
-    is released immediately (the HTTP response is failed), while the worker
-    observes the event and stops streaming from the upstream API — closing the
-    connection so the upstream stops computing too, and no retry is issued.
-
-The blocking callable is handed a zero-argument ``is_cancelled()`` predicate.
-It is expected to poll that predicate between upstream chunks and, when it
-returns True, abort promptly (see ``mcatapi`` for how the streaming query
-loop does this). Work that is a single short upstream call need not poll; it
-is simply bounded by the client timeout and the hard budget.
+A blocked socket can continue until its timeout; cancellation cannot kill a thread
+or guarantee that the remote server stops computation.
 """
 
 from __future__ import annotations
@@ -94,6 +64,7 @@ async def run_cancellable(
     """
     cancel_event = threading.Event()
     value: object = _UNSET
+    error: Exception | None = None
 
     try:
         with anyio.fail_after(timeout_s):
@@ -113,14 +84,17 @@ async def run_cancellable(
                         await anyio.sleep(_DISCONNECT_POLL_S)
 
                 async def run_work() -> None:
-                    nonlocal value
+                    nonlocal value, error
                     # abandon_on_cancel=True: if the scope is cancelled
                     # (disconnect or timeout) the loop stops waiting on the
                     # thread immediately. The thread is not killed, but it
                     # observes cancel_event and winds down on its own.
-                    value = await anyio.to_thread.run_sync(
-                        work, cancel_event.is_set, abandon_on_cancel=True
-                    )
+                    try:
+                        value = await anyio.to_thread.run_sync(
+                            work, cancel_event.is_set, abandon_on_cancel=True
+                        )
+                    except Exception as exc:
+                        error = exc
                     # Work is done — stop the monitor and leave the group.
                     tg.cancel_scope.cancel()
 
@@ -134,6 +108,9 @@ async def run_cancellable(
         # Belt and braces: whatever happened, make sure an abandoned worker
         # thread is told to stop (harmless if it already finished).
         cancel_event.set()
+
+    if error is not None:
+        raise error
 
     if value is _UNSET:
         # The group unwound without the work producing a value: the client
