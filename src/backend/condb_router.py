@@ -67,6 +67,8 @@ def search_runs(
     column names.
     """
     folder = request.folder or DEFAULT_FOLDER
+    if not condb_api.base_url:
+        raise HTTPException(503, "Conditions DB is not configured")
     resolved: list[tuple[str, str, object]] = []
     for cond in request.conditions:
         if cond.op not in ALLOWED_OPS:
@@ -124,6 +126,8 @@ def get_run_conditions(
     Raises:
         HTTPException 404 if the run has no conditions record, 500 on error.
     """
+    if not condb_api.base_url:
+        raise HTTPException(503, "Conditions DB is not configured")
     folder = request.folder or DEFAULT_FOLDER
     result = condb_api.get_run_conditions(folder, request.run)
     if not result["success"]:

@@ -118,7 +118,7 @@ def start_frontend(production_mode=False):
         return subprocess.Popen([npm_cmd, "run", "dev"], cwd=project_dir, env=env)
 
 
-def start_server():
+def start_server(production_mode=False):
     """
     Start the FastAPI server.
 
@@ -132,7 +132,7 @@ def start_server():
         None
     """
     print("Starting backend server...")
-    uvicorn.run("src.backend.main:app", host="0.0.0.0", port=8080, reload=True)
+    uvicorn.run("src.backend.main:app", host="0.0.0.0", port=8080, reload=not production_mode)
 
 
 def signal_handler(sig, frame):
@@ -151,10 +151,14 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     print("Performing pre-start checks...")
     load_env_variables()
+    if args.production:
+        os.environ["ENVIRONMENT"] = "production"
+    from src.backend.auth import validate_security_configuration
+    validate_security_configuration()
     check_environment_variables()
     check_required_packages()
     check_metacat_connection()
     print("All checks passed. Starting the servers...")
     frontend_process = start_frontend(production_mode=args.production)
-    start_server()  # This will block until the backend server is stopped
+    start_server(production_mode=args.production)  # Blocks until the backend stops
     frontend_process.terminate()  # Clean up frontend when backend stops

@@ -41,6 +41,7 @@ metacat_api = MetaCatAPI()
 # Load admin usernames on startup
 @app.on_event("startup")
 async def startup_event():
+    auth.validate_security_configuration()
     global admin_usernames
     admin_usernames = get_admin_usernames()
     auth.set_admin_emails(admin_usernames)
