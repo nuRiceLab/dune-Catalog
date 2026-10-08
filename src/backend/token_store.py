@@ -1,18 +1,6 @@
-"""
-token_store.py — per-user store for the long-lived FNAL vault token.
-
-The vault token (valid days-to-weeks) is the user's credential. This default
-implementation keeps it in memory, per process: simple, and fine for a catalog
-tool. Consequences to accept:
-  - tokens are lost on restart -> the user just reconnects to FNAL once
-  - not shared across uvicorn workers -> each worker holds its own; harmless
-
-If you ever need tokens to survive restarts, replace this class with one that
-encrypts at rest (e.g. cryptography.Fernet) and persists; keep the same
-put/get/delete interface so nothing else changes.
-"""
-
+"""Session-scoped, expiring FNAL credentials; restart requires reconnection."""
 import threading
+import time
 
 
 class InMemoryVaultTokenStore:
@@ -20,14 +8,25 @@ class InMemoryVaultTokenStore:
         self._d = {}
         self._lock = threading.Lock()
 
-    def put(self, user, vault_token, credkey):
+    def put(self, session_id, vault_token, credkey, expires_at):
         with self._lock:
-            self._d[user] = {"vault_token": vault_token, "credkey": credkey}
+            self._prune()
+            if expires_at > time.time():
+                self._d[session_id] = {
+                    "vault_token": vault_token, "credkey": credkey,
+                    "expires_at": expires_at,
+                }
 
-    def get(self, user):
+    def get(self, session_id):
         with self._lock:
-            return self._d.get(user)
+            self._prune()
+            return self._d.get(session_id)
 
-    def delete(self, user):
+    def delete(self, session_id):
         with self._lock:
-            self._d.pop(user, None)
+            return self._d.pop(session_id, None)
+
+    def _prune(self):
+        now = time.time()
+        for key in [key for key, item in self._d.items() if item["expires_at"] <= now]:
+            self._d.pop(key, None)

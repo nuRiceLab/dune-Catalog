@@ -76,7 +76,15 @@ export function Header() {
                     {isAuthenticated ? (
                         <Button
                             variant="outline"
-                            onClick={() => logout()}
+                            onClick={async () => {
+                                try {
+                                    const warning = await logout();
+                                    if (warning) toast({ title: 'Signed out', description: warning });
+                                } catch {
+                                    toast({ variant: 'destructive', title: 'Logout failed',
+                                        description: 'Your session may still be active. Please try again.' });
+                                }
+                            }}
                             className="flex items-center gap-2 text-headfoot-foreground hover:text-headfoot-foreground hover:bg-headfoot-foreground/10"
                         >
                             <LogOut className="w-4 h-4" />

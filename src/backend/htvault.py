@@ -127,3 +127,10 @@ class HTVaultClient:
                            headers={"X-Vault-Token": vault_token})
         r.raise_for_status()
         return int(((r.json() or {}).get("data") or {}).get("ttl", 0))
+
+    def revoke_token(self, vault_token):
+        response = self._http.post(
+            self._url("auth/token/revoke-self"),
+            headers={"X-Vault-Token": vault_token}, timeout=5.0,
+        )
+        response.raise_for_status()

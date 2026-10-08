@@ -30,6 +30,7 @@ export interface AuthMeResponse {
   authenticated: boolean;
   message: string;
   user?: UserInfo | null;
+  fnal_revoked?: boolean | null;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -48,12 +49,11 @@ export function login(): void {
 /**
  * Log out by clearing the backend session cookie.
  */
-export async function logout(): Promise<void> {
-  try {
-    await apiClient.post('/auth/logout');
-  } catch (error) {
-    console.error('Logout failed:', error);
-  }
+export async function logout(): Promise<string | undefined> {
+  const { data } = await apiClient.post<AuthMeResponse>('/auth/logout');
+  return data.fnal_revoked === false
+    ? 'Signed out locally. FNAL token revocation could not be confirmed.'
+    : undefined;
 }
 
 /**

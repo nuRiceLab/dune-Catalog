@@ -30,6 +30,8 @@ import hashlib
 import logging
 import os
 import secrets
+import sqlite3
+from pathlib import Path
 from datetime import datetime, timedelta, timezone
 from typing import Any, Literal, Optional
 from urllib.parse import urlencode, urlsplit
@@ -38,7 +40,8 @@ import httpx
 import jwt
 from fastapi import HTTPException, Request, Response, status
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+from src.backend.session_store import SessionStore
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +68,11 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3001/dunecatalog")
 CILOGON_ISSUER = "https://cilogon.org"
 _frontend_parts = urlsplit(FRONTEND_URL)
 TRUSTED_ORIGINS = {f"{_frontend_parts.scheme}://{_frontend_parts.netloc}"}
+SESSION_DB_PATH = os.getenv("SESSION_DB_PATH") or str(
+    Path(os.getenv("LOCALAPPDATA", str(Path.home() / ".local" / "share")))
+    / "DuneCatalog" / "sessions.sqlite3"
+)
+sessions = SessionStore(SESSION_DB_PATH)
 
 
 def require_trusted_origin(request: Request) -> None:
@@ -94,6 +102,8 @@ def validate_security_configuration() -> None:
         raise RuntimeError("CILOGON_CLIENT_ID and CILOGON_CLIENT_SECRET are required")
     if ACCESS_TOKEN_EXPIRE_MINUTES <= 0:
         raise RuntimeError("TOKEN_EXPIRY_MINUTES must be positive")
+    if IS_PRODUCTION and (not os.getenv("SESSION_DB_PATH") or not Path(SESSION_DB_PATH).is_absolute()):
+        raise RuntimeError("Production requires an absolute SESSION_DB_PATH on local disk")
     for name, value in (("FRONTEND_URL", FRONTEND_URL),
                         ("CILOGON_REDIRECT_URI", CILOGON_REDIRECT_URI),
                         ("CILOGON_DISCOVERY_URL", CILOGON_DISCOVERY_URL)):
@@ -137,12 +147,15 @@ class UserInfo(BaseModel):
     family_name: Optional[str] = None
     idp_name: Optional[str] = None
     is_admin: bool = False
+    session_id: str = Field(default="", exclude=True)
+    session_expires_at: int = Field(default=0, exclude=True)
 
 
 class AuthResponse(BaseModel):
     authenticated: bool
     message: str
     user: Optional[UserInfo] = None
+    fnal_revoked: Optional[bool] = None
 
 
 # ---------------------------------------------------------------------------
@@ -226,7 +239,14 @@ def create_access_token(
     expire = datetime.now(timezone.utc) + (
         expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
-    payload: dict[str, Any] = {**claims, "exp": expire}
+    payload: dict[str, Any] = {
+        **claims, "exp": int(expire.timestamp()), "jti": secrets.token_urlsafe(32),
+        "iss": "dune-catalog", "aud": "dune-catalog-api",
+    }
+    try:
+        sessions.register(payload["jti"], payload["exp"])
+    except sqlite3.Error:
+        raise HTTPException(503, "Session service is unavailable")
     return jwt.encode(payload, JWT_SECRET_KEY, algorithm="HS256")
 
 
@@ -235,14 +255,22 @@ def decode_token(token: str) -> Optional[dict[str, Any]]:
     if not _valid_signing_key():
         return None
     try:
-        return jwt.decode(token, JWT_SECRET_KEY, algorithms=["HS256"],
-                          options={"require": ["sub", "exp"]})
+        claims = jwt.decode(
+            token, JWT_SECRET_KEY, algorithms=["HS256"],
+            issuer="dune-catalog", audience="dune-catalog-api",
+            options={"require": ["sub", "exp", "jti", "iss", "aud", "identity_issuer"]},
+        )
+        if claims["identity_issuer"] != CILOGON_ISSUER or not claims["sub"]:
+            return None
+        return claims if sessions.is_active(claims["jti"]) else None
     except jwt.ExpiredSignatureError:
         logger.debug("Rejected expired JWT")
         return None
     except jwt.InvalidTokenError as exc:
         logger.debug("Rejected invalid JWT: %s", exc)
         return None
+    except sqlite3.Error:
+        raise HTTPException(503, "Session service is unavailable")
 
 
 def _claims_to_user_info(claims: dict[str, Any]) -> UserInfo:
@@ -258,6 +286,8 @@ def _claims_to_user_info(claims: dict[str, Any]) -> UserInfo:
         family_name=claims.get("family_name"),
         idp_name=claims.get("idp_name"),
         is_admin=is_admin(issuer, subject),
+        session_id=claims.get("jti", ""),
+        session_expires_at=claims.get("exp", 0),
     )
 
 
@@ -473,10 +503,17 @@ async def login_callback(request: Request) -> RedirectResponse:
 # ---------------------------------------------------------------------------
 
 
-async def logout(response: Response) -> AuthResponse:
-    response.delete_cookie(key=TOKEN_COOKIE, path="/")
+def logout(request: Request, response: Response) -> Optional[str]:
+    claims = decode_token(request.cookies.get(TOKEN_COOKIE, ""))
+    if claims:
+        try:
+            sessions.revoke(claims["jti"])
+        except sqlite3.Error:
+            raise HTTPException(503, "Session service is unavailable")
+    response.delete_cookie(key=TOKEN_COOKIE, path="/", secure=IS_PRODUCTION,
+                           httponly=True, samesite="lax")
     logger.info("User logged out")
-    return AuthResponse(authenticated=False, message="Logout successful")
+    return claims["jti"] if claims else None
 
 
 async def check_auth(request: Request) -> AuthResponse:

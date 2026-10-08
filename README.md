@@ -179,13 +179,35 @@ State-changing API requests require an exact trusted `Origin`, or a trusted
 its path is excluded. Scripts using session cookies must also supply this origin.
 FNAL login polling uses POST JSON with `login_id`; GET is not supported.
 
+### Session storage and FNAL lifecycle
+
+Production requires an absolute `SESSION_DB_PATH` on local disk, writable by the
+backend service account (for example `/var/lib/dunecatalog/sessions.sqlite3`).
+Keep it outside the repository and synced folders such as OneDrive. Development
+defaults to the user's local application data directory. SQLite stores only
+session identifiers and expirations. Losing the database signs everyone out;
+restarting with the same database preserves active sessions and revocations.
+This upgrade rejects all existing session cookies; users must sign in again.
+
+Logout revokes the catalog session before clearing its cookie, then removes
+session-owned FNAL credentials and pending logins. FNAL provider revocation is
+attempted with a five-second timeout; the UI reports when confirmation fails.
+Validate `auth/token/revoke-self` with an operator test account before deployment.
+Local logout remains effective if the provider is unavailable.
+
+Run **one backend worker**: FNAL credentials are held only in process memory.
+Users reconnect to FNAL after a backend restart. Connections expire at the
+earlier of the vault lease or catalog session expiry; unfinished logins expire
+after five minutes. Replica results are fetched using the requesting session's
+credentials on every request.
+
 ### Auth endpoints (backend)
 
 | Method | Path | Purpose |
 |--------|------|---------|
 | GET | `/auth/login` | Start the CILogon flow (302 to CILogon). |
 | GET | `/auth/callback` | Handle the redirect, set the session cookie. |
-| POST | `/auth/logout` | Clear the session cookie. |
+| POST | `/auth/logout` | Revoke the session, clear its cookie, and disconnect FNAL. |
 | GET | `/auth/me` | Current auth state + user info (incl. `is_admin`). |
 
 ## Project Structure

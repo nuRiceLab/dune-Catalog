@@ -52,8 +52,9 @@ export async function getReplicas(scope: string, name: string): Promise<Replicas
  * until the backend has stored the vault token. Resolves when connected.
  */
 export async function connectToFnal(): Promise<void> {
-    const start = await apiClient.post<{ login_id: string; auth_url: string }>('/rucio/login/start');
+    const start = await apiClient.post<{ login_id: string; auth_url: string; poll_interval: number }>('/rucio/login/start');
     const { login_id, auth_url } = start.data;
+    let pollInterval = start.data.poll_interval;
 
     const popup = window.open(auth_url, 'fnal_login', 'width=600,height=800');
     if (!popup) {
@@ -62,13 +63,15 @@ export async function connectToFnal(): Promise<void> {
 
     const deadline = Date.now() + 3 * 60 * 1000; // 3 min
     while (true) {
-        await new Promise((r) => setTimeout(r, 3000));
+        await new Promise((r) => setTimeout(r, Math.max(1, pollInterval) * 1000));
+        if (popup.closed) throw new Error('FNAL login was closed.');
         if (Date.now() > deadline) {
             try { popup.close(); } catch { /* ignore */ }
             throw new Error('Timed out waiting for FNAL login.');
         }
-        const poll = await apiClient.post<{ status: 'pending' | 'complete' }>(
+        const poll = await apiClient.post<{ status: 'pending' | 'complete'; poll_interval?: number }>(
             '/rucio/login/poll', { login_id });
+        pollInterval = poll.data.poll_interval ?? pollInterval;
         if (poll.data.status === 'complete') {
             try { popup.close(); } catch { /* ignore */ }
             return;

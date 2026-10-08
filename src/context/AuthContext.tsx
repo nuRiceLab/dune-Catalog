@@ -9,7 +9,7 @@ interface AuthContextType {
   isAdmin: boolean;
   user: UserInfo | null;
   login: () => void;
-  logout: () => Promise<void>;
+  logout: () => Promise<string | undefined>;
   refresh: () => Promise<void>;
 }
 
@@ -35,10 +35,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     startLogin();
   };
 
-  const logout = async (): Promise<void> => {
-    await endLogout();
+  const logout = async (): Promise<string | undefined> => {
+    const warning = await endLogout();
     setIsAuthenticated(false);
     setUser(null);
+    return warning;
   };
 
   return (
