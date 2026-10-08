@@ -9,7 +9,8 @@ from pathlib import Path
 import logging
 import tempfile
 import shutil
-from src.lib.mcatapi import MetaCatAPI
+from src.lib.mcatapi import MetaCatAPI, METACAT_TIMEOUT_S, METACAT_SIZE_TIMEOUT_S
+from src.backend.cancellable import run_cancellable
 from src.backend import auth
 from src.backend import rucio_router
 from src.backend import condb_router
@@ -107,8 +108,9 @@ class DatasetRequest(BaseModel):
 
 
 @app.post("/queryDatasets")
-def get_datasets(
+async def get_datasets(
     request: DatasetRequest,
+    http_request: Request,
     user: auth.UserInfo = Depends(auth.get_current_user),
 ) -> dict:
     """
@@ -127,21 +129,21 @@ def get_datasets(
     if request.customMql:
         print('Using custom MQL:', request.customMql)
     
-    result = metacat_api.get_datasets(
-        request.query, 
-        request.category, 
-        request.tab, 
-        request.officialOnly,
-        request.customMql
+    result = await run_cancellable(
+        http_request,
+        lambda cancelled: metacat_api.get_datasets(
+            request.query, request.category, request.tab, request.officialOnly,
+            request.customMql, is_cancelled=cancelled),
+        timeout_s=METACAT_TIMEOUT_S,
     )
-    
+
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["message"])
     return result
 
 
 @app.get("/health")
-async def health_check() -> dict:
+def health_check() -> dict:
     """
     Performs a health check by pinging MetaCat.
 
@@ -163,8 +165,9 @@ class FileRequest(BaseModel):
 
 
 @app.post("/queryFiles")
-def get_files(
+async def get_files(
     request: FileRequest,
+    http_request: Request,
     user: auth.UserInfo = Depends(auth.get_current_user),
 ):
     """
@@ -178,7 +181,12 @@ def get_files(
         HTTPException if a server error occurs
     """
     try:
-        result = metacat_api.get_files(request.namespace, request.name)
+        result = await run_cancellable(
+            http_request,
+            lambda cancelled: metacat_api.get_files(
+                request.namespace, request.name, is_cancelled=cancelled),
+            timeout_s=METACAT_TIMEOUT_S,
+        )
         if not result["success"]:
             # If the API call was successful but returned an error
             raise HTTPException(
@@ -187,6 +195,8 @@ def get_files(
             )
             
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         print('Error in get_files:', str(e))
         raise HTTPException(status_code=500, detail=str(e))
@@ -198,8 +208,9 @@ class FileDetailsRequest(BaseModel):
 
 
 @app.post("/fileDetails")
-def get_file_details(
+async def get_file_details(
     request: FileDetailsRequest,
+    http_request: Request,
     user: auth.UserInfo = Depends(auth.get_current_user),
 ):
     """
@@ -214,7 +225,12 @@ def get_file_details(
         HTTPException 404 if the file is not found, 500 on server errors
     """
     try:
-        result = metacat_api.get_file_details(request.namespace, request.name)
+        result = await run_cancellable(
+            http_request,
+            lambda cancelled: metacat_api.get_file_details(
+                request.namespace, request.name, is_cancelled=cancelled),
+            timeout_s=METACAT_TIMEOUT_S,
+        )
         if not result["success"]:
             raise HTTPException(
                 status_code=404,
@@ -238,8 +254,9 @@ class DatasetSizesRequest(BaseModel):
 
 
 @app.post("/datasetSizes")
-def get_dataset_sizes(
+async def get_dataset_sizes(
     request: DatasetSizesRequest,
+    http_request: Request,
     user: auth.UserInfo = Depends(auth.get_current_user),
 ):
     """
@@ -252,8 +269,11 @@ def get_dataset_sizes(
     if len(request.datasets) > 25:
         raise HTTPException(status_code=413, detail="Max 25 datasets per request")
     try:
-        result = metacat_api.get_dataset_sizes(
-            [{"namespace": d.namespace, "name": d.name} for d in request.datasets]
+        result = await run_cancellable(
+            http_request,
+            lambda cancelled: metacat_api.get_dataset_sizes(
+                [d.model_dump() for d in request.datasets], is_cancelled=cancelled),
+            timeout_s=METACAT_SIZE_TIMEOUT_S,
         )
         if not result["success"]:
             raise HTTPException(status_code=500, detail=result.get("message", "Size lookup failed"))

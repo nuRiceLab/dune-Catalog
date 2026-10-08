@@ -7,6 +7,7 @@ import logging
 import os
 
 import httpx
+from src.backend.cancellable import QueryCancelled
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class ConditionsDBAPI:
         self.base_url = (base_url or "").rstrip("/")
         self.timeout = timeout
 
-    def get_run_conditions(self, folder: str, run: int) -> dict:
+    def get_run_conditions(self, folder: str, run: int, is_cancelled=lambda: False) -> dict:
         """
         Fetch the conditions record for a single run number.
 
@@ -51,6 +52,8 @@ class ConditionsDBAPI:
                 "message": "Conditions DB is not configured on this server "
                            "(set CONDB_BASE_URL in .env)",
             }
+        if is_cancelled():
+            raise QueryCancelled()
         try:
             resp = httpx.get(
                 f"{self.base_url}/get",
@@ -62,6 +65,8 @@ class ConditionsDBAPI:
             logger.error(f"ConDB request failed for {folder} t={run}: {e}")
             return {"success": False, "message": f"Conditions DB request failed: {e}"}
 
+        if is_cancelled():
+            raise QueryCancelled()
         text = resp.text.strip()
         if not text:
             return {"success": False, "message": f"No conditions found for run {run}"}
@@ -96,7 +101,7 @@ class ConditionsDBAPI:
         return {"success": True, "results": self._clean_row(row)}
 
     def search_runs(self, folder: str, conditions: list[tuple[str, str, object]],
-                     limit: int = 200) -> dict:
+                     limit: int = 200, is_cancelled=lambda: False) -> dict:
         """
         Search a folder for runs matching column conditions, via ConDB's
         REST /search endpoint -- called directly with httpx rather than
@@ -144,6 +149,8 @@ class ConditionsDBAPI:
             else:
                 params.append(("cond", f"{column} {op} {value}"))
 
+        if is_cancelled():
+            raise QueryCancelled()
         try:
             resp = httpx.get(f"{self.base_url}/search", params=params, timeout=self.timeout)
             resp.raise_for_status()
@@ -151,6 +158,8 @@ class ConditionsDBAPI:
             logger.error(f"ConDB search failed for {folder}: {e}")
             return {"success": False, "message": f"Conditions DB search failed: {e}"}
 
+        if is_cancelled():
+            raise QueryCancelled()
         text = resp.text.strip()
         if not text:
             return {"success": True, "results": [], "truncated": False}
@@ -160,6 +169,8 @@ class ConditionsDBAPI:
         results = []
         truncated = False
         for line in lines[1:]:
+            if is_cancelled():
+                raise QueryCancelled()
             if len(results) >= limit:
                 truncated = True
                 break
