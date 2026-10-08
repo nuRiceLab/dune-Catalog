@@ -20,12 +20,6 @@ export interface UserInfo {
   is_admin?: boolean;
 }
 
-export interface AdminIdentity {
-  issuer: 'https://cilogon.org';
-  sub: string;
-  email?: string | null;
-}
-
 export interface AuthMeResponse {
   authenticated: boolean;
   message: string;

@@ -47,9 +47,8 @@ def clear_session(session_id: str):
 
 @router.post("/login/start")
 def login_start(user: auth.UserInfo = Depends(auth.get_current_user)):
-    started = vault.begin_auth()
     entry = {
-        "login_id": uuid.uuid4().hex, "session": started["session"],
+        "login_id": uuid.uuid4().hex,
         "expires_at": min(time.time() + _LOGIN_TTL, user.session_expires_at),
         "next_poll": 0.0, "polling": False,
     }
@@ -57,9 +56,20 @@ def login_start(user: auth.UserInfo = Depends(auth.get_current_user)):
         now = time.time()
         for key in [key for key, value in _PENDING.items() if value["expires_at"] <= now]:
             _PENDING.pop(key, None)
-        if not auth.sessions.is_active(user.session_id):
+        if entry["expires_at"] <= now:
             raise HTTPException(401, "Session expired")
         _PENDING[user.session_id] = entry
+    try:
+        started = vault.begin_auth()
+    except Exception:
+        with _PENDING_LOCK:
+            if _PENDING.get(user.session_id) is entry:
+                _PENDING.pop(user.session_id, None)
+        raise
+    with _PENDING_LOCK:
+        if _PENDING.get(user.session_id) is not entry or entry["expires_at"] <= time.time():
+            raise HTTPException(401, "Session or FNAL login expired; reconnect")
+        entry["session"] = started["session"]
     return {
         "login_id": entry["login_id"], "auth_url": started["auth_url"],
         "poll_interval": started["session"]["poll_interval"],
@@ -102,15 +112,11 @@ def login_poll(request: LoginPollRequest,
         with _PENDING_LOCK:
             if (_PENDING.get(user.session_id) is entry
                     and entry["expires_at"] > time.time()
-                    and auth.sessions.is_active(user.session_id)
                     and expires_at > time.time()):
                 previous_credentials = tokens.delete(user.session_id)
                 tokens.put(user.session_id, result["vault_token"], result["credkey"], expires_at)
                 _PENDING.pop(user.session_id, None)
                 accepted = True
-        if accepted and not auth.sessions.is_active(user.session_id):
-            tokens.delete(user.session_id)
-            accepted = False
     finally:
         if previous_credentials and previous_credentials["vault_token"] != result["vault_token"]:
             _revoke_vault_token(previous_credentials["vault_token"])

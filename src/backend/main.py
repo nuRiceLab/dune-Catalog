@@ -36,14 +36,11 @@ app.add_middleware(
 # Initialize MetaCat API
 metacat_api = MetaCatAPI()
 
-# Load admin usernames on startup
+# Load admin emails on startup
 @app.on_event("startup")
 async def startup_event():
     auth.validate_security_configuration()
-    auth.sessions.initialize()
-    global admin_identities
-    admin_identities = get_admin_identities()
-    auth.set_admin_identities(admin_identities)
+    auth.set_admin_emails(get_admin_emails())
 
 
 # Get the absolute path to the project root directory
@@ -62,10 +59,6 @@ def config_file_path(filename: str) -> Path:
     if target.parent != root:
         raise HTTPException(400, "Invalid configuration path")
     return target
-
-# Admin emails (will be loaded from config/admins.json)
-admin_identities = []
-
 
 # ---------------------------------------------------------------------------
 # CILogon OIDC authentication routes (see src/backend/auth.py)
@@ -87,7 +80,7 @@ async def auth_callback(request: Request):
 
 @app.post("/auth/logout")
 def auth_logout(request: Request, response: Response):
-    """Revoke the catalog session before discarding its FNAL credentials."""
+    """Clear the browser cookie and discard its session's FNAL credentials."""
     session_id = auth.logout(request, response)
     revoked = rucio_router.clear_session(session_id) if session_id else None
     return auth.AuthResponse(authenticated=False, message="Logout successful", fnal_revoked=revoked)
@@ -400,12 +393,12 @@ def save_dataset_stats(stats: Dict[str, Any]) -> bool:
         return False
 
 
-def get_admin_identities() -> list[dict]:
+def get_admin_emails() -> list[str]:
     """
-    Get list of admin usernames from the admins config file
+    Get list of admin emails from the admins config file
     
     Returns:
-        List of admin usernames
+        List of admin emails
     """
     admins_file = os.path.join(CONFIG_PATH, 'admins.json')
     
@@ -420,14 +413,14 @@ def get_admin_identities() -> list[dict]:
             logger.warning(f"Admin file does not exist: {admins_file}")
         return []
     except Exception as e:
-        logger.error(f"Error loading admin usernames: {e}")
+        logger.error(f"Error loading admin emails: {e}")
         return []
 
 
 def verify_admin(user: auth.UserInfo = Depends(auth.require_admin)) -> str:
     """
     FastAPI dependency: require an authenticated admin (CILogon session cookie
-    + issuer/subject on the allowlist). Returns the admin's email, or raises 401/403.
+    + email on the allowlist). Returns the admin's email, or raises 401/403.
     """
     return user.email or user.sub
 
@@ -509,14 +502,11 @@ async def save_config(file: str, data: ConfigData, admin_user: str = Depends(ver
         if file == "admins.json":
             records = data.data.get("admins")
             if not isinstance(records, list) or not records:
-                raise HTTPException(400, "At least one administrator identity is required")
+                raise HTTPException(400, "At least one administrator email is required")
             try:
-                data.data = {"admins": [
-                    auth.AdminIdentity.model_validate(record).model_dump(exclude_none=True)
-                    for record in records
-                ]}
+                data.data = auth.AdminConfig.model_validate(data.data).model_dump()
             except ValidationError:
-                raise HTTPException(400, "Invalid administrator identity records")
+                raise HTTPException(400, "Invalid administrator email addresses")
         
         # Create a temporary file to write to
         temporary = None
@@ -531,9 +521,7 @@ async def save_config(file: str, data: ConfigData, admin_user: str = Depends(ver
         
         # If we're updating the admins file, reload the admin allowlist
         if file == 'admins.json':
-            global admin_identities
-            admin_identities = get_admin_identities()
-            auth.set_admin_identities(admin_identities)
+            auth.set_admin_emails(data.data["admins"])
         
         return {"success": True, "message": f"Config file {file} updated successfully"}
     except HTTPException:

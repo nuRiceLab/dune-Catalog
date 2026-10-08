@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { isUserAdmin, type AdminIdentity } from '@/lib/auth';
+import { isUserAdmin } from '@/lib/auth';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,13 +20,8 @@ import AdminSidebar from '@/components/AdminSidebar';
 import { getConfigData, saveConfigData, CONFIG_FILES } from '@/lib/adminApi';
 import { z } from 'zod';
 
-const adminConfigSchema = z.object({
-  admins: z.array(z.object({
-    issuer: z.literal('https://cilogon.org'),
-    sub: z.string().min(1).refine(value => value === value.trim()),
-    email: z.string().nullish(),
-  }).strict()).min(1),
-});
+const adminEmailSchema = z.string().trim().toLowerCase().email();
+const adminConfigSchema = z.object({ admins: z.array(adminEmailSchema).min(1) });
 
 // Dynamically import the JSON editor to avoid SSR issues
 const JsonEditor = dynamic(() => import('@/components/JsonEditor'), { ssr: false });
@@ -35,7 +30,7 @@ export default function AdminsPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
-  const [admins, setAdmins] = useState<AdminIdentity[]>([]);
+  const [admins, setAdmins] = useState<string[]>([]);
   const [newAdmin, setNewAdmin] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isJsonMode, setIsJsonMode] = useState(false);
@@ -81,8 +76,15 @@ export default function AdminsPage() {
 
   const handleAddAdmin = () => {
     if (!newAdmin.trim()) return;
+    const parsed = adminEmailSchema.safeParse(newAdmin);
+    if (!parsed.success) {
+      toast({ variant: 'destructive', title: 'Invalid email',
+        description: 'Enter an administrator email address.' });
+      return;
+    }
+    const email = parsed.data;
     
-    if (admins.some(admin => admin.sub === newAdmin.trim())) {
+    if (admins.includes(email)) {
       toast({
         variant: "destructive",
         title: "Error",
@@ -91,15 +93,15 @@ export default function AdminsPage() {
       return;
     }
 
-    setAdmins([...admins, { issuer: 'https://cilogon.org', sub: newAdmin.trim() }]);
+    setAdmins([...admins, email]);
     setNewAdmin('');
   };
 
-  const handleRemoveAdmin = (admin: AdminIdentity) => {
+  const handleRemoveAdmin = (admin: string) => {
     setAdmins(admins.filter(a => a !== admin));
   };
 
-  const readJsonAdmins = (): AdminIdentity[] | null => {
+  const readJsonAdmins = (): string[] | null => {
     try {
       const parsed = adminConfigSchema.parse(JSON.parse(jsonContent));
       setJsonError(null);
@@ -107,7 +109,7 @@ export default function AdminsPage() {
     } catch (error) {
       setJsonError(error instanceof SyntaxError
         ? 'Enter valid JSON for the administrator list.'
-        : 'Each administrator needs issuer "https://cilogon.org", an exact nonempty sub, and an optional text email. Keep at least one administrator.');
+        : 'Each administrator must be an email address. Keep at least one administrator.');
       return null;
     }
   };
@@ -217,7 +219,7 @@ export default function AdminsPage() {
                 <CardHeader>
                   <CardTitle>Admin Users</CardTitle>
                   <CardDescription>
-                    Enroll exact CILogon subjects. Email addresses are display information only.
+                    Add administrators by the email address they use to sign in.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -226,8 +228,8 @@ export default function AdminsPage() {
                     {admins.length > 0 ? (
                       <div className="space-y-2">
                         {admins.map(admin => (
-                          <div key={`${admin.issuer}:${admin.sub}`} className="flex items-center justify-between p-2 bg-secondary rounded-md">
-                            <span>{admin.sub}{admin.email ? ` (${admin.email})` : ''}</span>
+                          <div key={admin} className="flex items-center justify-between p-2 bg-secondary rounded-md">
+                            <span>{admin}</span>
                             <Button 
                               variant="ghost" 
                               size="sm" 
@@ -254,7 +256,8 @@ export default function AdminsPage() {
                           value={newAdmin}
                           onChange={(e) => setNewAdmin(e.target.value)}
                           className="flex-1 mr-2"
-                          placeholder="Exact CILogon sub from /auth/me"
+                          type="email"
+                          placeholder="admin@example.org"
                         />
                         <Button onClick={handleAddAdmin}>
                           <PlusCircle className="mr-2 h-4 w-4" />

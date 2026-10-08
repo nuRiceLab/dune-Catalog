@@ -162,38 +162,52 @@ usage accountability within the app rather than protection of the data.
 
 ### Admin access
 
-Admins are enrolled by the exact CILogon issuer and subject in
-`src/config/admins.json`. Email is optional display information and never grants
-access. The initial list is empty to prevent automatic enrollment by email.
+Admins are identified by the email returned during CILogon sign-in. Store plain
+email strings in `src/config/admins.json`, for example:
 
-Before deploying this migration, have each intended administrator sign in and
-obtain their own `identity_issuer` and `sub` from `/auth/me`. Independently verify
-ownership, then provision records of the form
-`{"issuer":"https://cilogon.org","sub":"the verified subject"}` on the server.
-Do not guess subjects from email addresses. The Admin Users form accepts exact
-subjects; JSON mode also accepts an optional `email` label. Backend validation
-rejects malformed entries and removal of the last administrator through the API.
+```json
+{"admins": ["admin@example.org"]}
+```
+
+The Admin Users form and JSON editor accept emails, normalized by trimming
+whitespace and matching case-insensitively. A person can be added before their
+first sign-in; no CILogon issuer/subject lookup or user directory is required.
+Any CILogon identity reporting an allowlisted email receives admin access.
+Backend validation rejects malformed emails and removal of the last
+administrator through the API. Saved changes take effect immediately.
+
+When upgrading from issuer/subject records, replace them with the intended
+administrators' sign-in email strings before starting the new version. Records
+without an email need the operator to obtain that address; the backend does not
+infer emails from subjects or accept both formats.
 
 State-changing API requests require an exact trusted `Origin`, or a trusted
 `Referer` when Origin is absent. The trusted origin comes from `FRONTEND_URL`;
 its path is excluded. Scripts using session cookies must also supply this origin.
 FNAL login polling uses POST JSON with `login_id`; GET is not supported.
 
-### Session storage and FNAL lifecycle
+### Session cookies and FNAL lifecycle
 
-Production requires an absolute `SESSION_DB_PATH` on local disk, writable by the
-backend service account (for example `/var/lib/dunecatalog/sessions.sqlite3`).
-Keep it outside the repository and synced folders such as OneDrive. Development
-defaults to the user's local application data directory. SQLite stores only
-session identifiers and expirations. Losing the database signs everyone out;
-restarting with the same database preserves active sessions and revocations.
-This upgrade rejects all existing session cookies; users must sign in again.
+Catalog sessions use signed cookies with no session database or per-request
+storage lookup. The default lifetime is 24 hours, configurable through
+`TOKEN_EXPIRY_MINUTES` (default `1440`). Tokens are checked for signature,
+application issuer/audience, CILogon identity issuer, and expiry. The JWT's random
+session identifier only associates in-memory FNAL state with that login.
 
-Logout revokes the catalog session before clearing its cookie, then removes
-session-owned FNAL credentials and pending logins. FNAL provider revocation is
-attempted with a five-second timeout; the UI reports when confirmation fails.
+Logout clears the browser cookie. A copied cookie remains usable until its
+expiry, including after logout or a backend restart. Existing signed cookies
+remain valid until expiry when the signing key is unchanged.
+
+`SESSION_DB_PATH` is no longer used or required. The old SQLite file is not read;
+it can be archived or removed after migration. Session revocations recorded by
+the old version are no longer consulted. To require everyone to sign in again
+at migration, generate a new application signing key.
+
+Logout removes session-owned FNAL credentials and pending logins. FNAL provider
+revocation is attempted with a five-second timeout; the UI reports when confirmation fails.
 Validate `auth/token/revoke-self` with an operator test account before deployment.
-Local logout remains effective if the provider is unavailable.
+The browser cookie and local FNAL credentials are cleared even if the provider
+is unavailable; copied catalog cookies still follow the expiry rule above.
 
 Run **one backend worker**: FNAL credentials are held only in process memory.
 Users reconnect to FNAL after a backend restart. Connections expire at the
@@ -207,7 +221,7 @@ credentials on every request.
 |--------|------|---------|
 | GET | `/auth/login` | Start the CILogon flow (302 to CILogon). |
 | GET | `/auth/callback` | Handle the redirect, set the session cookie. |
-| POST | `/auth/logout` | Revoke the session, clear its cookie, and disconnect FNAL. |
+| POST | `/auth/logout` | Clear the browser cookie and disconnect FNAL. |
 | GET | `/auth/me` | Current auth state + user info (incl. `is_admin`). |
 
 ## Project Structure
