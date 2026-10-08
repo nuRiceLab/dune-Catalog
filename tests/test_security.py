@@ -146,6 +146,9 @@ class AdminBoundaryTests(unittest.TestCase):
             previous = path.read_text()
             for records in ([], [None], [42], [" "], ["not-an-email"],
                             ["a@@example.invalid"], ["a b@example.invalid"],
+                            ["admin@.example.invalid"], ["admin@example..invalid"],
+                            [".admin@example.invalid"], ["admin.@example.invalid"],
+                            ["admin@example.123"], ["a#b@example.invalid"],
                             [{"issuer": "https://cilogon.org", "sub": "old-sub"}]):
                 response = TestClient(main.app).post("/admin/config?file=admins.json",
                     json={"data": {"admins": records}},

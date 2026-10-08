@@ -162,7 +162,18 @@ class AdminConfig(BaseModel):
     def valid_emails(cls, values: list[str]) -> list[str]:
         emails = [value.strip().lower() for value in values]
         for email in emails:
-            if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
+            # Match the editor's Zod email validation, split into readable parts.
+            local, _, domain = email.partition("@")
+            valid_local = (
+                not local.startswith(".") and ".." not in local
+                and re.fullmatch(r"[a-z0-9_'+.\-]*[a-z0-9_+\-]", local) is not None
+            )
+            labels = domain.split(".")
+            valid_domain = (
+                len(labels) >= 2 and re.fullmatch(r"[a-z]{2,}", labels[-1]) is not None
+                and all(re.fullmatch(r"[a-z0-9][a-z0-9-]*", label) for label in labels[:-1])
+            )
+            if not valid_local or not valid_domain:
                 raise ValueError("Provide administrator email addresses")
         return emails
 
