@@ -6,7 +6,7 @@ import  { Footer }  from '@/components/Footer'
 import { SearchBar } from '@/components/SearchBar'
 import { DatasetTable } from '@/components/DatasetTable'
 import { SearchProgress } from '@/components/SearchProgress'
-import { searchDataSets, Dataset, isAbortError, isTimeoutError } from '@/lib/api'
+import { searchDataSets, Dataset, isAbortError, isAuthError, queryErrorMessage } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import config from '@/config/config.json';
@@ -39,10 +39,12 @@ function classifyMqlQuery(mql: string): 'files' | 'datasets' {
 }
 
 function HomeContent() {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated, isLoading, refresh } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [activeTabIndex, setActiveTabIndex] = useState(0)
+  const urlSearch = searchParams.toString()
+  const activeTabIndex = Math.max(0, tabs.indexOf(searchParams.get('tab') ?? ''))
+  const [retry, setRetry] = useState(0)
   const [sliderStyle, setSliderStyle] = useState({ width: 0, left: 0 })
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
   const [results, setResults] = useState<Dataset[]>([]);
@@ -64,10 +66,6 @@ function HomeContent() {
   }, [])
 
   useEffect(() => {
-    setResults([])
-  }, [activeTabIndex])
-
-  useEffect(() => {
     const updateSlider = () => {
       const activeTab = tabsRef.current[activeTabIndex]
       if (activeTab) {
@@ -84,8 +82,7 @@ function HomeContent() {
   }, [activeTabIndex, isLoaded])
 
   const handleTabChange = (tab: string) => {
-    const newIndex = tabs.indexOf(tab);
-    setActiveTabIndex(newIndex);
+    router.push('/?tab=' + encodeURIComponent(tab), { scroll: false });
   };
 
   // Searching only writes the search into the URL; the effect below is the
@@ -102,33 +99,34 @@ function HomeContent() {
     if (officialOnly) p.set('official', '1');
     if (customMql) p.set('mql', customMql);
     const searchUrl = `/?${p.toString()}`;
-    // Let detail pages link straight back to these results.
-    try { sessionStorage.setItem('dunecat-search-url', searchUrl) } catch {}
-    router.replace(searchUrl, { scroll: false });
+    if (p.toString() === urlSearch) setRetry(value => value + 1);
+    else router.push(searchUrl, { scroll: false });
   };
 
-  // Run the search encoded in the URL whenever it changes (and once auth
-  // is ready). Repeating an identical search leaves the URL unchanged, so
-  // the current results simply stay on screen. Superseding the search (or
-  // unmounting) aborts the in-flight request so it stops running on the
-  // backend and against MetaCat rather than finishing in the background.
+  // URL changes restore committed searches; repeating a search retries it.
   useEffect(() => {
-    if (isLoading || !isAuthenticated) return;
-    const tab = searchParams?.get('tab') ?? '';
+    setResults([]);
+    setSearched(false);
+    setSearching(false);
+    setSearchError(null);
+    const params = new URLSearchParams(urlSearch);
+    const tab = params.get('tab') ?? '';
     if (!tab || !tabs.includes(tab)) return;
-    setActiveTabIndex(tabs.indexOf(tab));
+    try { sessionStorage.setItem('dunecat-search-url', '/?' + urlSearch) } catch {}
+    if (isLoading || !isAuthenticated) return;
+    if (tab === 'Other' ? !params.get('mql') : !params.get('category')) return;
     const controller = new AbortController();
-    const mql = searchParams?.get('mql') ?? undefined;
+    const mql = params.get('mql') ?? undefined;
     setResultsMode(tab === 'Other' && mql && classifyMqlQuery(mql) === 'files' ? 'file' : 'dataset');
     setSearching(true);
     setSearchError(null);
     (async () => {
       try {
         const { results } = await searchDataSets(
-          searchParams?.get('q') ?? '',
-          searchParams?.get('category') ?? '',
+          params.get('q') ?? '',
+          params.get('category') ?? '',
           tab,
-          searchParams?.get('official') === '1',
+          params.get('official') === '1',
           mql,
           controller.signal
         );
@@ -141,11 +139,8 @@ function HomeContent() {
         // An aborted request is expected when the search is superseded; ignore.
         if (isAbortError(error)) return;
         if (controller.signal.aborted) return;
-        if (isTimeoutError(error)) {
-          setSearchError('MetaCat timeout, server is busy now… reload or try again later.');
-        } else {
-          console.error('Search failed:', error);
-        }
+        setSearchError(queryErrorMessage(error));
+        if (isAuthError(error)) void refresh();
       } finally {
         // Only clear the indicator if this search still owns it. If it was
         // superseded (aborted), a newer search has already taken over the
@@ -154,8 +149,7 @@ function HomeContent() {
       }
     })();
     return () => { controller.abort(); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, isLoading, isAuthenticated]);
+  }, [urlSearch, retry, isLoading, isAuthenticated, refresh]);
 
   if (!isClient || !isLoaded) {
     return null;
@@ -206,17 +200,18 @@ function HomeContent() {
             ) : (
               <>
                 <div className="mt-6">
-                  <SearchBar 
+                  <SearchBar
+                    key={urlSearch}
+                    initialValues={searchParams}
                     onSearch={handleSearch} 
                     activeTab={tabs[activeTabIndex]} 
-                    onTabChange={handleTabChange}
                   />
                 </div>
                 <div className="mt-2">
                   <SearchProgress active={searching} durationMs={config.app.api.timeout} />
                 </div>
                 {searchError ? (
-                  <div className="mt-4 rounded-lg border border-destructive/50 bg-destructive/5 p-4 text-center text-sm text-destructive">
+                  <div role="alert" className="mt-4 rounded-lg border border-destructive/50 bg-destructive/5 p-4 text-center text-sm text-destructive">
                     {searchError}
                   </div>
                 ) : (

@@ -1,5 +1,6 @@
+import { useAuth } from '@/context/AuthContext';
 import React, { useState, useEffect } from 'react';
-import { Dataset, searchFiles, File, recordDatasetAccess, isAbortError } from '@/lib/api';
+import { Dataset, searchFiles, File, recordDatasetAccess, isAbortError, isAuthError, queryErrorMessage } from '@/lib/api';
 import {
     Dialog,
     DialogContent,
@@ -20,6 +21,8 @@ interface ResultDialogProps {
 }
 
 export function DatasetDialog({ result, className }: ResultDialogProps) {
+    const { refresh } = useAuth();
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [files, setFiles] = useState<File[]>([]);    
     const [isLoadingFiles, setIsLoadingFiles] = useState(false);
     const [open, setOpen] = useState(false);
@@ -33,6 +36,9 @@ export function DatasetDialog({ result, className }: ResultDialogProps) {
         const { signal } = controller;
         async function fetchFiles() {
             setIsLoadingFiles(true);
+            setErrorMessage(null);
+            setMqlQuery('');
+            setFiles([]);
             try {
                 // Record dataset access (fire-and-forget, but abortable so it
                 // doesn't outlive a quickly-closed dialog)
@@ -52,8 +58,8 @@ export function DatasetDialog({ result, className }: ResultDialogProps) {
             } catch (error) {
                 // Dialog closed before the fetch finished — expected, ignore.
                 if (isAbortError(error) || signal.aborted) return;
-                console.error('Error fetching files:', error);
-                setFiles([]);
+                setErrorMessage(queryErrorMessage(error));
+                if (isAuthError(error)) void refresh();
             } finally {
                 if (!signal.aborted) setIsLoadingFiles(false);
             }
@@ -62,7 +68,7 @@ export function DatasetDialog({ result, className }: ResultDialogProps) {
         // Closing the dialog (or unmounting) aborts the in-flight file query
         // so it stops running against MetaCat instead of completing unseen.
         return () => { controller.abort(); };
-    }, [open, result.namespace, result.name]);
+    }, [open, result.namespace, result.name, refresh]);
 
     const handleCopyQuery = () => {
         navigator.clipboard.writeText(mqlQuery).then(() => {
@@ -136,7 +142,8 @@ export function DatasetDialog({ result, className }: ResultDialogProps) {
                 )}
                 <div className="w-full">
                     <h3 className="text-lg font-semibold mb-2">Files in this dataset (DUNE catalog will only display the first {config.app.files.maxToShow} files):</h3>
-                    <FilesTable files={files} isLoading={isLoadingFiles} totalCount={result.files} />
+                    {errorMessage ? <p role="alert" className="text-destructive">{errorMessage}</p> :
+                        <FilesTable files={files} isLoading={isLoadingFiles} totalCount={result.files} />}
                 </div>
             </DialogContent>
         </Dialog>

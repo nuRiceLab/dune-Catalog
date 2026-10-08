@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { getSession, login as startLogin, logout as endLogout, type UserInfo } from '@/lib/auth';
 
 interface AuthContextType {
@@ -20,16 +20,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     const session = await getSession();
     setIsAuthenticated(session.authenticated);
     setUser(session.user ?? null);
     setIsLoading(false);
-  };
+  }, []);
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
 
   const login = (): void => {
     startLogin();

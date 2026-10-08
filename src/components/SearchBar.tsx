@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { ReadonlyURLSearchParams } from 'next/navigation'
 import { Loader2 } from "lucide-react"
 import config from '@/config/config.json';
 import { Textarea } from "@/components/ui/textarea"
@@ -19,14 +20,14 @@ import { ConditionsDbPanel } from "@/components/ConditionsDbPanel"
 interface SearchBarProps {
   onSearch: (query: string, category: string, tab: string, officialOnly: boolean, customMql?: string) => void;
   activeTab: string;
-  onTabChange?: (tab: string) => void;
+  initialValues: ReadonlyURLSearchParams;
 }
 
-export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarProps) {
-  const [officialOnly, setOfficialOnly] = useState(false);
-  const [query, setQuery] = useState('');
-  const [category, setCategory] = useState('');
-  const [customMql, setCustomMql] = useState('');
+export function SearchBar({ onSearch, activeTab, initialValues }: SearchBarProps) {
+  const [officialOnly, setOfficialOnly] = useState(initialValues.get('official') === '1');
+  const [query, setQuery] = useState(initialValues.get('q') ?? '');
+  const [category, setCategory] = useState(initialValues.get('category') ?? '');
+  const [customMql, setCustomMql] = useState(initialValues.get('mql') ?? '');
   const [isLoading, setIsLoading] = useState(false);
   const [cooldownTime, setCooldownTime] = useState(0);
   const cooldownInterval = useRef<NodeJS.Timeout | null>(null);
@@ -44,22 +45,6 @@ export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarPro
     };
   }, []);
 
-  // Reset category when tab changes
-  useEffect(() => {
-    //if (!savedSearchRef.current || savedSearchRef.current.tab !== activeTab) {
-    //  setCategory('');
-    //}
-    // Reset search form when tab changes
-    setCategory('');
-    setQuery('');
-    if (activeTab !== 'Other') {
-      setCustomMql('');
-    } else {
-      // Reset regular search fields when switching to Other tab
-      setOfficialOnly(false);
-    }
-  }, [activeTab]);
-  
   // Initialize cooldown timer
   useEffect(() => {
     // const cooldownTimer = config.app.search.cooldownTime;
@@ -78,8 +63,6 @@ export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarPro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Searches are open to everyone; CILogon login is only used for identity
-    // and admin access (MetaCat reads are anonymous).
     if (cooldownTime > 0) {
       toast({
         variant: "destructive",
@@ -122,32 +105,6 @@ export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarPro
       setIsLoading(false);
     }
   };
-  {/*
-  const handleSavedSearchSelect = (searchName: string) => {
-    const savedSearch = config.savedSearches.find(search => search.name === searchName);
-    if (savedSearch) {
-      // Store the selected saved search
-      savedSearchRef.current = {
-        name: savedSearch.name,
-        tab: savedSearch.tab,
-        category: savedSearch.category
-      };
-
-      // Update form fields
-      setQuery(savedSearch.query);
-      setOfficialOnly(savedSearch.officialOnly);
-
-      // If the search is for a different tab, trigger tab change
-      if (savedSearch.tab !== activeTab && onTabChange) {
-        onTabChange(savedSearch.tab);
-      }
-      // If it's the same tab, update category immediately
-      else {
-        setCategory(savedSearch.category);
-      }
-    }
-  };
-  */};
   const getCategoryOptions = () => {
     return config.tabs[activeTab]?.categories.map(cat => cat.name) || [];
   };
@@ -194,6 +151,7 @@ export function SearchBar({ onSearch, activeTab, /*onTabChange*/ }: SearchBarPro
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search..."
+              aria-label="Dataset search"
               className="flex-grow"
             />
             <Select value={category} onValueChange={setCategory}>

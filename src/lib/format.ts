@@ -9,11 +9,13 @@
  * (k = 1000), matching the metacat CLI convention.
  *
  * - undefined  -> '…'  (value still loading)
- * - 0 / null   -> '—'  (unknown or empty)
+ * - null -> '—', negative -> 'n/a', zero -> '0 Bytes'
  */
 export function formatSize(bytes: number | undefined | null): string {
   if (bytes === undefined) return '…';
-  if (!bytes) return '—';
+  if (bytes === null) return '—';
+  if (bytes < 0) return 'n/a';
+  if (bytes === 0) return '0 Bytes';
   const k = 1000; // decimal units, matching the metacat CLI
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
   const i = Math.min(
