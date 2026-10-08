@@ -27,24 +27,21 @@ os.environ.update({
     "CILOGON_CLIENT_SECRET": "browser-test",
     "CILOGON_REDIRECT_URI": "http://localhost:8082/auth/callback",
     "FRONTEND_URL": "http://localhost:3002/dunecatalog",
-    "SESSION_DB_PATH": str(directory / "sessions.sqlite3"),
 })
 
 from src.backend import auth, main
 from src.lib import mcatapi
 
 main.CONFIG_PATH = str(directory)
-(directory / "admins.json").write_text(json.dumps({"admins": [
-    {"issuer": auth.CILOGON_ISSUER, "sub": "browser-test"}
-]}))
+(directory / "admins.json").write_text(json.dumps({"admins": ["browser@example.invalid"]}))
 state = {"fail_sizes": True, "delay": 0.1, "size_requests": 0,
          "active": 0, "max_active": 0, "queries": 0}
 lock = threading.Lock()
 
 
 @main.app.get("/__test__/login")
-def login(response: Response):
-    token = auth.create_access_token({"sub": "browser-test",
+def login(response: Response, email: str = "browser@example.invalid", subject: str = "browser-test"):
+    token = auth.create_access_token({"sub": subject, "email": email,
         "identity_issuer": auth.CILOGON_ISSUER, "name": "Browser Test"})
     response.set_cookie(auth.TOKEN_COOKIE, token, httponly=True, samesite="lax")
     return {"authenticated": True}

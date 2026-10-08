@@ -1,5 +1,10 @@
 # DUNE Catalog TODO List
 
+## Reversions
+
+- [x] Revert the SQLite-backed login session registry added in PR #17, including `SESSION_DB_PATH` and per-request session lookups. Keep signed-cookie authentication and FNAL logout cleanup. Retain the existing 24-hour cookie lifetime; after logout, a copied cookie remains valid until expiry.
+- [x] Restore email-based administrator identification from before PR #16. Use email strings in `admins.json` and the Admin Users form/JSON editor, with case-insensitive matching against the signed-in user's email. Adding an admin requires only their email, without `issuer`/`sub` records or a prior sign-in. Keep CILogon sign-in.
+
 ## Current Tasks
 - copy list of file names for a dataset
 - Double check for Security measures in general

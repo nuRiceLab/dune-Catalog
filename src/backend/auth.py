@@ -19,7 +19,7 @@ Flow overview
 Adapted from the sibling ``dune-pro-ai-agent`` project. This module reads its
 configuration straight from environment variables (loaded from ``.env`` by
 ``run.py``) to match the rest of the DUNE Catalog backend, and gates admin
-access with an issuer/subject allowlist (``src/config/admins.json``) instead of MetaCat
+access with an email allowlist (``src/config/admins.json``) instead of MetaCat
 usernames.
 """
 
@@ -30,18 +30,16 @@ import hashlib
 import logging
 import os
 import secrets
-import sqlite3
-from pathlib import Path
+import re
 from datetime import datetime, timedelta, timezone
-from typing import Any, Literal, Optional
+from typing import Any, Optional
 from urllib.parse import urlencode, urlsplit
 
 import httpx
 import jwt
 from fastapi import HTTPException, Request, Response, status
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel, ConfigDict, Field, field_validator
-from src.backend.session_store import SessionStore
+from pydantic import BaseModel, Field, field_validator
 
 logger = logging.getLogger(__name__)
 
@@ -68,11 +66,6 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3001/dunecatalog")
 CILOGON_ISSUER = "https://cilogon.org"
 _frontend_parts = urlsplit(FRONTEND_URL)
 TRUSTED_ORIGINS = {f"{_frontend_parts.scheme}://{_frontend_parts.netloc}"}
-SESSION_DB_PATH = os.getenv("SESSION_DB_PATH") or str(
-    Path(os.getenv("LOCALAPPDATA", str(Path.home() / ".local" / "share")))
-    / "DuneCatalog" / "sessions.sqlite3"
-)
-sessions = SessionStore(SESSION_DB_PATH)
 
 
 def require_trusted_origin(request: Request) -> None:
@@ -102,8 +95,6 @@ def validate_security_configuration() -> None:
         raise RuntimeError("CILOGON_CLIENT_ID and CILOGON_CLIENT_SECRET are required")
     if ACCESS_TOKEN_EXPIRE_MINUTES <= 0:
         raise RuntimeError("TOKEN_EXPIRY_MINUTES must be positive")
-    if IS_PRODUCTION and (not os.getenv("SESSION_DB_PATH") or not Path(SESSION_DB_PATH).is_absolute()):
-        raise RuntimeError("Production requires an absolute SESSION_DB_PATH on local disk")
     for name, value in (("FRONTEND_URL", FRONTEND_URL),
                         ("CILOGON_REDIRECT_URI", CILOGON_REDIRECT_URI),
                         ("CILOGON_DISCOVERY_URL", CILOGON_DISCOVERY_URL)):
@@ -128,9 +119,9 @@ _OAUTH_COOKIE_TTL_SECONDS = 10 * 60  # 10 minutes
 # Cached OIDC discovery document (fetched lazily on first use).
 _discovery_cache: Optional[dict[str, Any]] = None
 
-# Admin identity allowlist, populated by ``set_admin_identities`` at startup and
+# Admin email allowlist, populated by ``set_admin_emails`` at startup and
 # whenever admins.json is edited via the admin config API.
-_admin_identities: set[tuple[str, str]] = set()
+_admin_emails: set[str] = set()
 
 
 # ---------------------------------------------------------------------------
@@ -163,29 +154,38 @@ class AuthResponse(BaseModel):
 # ---------------------------------------------------------------------------
 
 
-class AdminIdentity(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    issuer: Literal["https://cilogon.org"]
-    sub: str
-    email: Optional[str] = None
+class AdminConfig(BaseModel):
+    admins: list[str]
 
-    @field_validator("sub")
+    @field_validator("admins")
     @classmethod
-    def valid_subject(cls, value: str) -> str:
-        if not value or value != value.strip():
-            raise ValueError("Provide the exact nonempty CILogon subject")
-        return value
+    def valid_emails(cls, values: list[str]) -> list[str]:
+        emails = [value.strip().lower() for value in values]
+        for email in emails:
+            # Match the editor's Zod email validation, split into readable parts.
+            local, _, domain = email.partition("@")
+            valid_local = (
+                not local.startswith(".") and ".." not in local
+                and re.fullmatch(r"[a-z0-9_'+.\-]*[a-z0-9_+\-]", local) is not None
+            )
+            labels = domain.split(".")
+            valid_domain = (
+                len(labels) >= 2 and re.fullmatch(r"[a-z]{2,}", labels[-1]) is not None
+                and all(re.fullmatch(r"[a-z0-9][a-z0-9-]*", label) for label in labels[:-1])
+            )
+            if not valid_local or not valid_domain:
+                raise ValueError("Provide administrator email addresses")
+        return emails
 
 
-def set_admin_identities(records: list[dict]) -> None:
-    global _admin_identities
-    identities = [AdminIdentity.model_validate(record) for record in records]
-    _admin_identities = {(record.issuer, record.sub) for record in identities}
-    logger.info("Loaded %d admin identities", len(_admin_identities))
+def set_admin_emails(emails: list[str]) -> None:
+    global _admin_emails
+    _admin_emails = set(AdminConfig(admins=emails).admins)
+    logger.info("Loaded %d admin emails", len(_admin_emails))
 
 
-def is_admin(issuer: str, sub: str) -> bool:
-    return (issuer, sub) in _admin_identities
+def is_admin(email: Optional[str]) -> bool:
+    return bool(email and email.strip().lower() in _admin_emails)
 
 
 # ---------------------------------------------------------------------------
@@ -243,10 +243,6 @@ def create_access_token(
         **claims, "exp": int(expire.timestamp()), "jti": secrets.token_urlsafe(32),
         "iss": "dune-catalog", "aud": "dune-catalog-api",
     }
-    try:
-        sessions.register(payload["jti"], payload["exp"])
-    except sqlite3.Error:
-        raise HTTPException(503, "Session service is unavailable")
     return jwt.encode(payload, JWT_SECRET_KEY, algorithm="HS256")
 
 
@@ -262,15 +258,13 @@ def decode_token(token: str) -> Optional[dict[str, Any]]:
         )
         if claims["identity_issuer"] != CILOGON_ISSUER or not claims["sub"]:
             return None
-        return claims if sessions.is_active(claims["jti"]) else None
+        return claims
     except jwt.ExpiredSignatureError:
         logger.debug("Rejected expired JWT")
         return None
     except jwt.InvalidTokenError as exc:
         logger.debug("Rejected invalid JWT: %s", exc)
         return None
-    except sqlite3.Error:
-        raise HTTPException(503, "Session service is unavailable")
 
 
 def _claims_to_user_info(claims: dict[str, Any]) -> UserInfo:
@@ -285,7 +279,7 @@ def _claims_to_user_info(claims: dict[str, Any]) -> UserInfo:
         given_name=claims.get("given_name"),
         family_name=claims.get("family_name"),
         idp_name=claims.get("idp_name"),
-        is_admin=is_admin(issuer, subject),
+        is_admin=is_admin(email),
         session_id=claims.get("jti", ""),
         session_expires_at=claims.get("exp", 0),
     )
@@ -305,7 +299,7 @@ def get_current_user(request: Request) -> UserInfo:
 
 
 def require_admin(request: Request) -> UserInfo:
-    """FastAPI dependency: authenticated AND on the admin identity allowlist."""
+    """FastAPI dependency: authenticated AND on the admin email allowlist."""
     user = get_current_user(request)
     if not user.is_admin:
         logger.warning(
@@ -504,12 +498,8 @@ async def login_callback(request: Request) -> RedirectResponse:
 
 
 def logout(request: Request, response: Response) -> Optional[str]:
+    """Clear the browser cookie; signed copies remain valid until expiry."""
     claims = decode_token(request.cookies.get(TOKEN_COOKIE, ""))
-    if claims:
-        try:
-            sessions.revoke(claims["jti"])
-        except sqlite3.Error:
-            raise HTTPException(503, "Session service is unavailable")
     response.delete_cookie(key=TOKEN_COOKIE, path="/", secure=IS_PRODUCTION,
                            httponly=True, samesite="lax")
     logger.info("User logged out")

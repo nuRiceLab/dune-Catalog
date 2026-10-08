@@ -1,9 +1,10 @@
 """Security regressions run locally with synthetic credentials and no upstream calls."""
 import asyncio
+import json
 import os
 import tempfile
 import time
-import sqlite3
+from datetime import timedelta
 from pathlib import Path
 import unittest
 from unittest.mock import patch
@@ -16,7 +17,6 @@ os.environ.update({
     "CILOGON_REDIRECT_URI": "https://catalog.example.invalid/auth/callback",
     "FRONTEND_URL": "https://catalog.example.invalid/dunecatalog",
     "ENVIRONMENT": "production",
-    "SESSION_DB_PATH": str(Path(tempfile.gettempdir()) / "dune-audit-sessions.sqlite3"),
 })
 
 import jwt
@@ -54,6 +54,11 @@ class ConfigurationTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 auth.validate_security_configuration()
 
+    def test_production_starts_without_session_database_configuration(self):
+        with patch.dict(os.environ):
+            os.environ.pop("SESSION_DB_PATH", None)
+            auth.validate_security_configuration()
+
     def test_direct_app_startup_validates_secret(self):
         with patch.object(auth, "JWT_SECRET_KEY", ""):
             with self.assertRaises(RuntimeError):
@@ -84,19 +89,32 @@ class AdminBoundaryTests(unittest.TestCase):
     def tearDown(self):
         main.app.dependency_overrides.clear()
 
-    def test_email_does_not_establish_admin_identity(self):
-        self.assertTrue(hasattr(auth, "set_admin_identities"))
-        auth.set_admin_identities([{"issuer": "https://cilogon.org", "sub": "admin-sub"}])
+    def test_email_grants_admin_access_without_subject_enrollment(self):
+        auth.set_admin_emails([" Admin@Example.Invalid "])
         self.assertTrue(auth._claims_to_user_info({
-            "identity_issuer": "https://cilogon.org", "sub": "admin-sub"
+            "sub": "never-enrolled", "email": "ADMIN@example.invalid"
         }).is_admin)
         self.assertFalse(auth._claims_to_user_info({
-            "identity_issuer": "https://cilogon.org", "sub": "other-sub",
-            "email": "admin@example.invalid"
+            "sub": "never-enrolled", "email": "other@example.invalid"
         }).is_admin)
         self.assertFalse(auth._claims_to_user_info({
-            "identity_issuer": "https://untrusted.example.invalid", "sub": "admin-sub"
+            "sub": "never-enrolled"
         }).is_admin)
+        auth.set_admin_emails([])
+
+    def test_saved_email_list_is_normalized_and_updates_admin_access(self):
+        main.app.dependency_overrides[main.verify_admin] = lambda: "audit"
+        with tempfile.TemporaryDirectory() as directory, patch.object(main, "CONFIG_PATH", directory):
+            response = TestClient(main.app).post("/admin/config?file=admins.json",
+                json={"data": {"admins": [" Admin@Example.Invalid "]}},
+                headers={"Origin": "https://catalog.example.invalid"})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(json.loads((Path(directory) / "admins.json").read_text()),
+                             {"admins": ["admin@example.invalid"]})
+            self.assertTrue(auth._claims_to_user_info({
+                "sub": "new-user", "email": "admin@example.invalid"
+            }).is_admin)
+            auth.set_admin_emails([])
 
     def test_untrusted_origins_cannot_write_config(self):
         main.app.dependency_overrides[main.verify_admin] = lambda: "audit"
@@ -124,9 +142,14 @@ class AdminBoundaryTests(unittest.TestCase):
         main.app.dependency_overrides[main.verify_admin] = lambda: "audit"
         with tempfile.TemporaryDirectory() as directory, patch.object(main, "CONFIG_PATH", directory):
             path = Path(directory) / "admins.json"
-            path.write_text('{"admins":[{"issuer":"https://cilogon.org","sub":"admin-sub"}]}')
+            path.write_text('{"admins":["admin@example.invalid"]}')
             previous = path.read_text()
-            for records in ([], ["admin@example.invalid"], [{"issuer": "https://cilogon.org", "sub": " "}]):
+            for records in ([], [None], [42], [" "], ["not-an-email"],
+                            ["a@@example.invalid"], ["a b@example.invalid"],
+                            ["admin@.example.invalid"], ["admin@example..invalid"],
+                            [".admin@example.invalid"], ["admin.@example.invalid"],
+                            ["admin@example.123"], ["a#b@example.invalid"],
+                            [{"issuer": "https://cilogon.org", "sub": "old-sub"}]):
                 response = TestClient(main.app).post("/admin/config?file=admins.json",
                     json={"data": {"admins": records}},
                     headers={"Origin": "https://catalog.example.invalid"})
@@ -156,44 +179,22 @@ class AdminBoundaryTests(unittest.TestCase):
 
 
 class SessionTests(unittest.TestCase):
-    def setUp(self):
-        from src.backend.session_store import SessionStore
-        directory = tempfile.TemporaryDirectory()
-        self.addCleanup(directory.cleanup)
-        store = SessionStore(Path(directory.name) / "sessions.sqlite3")
-        store.initialize()
-        patcher = patch.object(auth, "sessions", store)
-        patcher.start()
-        self.addCleanup(patcher.stop)
-
-    def test_logout_invalidates_a_copied_cookie(self):
+    def test_logout_clears_browser_cookie_but_copy_authenticates_until_expiry(self):
         token = auth.create_access_token({"sub": "audit", "identity_issuer": "https://cilogon.org"})
         response = TestClient(main.app).post("/auth/logout", headers={
             "Origin": "https://catalog.example.invalid", "Cookie": f"dunecat_token={token}"
         })
         self.assertEqual(response.status_code, 200)
-        self.assertIsNone(auth.decode_token(token))
+        self.assertFalse(response.json()["authenticated"])
+        self.assertIn("Max-Age=0", response.headers["set-cookie"])
+        copied = TestClient(main.app).get("/auth/me", headers={"Cookie": f"dunecat_token={token}"})
+        self.assertTrue(copied.json()["authenticated"])
 
-    def test_session_registry_persists_revocation(self):
-        from src.backend.session_store import SessionStore
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "sessions.sqlite3"
-            first = SessionStore(path)
-            first.initialize()
-            first.register("audit", int(time.time()) + 60)
-            self.assertTrue(SessionStore(path).is_active("audit"))
-            first.revoke("audit")
-            self.assertFalse(SessionStore(path).is_active("audit"))
-            first.register("expired", int(time.time()) - 1)
-            self.assertFalse(first.is_active("expired"))
-
-    def test_registry_failure_never_allows_signature_only_authentication(self):
-        from fastapi import HTTPException
-        token = auth.create_access_token({"sub": "audit", "identity_issuer": "https://cilogon.org"})
-        with patch.object(auth.sessions, "is_active", side_effect=sqlite3.OperationalError):
-            with self.assertRaises(HTTPException) as error:
-                auth.decode_token(token)
-            self.assertEqual(error.exception.status_code, 503)
+    def test_expired_cookie_cannot_authenticate(self):
+        token = auth.create_access_token({"sub": "audit", "identity_issuer": "https://cilogon.org"},
+                                         expires_delta=timedelta(seconds=-1))
+        response = TestClient(main.app).get("/auth/me", headers={"Cookie": f"dunecat_token={token}"})
+        self.assertFalse(response.json()["authenticated"])
 
     def test_internal_session_fields_are_not_returned_to_browser(self):
         token = auth.create_access_token({"sub": "audit", "identity_issuer": "https://cilogon.org"})
@@ -205,13 +206,11 @@ class SessionTests(unittest.TestCase):
         from fastapi import HTTPException
         router = main.rucio_router
         user = auth.UserInfo(sub="audit", session_id="race", session_expires_at=int(time.time()) + 60)
-        auth.sessions.register("race", user.session_expires_at)
         with patch.object(router.vault, "begin_auth", return_value={
             "auth_url": "https://fnal.example.invalid", "session": {"poll_interval": 5}
         }):
             started = router.login_start(user)
         def complete_after_logout(session):
-            auth.sessions.revoke("race")
             router.clear_session("race")
             return {"vault_token": "late-token", "credkey": "audit", "lease_duration": 60}
         with (
@@ -224,10 +223,22 @@ class SessionTests(unittest.TestCase):
             self.assertIsNone(router.tokens.get("race"))
             revoke.assert_called_once_with("late-token")
 
+    def test_late_start_cannot_restore_a_pending_fnal_login_after_logout(self):
+        from fastapi import HTTPException
+        router = main.rucio_router
+        user = auth.UserInfo(sub="audit", session_id="start-race", session_expires_at=int(time.time()) + 60)
+        def start_after_logout():
+            router.clear_session("start-race")
+            return {"auth_url": "https://fnal.example.invalid", "session": {"poll_interval": 5}}
+        with patch.object(router.vault, "begin_auth", side_effect=start_after_logout):
+            with self.assertRaises(HTTPException) as error:
+                router.login_start(user)
+            self.assertEqual(error.exception.status_code, 401)
+        self.assertNotIn("start-race", router._PENDING)
+
     def test_fnal_poll_is_serialized_and_honors_provider_interval(self):
         router = main.rucio_router
         user = auth.UserInfo(sub="audit", session_id="polling", session_expires_at=int(time.time()) + 60)
-        auth.sessions.register("polling", user.session_expires_at)
         with patch.object(router.vault, "begin_auth", return_value={
             "auth_url": "https://fnal.example.invalid", "session": {"poll_interval": 5}
         }):
@@ -247,7 +258,6 @@ class SessionTests(unittest.TestCase):
         from fastapi import HTTPException
         router = main.rucio_router
         user = auth.UserInfo(sub="audit", session_id="expiry", session_expires_at=int(time.time()) + 60)
-        auth.sessions.register("expiry", user.session_expires_at)
         router.tokens.put("expiry", "token", "key", time.time() - 1)
         self.assertIsNone(router.tokens.get("expiry"))
         with patch.object(router.vault, "begin_auth", return_value={
@@ -262,7 +272,7 @@ class SessionTests(unittest.TestCase):
         self.assertEqual(error.exception.status_code, 410)
         self.assertNotIn("expiry", router._PENDING)
 
-    def test_provider_revocation_failure_does_not_restore_local_access(self):
+    def test_provider_revocation_failure_still_clears_local_fnal_credentials(self):
         router = main.rucio_router
         token = auth.create_access_token({"sub": "audit", "identity_issuer": "https://cilogon.org"})
         claims = auth.decode_token(token)
@@ -272,7 +282,7 @@ class SessionTests(unittest.TestCase):
                 "Origin": "https://catalog.example.invalid", "Cookie": f"dunecat_token={token}"})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.json()["fnal_revoked"])
-        self.assertIsNone(auth.decode_token(token))
+        self.assertIn("Max-Age=0", response.headers["set-cookie"])
         self.assertIsNone(router.tokens.get(claims["jti"]))
         self.assertNotIn("sensitive", response.text)
 

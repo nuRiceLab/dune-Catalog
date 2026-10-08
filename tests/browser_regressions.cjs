@@ -63,7 +63,7 @@ test('50-row pages load sizes without saturating the service and sort globally',
   await page.locator('tbody tr').first().getByText('dataset-49', { exact: true }).waitFor();
 });
 
-test('invalid admin JSON stays editable and valid records can be saved', async t => {
+test('invalid admin JSON stays editable and email strings can be saved', async t => {
   const page = await openPage(t, '/admin/users/');
   const errors = [];
   page.on('pageerror', error => {
@@ -72,7 +72,7 @@ test('invalid admin JSON stays editable and valid records can be saved', async t
       && error.stack.includes('at dispose')) return;
     errors.push(error.message);
   });
-  await page.getByText('browser-test', { exact: true }).waitFor();
+  await page.getByText('browser@example.invalid', { exact: true }).waitFor();
   await page.getByRole('button', { name: 'JSON View' }).click();
   const editor = page.getByRole('textbox', { name: /Editor content/ });
   await editor.waitFor({ timeout: 30000 });
@@ -89,6 +89,7 @@ test('invalid admin JSON stays editable and valid records can be saved', async t
   for (const content of [
     '',
     '{"admins":[null]}',
+    '{"admins":["not-an-email"]}',
     '{"admins":[{"issuer":"https://cilogon.org","sub":{}}]}',
     '{"admins":[{"issuer":"https://wrong.example.invalid","sub":"test"}]}',
     '{"admins":[]}',
@@ -107,13 +108,10 @@ test('invalid admin JSON stays editable and valid records can be saved', async t
     assert.equal(saves, 0);
     assert.deepEqual(errors, []);
   }
-  const admins = [
-    { issuer: 'https://cilogon.org', sub: 'browser-test' },
-    { issuer: 'https://cilogon.org', sub: 'another-test', email: 'test@example.invalid' },
-  ];
+  const admins = ['browser@example.invalid', 'test@example.invalid'];
   await edit(JSON.stringify({ admins }));
   await page.getByRole('button', { name: 'Form View' }).click();
-  await page.getByText('another-test (test@example.invalid)', { exact: true }).waitFor();
+  await page.getByText('test@example.invalid', { exact: true }).waitFor();
   await Promise.all([
     page.waitForResponse(response => response.url().includes('/admin/config') && response.request().method() === 'POST'),
     page.getByRole('button', { name: 'Save Changes' }).click(),
@@ -121,8 +119,32 @@ test('invalid admin JSON stays editable and valid records can be saved', async t
   const saved = await page.request.get(`${api}/admin/config?file=admins.json`);
   assert.deepEqual((await saved.json()).data.admins, admins);
   await page.reload();
-  await page.getByText('another-test (test@example.invalid)', { exact: true }).waitFor();
+  await page.getByText('test@example.invalid', { exact: true }).waitFor();
   assert.deepEqual(errors, []);
+});
+
+test('an admin can add an email before that person signs in', async t => {
+  const page = await openPage(t, '/admin/users/');
+  await page.getByText('browser@example.invalid', { exact: true }).waitFor();
+  const input = page.getByRole('textbox', { name: 'Add New Admin' });
+  await input.fill('New-Admin@Example.Invalid');
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  await page.getByText('new-admin@example.invalid', { exact: true }).waitFor();
+  await input.fill('NEW-ADMIN@example.invalid');
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  assert.equal(await page.getByText('new-admin@example.invalid', { exact: true }).count(), 1);
+  await Promise.all([
+    page.waitForResponse(response => response.url().includes('/admin/config') && response.request().method() === 'POST'),
+    page.getByRole('button', { name: 'Save Changes' }).click(),
+  ]);
+  await page.reload();
+  await page.getByText('new-admin@example.invalid', { exact: true }).waitFor();
+  await page.request.get(`${api}/__test__/login?email=new-admin@example.invalid&subject=never-enrolled`);
+  const session = await (await page.request.get(`${api}/auth/me`)).json();
+  assert.equal(session.user.sub, 'never-enrolled');
+  assert.equal(session.user.is_admin, true);
+  await page.reload();
+  await page.getByText('Current Admins', { exact: true }).waitFor();
 });
 
 test('leaving a search cancels sizes without starting the next batch', async t => {
@@ -145,7 +167,7 @@ test('leaving a search cancels sizes without starting the next batch', async t =
   assert.equal(await page.locator('tbody tr').count(), 0);
 });
 
-test('logout revokes the browser session and rejects a copied cookie', async t => {
+test('logout clears the browser session while a copied cookie lasts until expiry', async t => {
   const page = await openPage(t, '/');
   await page.getByRole('button', { name: 'Logout' }).waitFor();
   const cookie = (await page.context().cookies(api)).find(cookie => cookie.name === 'dunecat_token');
@@ -155,6 +177,8 @@ test('logout revokes the browser session and rejects a copied cookie', async t =
     page.getByRole('button', { name: 'Logout' }).click(),
   ]);
   await page.getByRole('button', { name: 'Login with CILogon', exact: true }).waitFor();
+  const cleared = await page.request.get(`${api}/auth/me`);
+  assert.equal((await cleared.json()).authenticated, false);
   const session = await page.request.get(`${api}/auth/me`, { headers: { Cookie: `dunecat_token=${cookie.value}` } });
-  assert.equal((await session.json()).authenticated, false);
+  assert.equal((await session.json()).authenticated, true);
 });

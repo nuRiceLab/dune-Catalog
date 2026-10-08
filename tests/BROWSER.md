@@ -2,9 +2,9 @@
 
 These checks use Chromium, the Next.js UI, and the real FastAPI session,
 configuration, query cancellation, and size-worker code. Only MetaCat data and
-the CILogon login exchange are replaced by local fixtures. Configuration and
-SQLite sessions live in a temporary directory. The fixture listens only on
-loopback and must not be used as a deployment entrypoint.
+the CILogon login exchange are replaced by local fixtures. Configuration lives
+in a temporary directory; signed sessions use no database. The fixture listens
+only on loopback and must not be used as a deployment entrypoint.
 
 Install the usual project dependencies. If Playwright is not already available,
 install the browser test tooling without changing the package manifest:
@@ -31,8 +31,10 @@ node --test tests/browser_regressions.cjs
 
 The checks cover retry after a 503 size response, zero-byte datasets, all sizes
 on a 50-row page, global size ordering, cancellation before the next batch,
-empty or malformed administrator JSON and recovery, persisted admin edits, and logout
-revoking a copied session cookie. They do not contact live CILogon, FNAL, or
-MetaCat services. Monaco's normal editor assets are loaded from its CDN.
+empty or malformed administrator JSON and recovery, persisted email-based admin
+edits, adding an administrator before their first sign-in, and logout clearing
+the browser cookie while copied cookies remain valid until expiry. They do not
+contact live CILogon, FNAL, or MetaCat services. Monaco's normal editor assets are
+loaded from its CDN.
 The page-error assertion excludes Monaco's `Canceled` rejection when disposing
 the editor; application errors, including malformed-record render crashes, fail.
