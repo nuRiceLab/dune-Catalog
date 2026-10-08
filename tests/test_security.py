@@ -1,6 +1,8 @@
 """Security regressions run locally with synthetic credentials and no upstream calls."""
 import asyncio
 import os
+import tempfile
+from pathlib import Path
 import unittest
 from unittest.mock import patch
 
@@ -68,10 +70,85 @@ class ConfigurationTests(unittest.TestCase):
         with patch.object(main.condb_router.condb_api, "base_url", ""):
             main.app.dependency_overrides[auth.get_current_user] = lambda: auth.UserInfo(sub="audit")
             try:
-                response = TestClient(main.app).post("/runConditions", json={"run": 1})
+                response = TestClient(main.app).post("/runConditions", json={"run": 1}, headers={"Origin": "https://catalog.example.invalid"})
                 self.assertEqual(response.status_code, 503)
             finally:
                 main.app.dependency_overrides.clear()
+
+
+class AdminBoundaryTests(unittest.TestCase):
+    def tearDown(self):
+        main.app.dependency_overrides.clear()
+
+    def test_email_does_not_establish_admin_identity(self):
+        self.assertTrue(hasattr(auth, "set_admin_identities"))
+        auth.set_admin_identities([{"issuer": "https://cilogon.org", "sub": "admin-sub"}])
+        self.assertTrue(auth._claims_to_user_info({
+            "identity_issuer": "https://cilogon.org", "sub": "admin-sub"
+        }).is_admin)
+        self.assertFalse(auth._claims_to_user_info({
+            "identity_issuer": "https://cilogon.org", "sub": "other-sub",
+            "email": "admin@example.invalid"
+        }).is_admin)
+        self.assertFalse(auth._claims_to_user_info({
+            "identity_issuer": "https://untrusted.example.invalid", "sub": "admin-sub"
+        }).is_admin)
+
+    def test_untrusted_origins_cannot_write_config(self):
+        main.app.dependency_overrides[main.verify_admin] = lambda: "audit"
+        with tempfile.TemporaryDirectory() as directory, patch.object(main, "CONFIG_PATH", directory):
+            for origin in (None, "null", "https://evil.example.invalid",
+                           "https://catalog.example.invalid.attacker.invalid"):
+                headers = {} if origin is None else {"Origin": origin}
+                response = TestClient(main.app).post(
+                    "/admin/config?file=helpContent.json",
+                    content=b'{"data":{"audit":true}}', headers=headers,
+                )
+                self.assertEqual(response.status_code, 403)
+            self.assertEqual(list(Path(directory).iterdir()), [])
+
+    def test_trusted_origin_cannot_escape_config_directory(self):
+        main.app.dependency_overrides[main.verify_admin] = lambda: "audit"
+        with tempfile.TemporaryDirectory() as directory, patch.object(main, "CONFIG_PATH", directory):
+            client = TestClient(main.app)
+            for filename in ("../escape.json", "sub/admins.json", "admins.json "):
+                response = client.post("/admin/config", params={"file": filename},
+                    json={"data": {}}, headers={"Origin": "https://catalog.example.invalid"})
+                self.assertEqual(response.status_code, 400)
+
+    def test_invalid_admin_list_does_not_replace_valid_file(self):
+        main.app.dependency_overrides[main.verify_admin] = lambda: "audit"
+        with tempfile.TemporaryDirectory() as directory, patch.object(main, "CONFIG_PATH", directory):
+            path = Path(directory) / "admins.json"
+            path.write_text('{"admins":[{"issuer":"https://cilogon.org","sub":"admin-sub"}]}')
+            previous = path.read_text()
+            for records in ([], ["admin@example.invalid"], [{"issuer": "https://cilogon.org", "sub": " "}]):
+                response = TestClient(main.app).post("/admin/config?file=admins.json",
+                    json={"data": {"admins": records}},
+                    headers={"Origin": "https://catalog.example.invalid"})
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(path.read_text(), previous)
+
+    def test_trusted_origin_or_referer_can_save(self):
+        main.app.dependency_overrides[main.verify_admin] = lambda: "audit"
+        with tempfile.TemporaryDirectory() as directory, patch.object(main, "CONFIG_PATH", directory):
+            for headers in (
+                {"Origin": "https://catalog.example.invalid"},
+                {"Referer": "https://catalog.example.invalid/dunecatalog/admin"},
+            ):
+                response = TestClient(main.app).post("/admin/config?file=helpContent.json",
+                    json={"data": {"audit": True}}, headers=headers)
+                self.assertEqual(response.status_code, 200)
+            self.assertIn('"audit": true', (Path(directory) / "helpContent.json").read_text())
+
+    def test_referer_does_not_override_bad_origin(self):
+        response = TestClient(main.app).post("/auth/logout", headers={
+            "Origin": "null", "Referer": "https://catalog.example.invalid/",
+        })
+        self.assertEqual(response.status_code, 403)
+
+    def test_poll_cannot_change_credentials_via_get(self):
+        self.assertEqual(TestClient(main.app).get("/rucio/login/poll?login_id=audit").status_code, 405)
 
 
 if __name__ == "__main__":

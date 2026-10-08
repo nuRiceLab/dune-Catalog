@@ -4,7 +4,8 @@ from datetime import datetime
 from typing import Dict, List, Optional, Any
 from fastapi import FastAPI, HTTPException, Depends, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
+from pathlib import Path
 import logging
 import tempfile
 import shutil
@@ -18,18 +19,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Create the FastAPI app
-app = FastAPI()
+app = FastAPI(dependencies=[Depends(auth.require_trusted_origin)])
 
 app.include_router(rucio_router.router)
 app.include_router(condb_router.router)
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "https://dune-tech.rice.edu"
-    ],
+    allow_origins=list(auth.TRUSTED_ORIGINS),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,9 +39,9 @@ metacat_api = MetaCatAPI()
 @app.on_event("startup")
 async def startup_event():
     auth.validate_security_configuration()
-    global admin_usernames
-    admin_usernames = get_admin_usernames()
-    auth.set_admin_emails(admin_usernames)
+    global admin_identities
+    admin_identities = get_admin_identities()
+    auth.set_admin_identities(admin_identities)
 
 
 # Get the absolute path to the project root directory
@@ -52,9 +49,20 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..
 
 # Path to the configuration directory
 CONFIG_PATH = os.path.join(PROJECT_ROOT, 'src', 'config')
+CONFIG_FILES = {"config.json", "admins.json", "dataset_access_stats.json", "helpContent.json"}
+
+
+def config_file_path(filename: str) -> Path:
+    if filename not in CONFIG_FILES:
+        raise HTTPException(400, "Unknown configuration file")
+    root = Path(CONFIG_PATH).resolve()
+    target = (root / filename).resolve()
+    if target.parent != root:
+        raise HTTPException(400, "Invalid configuration path")
+    return target
 
 # Admin emails (will be loaded from config/admins.json)
-admin_usernames = []
+admin_identities = []
 
 
 # ---------------------------------------------------------------------------
@@ -369,7 +377,7 @@ def save_dataset_stats(stats: Dict[str, Any]) -> bool:
         return False
 
 
-def get_admin_usernames() -> List[str]:
+def get_admin_identities() -> list[dict]:
     """
     Get list of admin usernames from the admins config file
     
@@ -396,7 +404,7 @@ def get_admin_usernames() -> List[str]:
 def verify_admin(user: auth.UserInfo = Depends(auth.require_admin)) -> str:
     """
     FastAPI dependency: require an authenticated admin (CILogon session cookie
-    + email on the allowlist). Returns the admin's email, or raises 401/403.
+    + issuer/subject on the allowlist). Returns the admin's email, or raises 401/403.
     """
     return user.email or user.sub
 
@@ -431,14 +439,14 @@ async def get_config(file: str = None, list: bool = False, admin_user: str = Dep
     try:
         if list:
             # List all config files
-            files = [f for f in os.listdir(CONFIG_PATH) if f.endswith('.json')]
+            files = sorted(CONFIG_FILES)
             return {"success": True, "configFiles": files}
         
         if not file:
             raise HTTPException(status_code=400, detail="File parameter is required")
         
         # Get config file path
-        config_file = os.path.join(CONFIG_PATH, file)
+        config_file = config_file_path(file)
         
         # Check if file exists
         if not os.path.exists(config_file):
@@ -449,6 +457,8 @@ async def get_config(file: str = None, list: bool = False, admin_user: str = Dep
             data = json.load(f)
         
         return {"success": True, "data": data}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error getting config: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -472,22 +482,39 @@ async def save_config(file: str, data: ConfigData, admin_user: str = Depends(ver
             raise HTTPException(status_code=400, detail="File parameter is required")
         
         # Get config file path
-        config_file = os.path.join(CONFIG_PATH, file)
+        config_file = config_file_path(file)
+        if file == "admins.json":
+            records = data.data.get("admins")
+            if not isinstance(records, list) or not records:
+                raise HTTPException(400, "At least one administrator identity is required")
+            try:
+                data.data = {"admins": [
+                    auth.AdminIdentity.model_validate(record).model_dump(exclude_none=True)
+                    for record in records
+                ]}
+            except ValidationError:
+                raise HTTPException(400, "Invalid administrator identity records")
         
         # Create a temporary file to write to
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
-            json.dump(data.data, temp_file, indent=2)
-        
-        # Replace the original file with the temporary file
-        shutil.move(temp_file.name, config_file)
+        temporary = None
+        try:
+            with tempfile.NamedTemporaryFile(mode='w', dir=CONFIG_PATH, delete=False) as temp_file:
+                temporary = temp_file.name
+                json.dump(data.data, temp_file, indent=2)
+            os.replace(temporary, config_file)
+        finally:
+            if temporary and os.path.exists(temporary):
+                os.unlink(temporary)
         
         # If we're updating the admins file, reload the admin allowlist
         if file == 'admins.json':
-            global admin_usernames
-            admin_usernames = get_admin_usernames()
-            auth.set_admin_emails(admin_usernames)
+            global admin_identities
+            admin_identities = get_admin_identities()
+            auth.set_admin_identities(admin_identities)
         
         return {"success": True, "message": f"Config file {file} updated successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error saving config: {e}")
         raise HTTPException(status_code=500, detail=str(e))

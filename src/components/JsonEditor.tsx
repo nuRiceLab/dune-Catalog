@@ -31,7 +31,7 @@ export default function JsonEditor({ value, onChange }: JsonEditorProps) {
   }, [value]);
 
   const handleEditorChange = (value: string | undefined) => {
-    if (!value) return;
+    if (value === undefined) return;
     setEditorContent(value);
     
     // Store the content as a string, but don't validate on every keystroke

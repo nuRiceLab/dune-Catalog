@@ -19,7 +19,7 @@ Flow overview
 Adapted from the sibling ``dune-pro-ai-agent`` project. This module reads its
 configuration straight from environment variables (loaded from ``.env`` by
 ``run.py``) to match the rest of the DUNE Catalog backend, and gates admin
-access with an email allowlist (``src/config/admins.json``) instead of MetaCat
+access with an issuer/subject allowlist (``src/config/admins.json``) instead of MetaCat
 usernames.
 """
 
@@ -31,14 +31,14 @@ import logging
 import os
 import secrets
 from datetime import datetime, timedelta, timezone
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 from urllib.parse import urlencode, urlsplit
 
 import httpx
 import jwt
 from fastapi import HTTPException, Request, Response, status
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, field_validator
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +62,24 @@ CILOGON_SCOPES = os.getenv(
     "CILOGON_SCOPES", "openid email profile org.cilogon.userinfo"
 )
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3001/dunecatalog")
+CILOGON_ISSUER = "https://cilogon.org"
+_frontend_parts = urlsplit(FRONTEND_URL)
+TRUSTED_ORIGINS = {f"{_frontend_parts.scheme}://{_frontend_parts.netloc}"}
+
+
+def require_trusted_origin(request: Request) -> None:
+    """Cookies authorize the user; exact origins authorize browser mutations."""
+    if request.method in {"GET", "HEAD", "OPTIONS"}:
+        return
+    origin = request.headers.get("origin")
+    if origin is None:
+        try:
+            referer = urlsplit(request.headers.get("referer", ""))
+            origin = f"{referer.scheme}://{referer.netloc}"
+        except ValueError:
+            origin = ""
+    if origin not in TRUSTED_ORIGINS:
+        raise HTTPException(403, "Untrusted request origin")
 
 
 def _valid_signing_key() -> bool:
@@ -100,9 +118,9 @@ _OAUTH_COOKIE_TTL_SECONDS = 10 * 60  # 10 minutes
 # Cached OIDC discovery document (fetched lazily on first use).
 _discovery_cache: Optional[dict[str, Any]] = None
 
-# Admin email allowlist, populated by ``set_admin_emails`` at startup and
+# Admin identity allowlist, populated by ``set_admin_identities`` at startup and
 # whenever admins.json is edited via the admin config API.
-_admin_emails: set[str] = set()
+_admin_identities: set[tuple[str, str]] = set()
 
 
 # ---------------------------------------------------------------------------
@@ -112,6 +130,7 @@ _admin_emails: set[str] = set()
 
 class UserInfo(BaseModel):
     sub: str
+    identity_issuer: str = ""
     email: Optional[str] = None
     name: Optional[str] = None
     given_name: Optional[str] = None
@@ -131,18 +150,29 @@ class AuthResponse(BaseModel):
 # ---------------------------------------------------------------------------
 
 
-def set_admin_emails(emails: list[str]) -> None:
-    """Replace the in-memory admin allowlist (case-insensitive emails)."""
-    global _admin_emails
-    _admin_emails = {e.strip().lower() for e in emails if e and e.strip()}
-    logger.info("Loaded %d admin email(s)", len(_admin_emails))
+class AdminIdentity(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    issuer: Literal["https://cilogon.org"]
+    sub: str
+    email: Optional[str] = None
+
+    @field_validator("sub")
+    @classmethod
+    def valid_subject(cls, value: str) -> str:
+        if not value or value != value.strip():
+            raise ValueError("Provide the exact nonempty CILogon subject")
+        return value
 
 
-def is_admin(email: Optional[str]) -> bool:
-    """Return True if ``email`` is on the admin allowlist."""
-    if not email:
-        return False
-    return email.strip().lower() in _admin_emails
+def set_admin_identities(records: list[dict]) -> None:
+    global _admin_identities
+    identities = [AdminIdentity.model_validate(record) for record in records]
+    _admin_identities = {(record.issuer, record.sub) for record in identities}
+    logger.info("Loaded %d admin identities", len(_admin_identities))
+
+
+def is_admin(issuer: str, sub: str) -> bool:
+    return (issuer, sub) in _admin_identities
 
 
 # ---------------------------------------------------------------------------
@@ -157,7 +187,10 @@ async def get_discovery_document() -> dict[str, Any]:
         async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.get(CILOGON_DISCOVERY_URL)
             resp.raise_for_status()
-            _discovery_cache = resp.json()
+            document = resp.json()
+            if document.get("issuer") != CILOGON_ISSUER:
+                raise RuntimeError("Unexpected CILogon discovery issuer")
+            _discovery_cache = document
         logger.debug("Loaded CILogon OIDC discovery from %s", CILOGON_DISCOVERY_URL)
     return _discovery_cache
 
@@ -214,14 +247,17 @@ def decode_token(token: str) -> Optional[dict[str, Any]]:
 
 def _claims_to_user_info(claims: dict[str, Any]) -> UserInfo:
     email = claims.get("email")
+    issuer = claims.get("identity_issuer", "")
+    subject = claims.get("sub", "")
     return UserInfo(
-        sub=str(claims.get("sub", "")),
+        sub=subject,
+        identity_issuer=issuer,
         email=email,
         name=claims.get("name"),
         given_name=claims.get("given_name"),
         family_name=claims.get("family_name"),
         idp_name=claims.get("idp_name"),
-        is_admin=is_admin(email),
+        is_admin=is_admin(issuer, subject),
     )
 
 
@@ -239,7 +275,7 @@ def get_current_user(request: Request) -> UserInfo:
 
 
 def require_admin(request: Request) -> UserInfo:
-    """FastAPI dependency: authenticated AND on the admin allowlist."""
+    """FastAPI dependency: authenticated AND on the admin identity allowlist."""
     user = get_current_user(request)
     if not user.is_admin:
         logger.warning(
@@ -399,6 +435,7 @@ async def login_callback(request: Request) -> RedirectResponse:
 
     claims = {
         "sub": sub,
+        "identity_issuer": CILOGON_ISSUER,
         "email": userinfo.get("email"),
         "name": userinfo.get("name"),
         "given_name": userinfo.get("given_name"),
